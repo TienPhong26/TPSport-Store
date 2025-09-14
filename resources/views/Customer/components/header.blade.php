@@ -5,6 +5,7 @@
     <title>Profile</title>
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <script src="{{ asset('js/alert.js') }}"></script>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
@@ -19,79 +20,89 @@
                 </a>
             </div>
 
-            <div class="search-container">
-                <form action="{{ route('products.search') }}" method="GET" class="search-form" id="searchForm">
-                    <div class="search-box">
-                        <input type="text" name="query" id="searchInput" placeholder="Tìm kiếm sản phẩm..."
-                            value="{{ request('query') }}" class="search-input" autocomplete="off">
-                        <button type="submit" class="search-btn">
-                            <i class="lni lni-search"></i>
-                        </button>
-                    </div>
-                    <div id="searchSuggestions" class="search-suggestions"></div>
-                </form>
-            </div>
 
-            <div class="menu"><a href="#menu" class="openicon">☰</a>
+
+            <div class="menu">
+                <a href="#menu" class="openicon">☰</a>
                 <nav id="menu">
                     <ul>
-                        <li><a href="{{ route(name: 'customer.about') }}">Giới thiệu</a></li>
+
                         @auth('customer')
                             <li>
                                 <a href="{{ route('cart.view') }}">
-                                    <i class="lni lni-shopping-basket"></i> Giỏ hàng
+                                    <i class="lni lni-shopping-basket"></i> GIỎ HÀNG
                                 </a>
                             </li>
                         @endauth
-                        <li><a href="{{ route(name: 'categories.list') }}">Danh mục</a></li>
-                        <li><a href="{{ route(name: 'brands.list') }}">Thương hiệu</a></li>
-                        @guest('customer')
-                            <li><a href="{{ route('customer.login') }}">Đăng nhập</a></li>
-                            <li><a href="{{ route('customer.register') }}">Đăng ký</a></li>
-                        @else
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                    <i class="lni lni-user"></i>
-                                    @auth('customer')
-                                        {{ Auth::guard('customer')->user()->customer_name }}
-                                    @else
-                                        Tài khoản
-                                    @endauth
-                                </a>
-                                <div class="dropdown-menu">
-                                    <a href="{{ route('customer.profile') }}" class="dropdown-item">
-                                        <i class="lni lni-user"></i> Thông tin tài khoản
-                                    </a>
-                                    <a href="{{ route('customer.orders') }}" class="dropdown-item">
-                                        <i class="lni lni-shopping-basket"></i> Lịch sử mua hàng
-                                    </a>
-                                    <a href="{{ route('customer.change-password') }}" class="dropdown-item">
-                                        <i class="lni lni-lock"></i> Đổi mật khẩu
-                                    </a>
-                                    <form action="{{ route('customer.logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="lni lni-exit"></i> Đăng xuất
-                                        </button>
-                                    </form>
+
+                        <li><a href="{{ route('brands.list') }}">THƯƠNG HIỆU</a></li>
+                        <li><a href="{{ route('categories.list') }}">DANH MỤC</a></li>
+                        <li><a href="{{ route('brands.list') }}">SẢN PHẨM MỚI</a></li>
+                        <li><a href="{{ route('brands.list') }}">NAM</a></li>
+                        <li><a href="{{ route('brands.list') }}">NỮ</a></li>
+                        <li><a href="{{ route('brands.list') }}">OUTLET</a></li>
+                        <li><a href="{{ route('customer.about') }}">GIỚI THIỆU</a></li>
+
+
+                        {{-- Ô tìm kiếm --}}
+                        {{-- <li><a href="{{ route('customer.contact') }}">LIÊN HỆ VỚI CHÚNG TÔI</a></li> --}}
+                        <div class="search-container">
+                            <form action="{{ route('products.search') }}" method="GET" class="search-form"
+                                id="searchForm">
+                                <div class="search-box">
+                                    <input type="text" name="query" id="searchInput" placeholder="Tìm kiếm sản phẩm..."
+                                        value="{{ request('query') }}" class="search-input" autocomplete="off">
+                                    <button type="submit" class="search-btn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
                                 </div>
-                            </li>
-                        @endguest
-                        <li><a href="{{ route('customer.contact') }}">Liên hệ với chúng tôi</a></li>
+                                <div id="searchSuggestions" class="search-suggestions"></div>
+                            </form>
+                        </div>
+
+                        {{-- Icon user + menu --}}
+                        <li class="user-dropdown">
+                            <a href="javascript:void(0);" class="user-icon">
+                                <i class="fas fa-user"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                @guest('customer')
+                                    <li><a href="{{ route('customer.login') }}">Đăng nhập</a></li>
+                                    <li><a href="{{ route('customer.register') }}">Đăng ký</a></li>
+                                @else
+                                    <li><a href="{{ route('customer.profile') }}"><i class="lni lni-user"></i> Thông tin tài
+                                            khoản</a></li>
+                                    <li><a href="{{ route('customer.orders') }}"><i class="lni lni-shopping-basket"></i>
+                                            Lịch sử mua hàng</a></li>
+                                    <li><a href="{{ route('customer.change-password') }}"><i class="lni lni-lock"></i> Đổi
+                                            mật khẩu</a></li>
+                                    <li>
+                                        <form action="{{ route('customer.logout') }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="lni lni-exit"></i> Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endguest
+                            </ul>
+                        </li>
+
                     </ul>
                 </nav>
             </div>
+
         </div>
     </div>
 </header>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
         const searchForm = document.getElementById('searchForm');
         const suggestionsContainer = document.getElementById('searchSuggestions');
         let searchTimeout;
 
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             clearTimeout(searchTimeout);
             const query = this.value.trim();
 
@@ -129,10 +140,52 @@
         });
 
         // Hide suggestions when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!searchForm.contains(e.target)) {
                 suggestionsContainer.style.display = 'none';
             }
         });
     });
+    document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('searchInput');
+
+    // Danh sách placeholder luân phiên
+    const placeholders = [
+        "Tìm theo thương hiệu...",
+        "Tìm theo tên sản phẩm..."
+    ];
+
+    let currentIndex = 0; // đang ở placeholder nào
+    let charIndex = 0;    // ký tự thứ mấy trong chuỗi
+    let isDeleting = false; // có đang xóa không
+
+    function typeEffect() {
+        const currentText = placeholders[currentIndex];
+
+        if (!isDeleting && charIndex <= currentText.length) {
+            // Gõ thêm từng chữ
+            input.setAttribute('placeholder', currentText.substring(0, charIndex));
+            charIndex++;
+            setTimeout(typeEffect, 70); // tốc độ gõ
+        } else if (isDeleting && charIndex >= 0) {
+            // Xóa từng chữ
+            input.setAttribute('placeholder', currentText.substring(0, charIndex));
+            charIndex--;
+            setTimeout(typeEffect, 50); // tốc độ xóa
+        } else {
+            if (!isDeleting) {
+                // Tạm dừng trước khi xóa
+                isDeleting = true;
+                setTimeout(typeEffect, 1000);
+            } else {
+                // Chuyển sang placeholder tiếp theo
+                isDeleting = false;
+                currentIndex = (currentIndex + 1) % placeholders.length;
+                setTimeout(typeEffect, 300);
+            }
+        }
+    }
+
+    typeEffect();
+});
 </script>

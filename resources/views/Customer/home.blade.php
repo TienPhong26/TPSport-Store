@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <title>Website bán đồ</title>
+    <title>Tp Sport Việt Nam  - Cửa hàng bán đồ thể thao</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/logo.png') }}">  
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">

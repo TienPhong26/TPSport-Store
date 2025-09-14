@@ -27,8 +27,59 @@ li {
     padding: 0px 10px;
 }
 /**********START HEADER SECTION**********/
+
+.user-dropdown {
+    position: relative;
+    /* display: inline-block; */
+    align-items: center;  
+}
+
+.user-dropdown .user-icon {
+    display: inline-block;
+    color: #333;
+    padding: 8px 12px;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.user-dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #2d2d2d;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: none;
+    min-width: 120px;
+    z-index: 999;
+}
+
+
+
+.user-dropdown .dropdown-menu li a,
+.user-dropdown .dropdown-menu li button {
+    display: block;
+    padding: 8px;
+    color: #fff;
+    text-align: left;
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 8px;
+}
+.user-dropdown .dropdown-menu li a:hover,
+.user-dropdown .dropdown-menu li button:hover {
+    background-color: #444;
+}
+.user-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
 header {
-    background: black;
+    background: #2d2d2d;
 }
 .header {
     padding: 6px 0px 16px 0px;
@@ -91,18 +142,19 @@ header {
 
 .search-btn {
     padding: 15px 20px;
-    background: #3498db;
+    background: #2d2d2d;
     border: none;
     color: white;
     cursor: pointer;
     transition: background 0.3s ease;
     display: flex;
     align-items: center;
+    border-radius: 25px;
     justify-content: center;
 }
 
 .search-btn:hover {
-    background: #2980b9;
+    background: #444;
 }
 
 .search-btn i {
@@ -224,7 +276,7 @@ header {
     display: flex;
     gap: 25px;
     list-style: none;
-    margin-top: 14px;
+    /* margin-top: 14px; */
 }
 .menu li {
     font-weight: bold;
