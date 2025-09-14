@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <script src="{{ asset('js/alert.js') }}"></script>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+
 </head>
 
 <body>
@@ -38,13 +40,49 @@
         @endif
     </div>
 
-    <img src="{{ asset('images/slider.png') }}" class="w-100" alt="Slider">
-    <div class="container">
-        <div class="banner">
-            <img src="{{ asset('images/banner-1.png') }}" class="w-100" alt="Banner 1">
-            <img src="{{ asset('images/banner-2.png') }}" class="w-100" alt="Banner 2">
+    {{-- <img src="{{ asset('images/slider.png') }}" class="w-100" alt="Slider"> --}}
+    <!-- Slider main container -->
+    <div class="swiper" id="home_slider">
+        <div class="swiper-wrapper">
+            <!-- Slides -->
+            <div class="swiper-slide">
+            <img src="{{ asset('images/slider.png') }}" alt="">
+            </div>
+            <div class="swiper-slide">
+            <img src="{{ asset('images/slider.png') }}" alt="">
+            </div>
+            <div class="swiper-slide">
+            <img src="{{ asset('images/slider.png') }}" alt="">
+            </div>
+        </div>
+
+        <div class="swiper-pagination"></div>
+
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+
+  <div class="container">
+    <div class="sport-favorite">
+        <h2 class="text-center mb-4">MÔN THỂ THAO YÊU THÍCH</h2>
+
+        <div class="sports-list">
+            @foreach($sports as $sport)
+                <div class="mx-2">
+                <a href="{{ url('/sports/'.$sport->id) }}" class="sport-card">
+                    <div class="sport-img">
+                    <img src="{{ $sport->image }}" alt="{{ $sport->title }}" class="img-sports">
+                    </div>
+                </a>
+                </div>
+            @endforeach
         </div>
     </div>
+    </div>
+
+
+
+
     <!----------PRODUCT HTML STARTS----->
 
     <div class="container">
@@ -156,7 +194,43 @@
 
     @include('Customer.components.footer')
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     <script>
+       var swiper = new Swiper("#home_slider", {
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+            bulletClass: 'custom-bullet',           // class riêng cho bullet
+            bulletActiveClass: 'custom-bullet-active'
+        },
+          navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+    },
+        speed: 800
+        });
+
+        // Khi slide thay đổi → reset progress animation
+        swiper.on('slideChange', () => {
+        document.querySelectorAll('.custom-bullet').forEach(bullet => {
+            bullet.classList.remove('progress'); // xóa progress class
+            void bullet.offsetWidth; // trick để reset animation
+        });
+        const activeBullet = document.querySelector('.custom-bullet-active');
+        if (activeBullet) activeBullet.classList.add('progress');
+        });
+
+        // Lần đầu load → chạy progress cho bullet đầu tiên
+        document.addEventListener('DOMContentLoaded', () => {
+        const activeBullet = document.querySelector('.custom-bullet-active');
+        if (activeBullet) activeBullet.classList.add('progress');
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
 
             const cartButtons = document.querySelectorAll('.cart-button');

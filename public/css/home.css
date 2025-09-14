@@ -22,7 +22,7 @@ li {
 }
 .container {
     width: 100%;
-    max-width: 1300px;
+    max-width: 1500px;
     margin: 0px auto;
     padding: 0px 10px;
 }
@@ -1153,4 +1153,157 @@ footer {
         flex: 0 0 100%;
         max-width: 100%;
     }
+}
+
+
+//bannner ccs
+
+#home_slider {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+#home_slider img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Thanh nền progress */
+.swiper-pagination-progressbar {
+  background: rgba(255, 255, 255, 0.3); /* màu nền thanh */
+  height: 4px;                          /* chiều cao thanh */
+  border-radius: 10px;                  /* bo góc */
+  bottom: 10px !important;              /* cách đáy */
+}
+
+/* Thanh tiến trình chạy */
+.swiper-pagination-progressbar-fill {
+  background: #ffffff; /* màu chạy */
+  border-radius: 10px;
+  height: 100%;
+  transition: transform 0.4s linear;
+}
+
+/* Ẩn dấu mũi tên trên mobile nếu muốn */
+@media (max-width: 768px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none;
+  }
+}
+/* thanh mặc định */
+.custom-bullet {
+  display: inline-block;
+  width: 40px;           /* chiều dài */
+  height: 4px;           /* chiều cao */
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* thanh active hơi to hơn */
+.custom-bullet-active {
+  height: 5px;
+  width: 60px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* phần fill chạy bên trong */
+.custom-bullet::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background:#5792ff ;
+}
+
+/* Animation khi active */
+.custom-bullet.progress::after {
+  animation: fillBar 4s linear forwards; /* thời gian = autoplay.delay */
+}
+
+/* Keyframes cho chạy dần */
+@keyframes fillBar {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+/* Ẩn mặc định – selector mạnh hơn */
+#home_slider.swiper .swiper-button-prev,
+#home_slider.swiper .swiper-button-next {
+  opacity: 0 !important;                
+  visibility: hidden !important;        
+  pointer-events: none;   /* tránh click khi ẩn */
+  color: #fff;         
+  width: 40px;         
+  height: 40px;
+  display: flex;             
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 10;
+}
+
+/* Khi hover toàn slider hiện nút */
+#home_slider.swiper:hover .swiper-button-prev,
+#home_slider.swiper:hover .swiper-button-next {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto; /* cho click được */
+}
+
+/* Icon mũi tên */
+#home_slider.swiper .swiper-button-prev::after,
+#home_slider.swiper .swiper-button-next::after {
+  font-family: 'swiper-icons'; 
+  font-size: 32px;
+  color: #fff;
+}
+
+.sport-favorite{
+    margin: 50px 0px 20px 0px;
+    text-align: center;
+}
+.sport-favorite h2{
+    color: #000 !important;
+    font-size: 2em;
+    margin: 0px;
+    line-height: 1.2;
+    text-align: center;
+    font-weight: 400;
+}
+//sport favorite css
+
+.sport-card {
+  width: 150px; /* hoặc kích thước bạn muốn */
+  text-align: center;
+}
+
+.img-sports {
+  width: 250px;
+  height: auto;
+  object-fit: cover;
+}
+
+
+.sports-list {
+    display: flex;
+    flex-wrap: nowrap; 
+    overflow-x: auto;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.sport-card {
+    flex: 0 0 auto; /* Không cho phép các card co giãn, giữ kích thước cố định */
+    text-decoration: none; /* Bỏ gạch chân của thẻ a */
+}
+
+.mx-2 {
+    margin: 0 8px; /* Giữ margin ngang như trong mã gốc */
 }

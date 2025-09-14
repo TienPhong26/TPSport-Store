@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Product;
@@ -26,8 +27,12 @@ class ShopController extends Controller
             ->take(3)
             ->get();
 
+        $sports = Sports::where('status', 1)->get(); 
+        // dd($sports);
+
         return view('Customer.home',  [
             'products' => $products,
+            'sports' => $sports,
             'latestFeedbacks' => $latestFeedbacks,
         ]);
     }
