@@ -16,10 +16,11 @@ class ShopController extends Controller
         $products = Product::with(['images' => function ($query) {
             $query->wherePivot('image_role', 'main');
         }])
-            ->where('status', true)
+            ->where('status', 1)
             ->orderBy('product_id', 'desc')
             ->take(8)
             ->get();
+        // dd($products);
 
         // Lấy 3 đánh giá mới nhất của customer
         $latestFeedbacks = Feedback::with(['customer', 'order.orderDetails.product'])
@@ -27,7 +28,7 @@ class ShopController extends Controller
             ->take(3)
             ->get();
 
-        $sports = Sports::where('status', 1)->get(); 
+        $sports = Sports::where('status', 1)->get();
         // dd($sports);
 
         return view('Customer.home',  [
