@@ -10,15 +10,18 @@ class Category extends Model
     use HasFactory;
 
     protected $table = 'categories';
-    protected $primaryKey = 'category_id';
-    protected $fillable = ['category_name'];
+    protected $primaryKey = 'id';
+    protected $fillable = ['name', 'description'];
 
     public $timestamps = false;
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'category_product', 'category_id', 'product_id')
-            ->using(CategoryProduct::class)
-            ->withPivot('category_order', 'category_role');
+        return $this->belongsToMany(
+            Product::class,        // model Product
+            'category_product',    // tên bảng pivot
+            'category_id',         // khóa ngoại của category trong pivot
+            'product_id'           // khóa ngoại của product trong pivot
+        );
     }
 }

@@ -13,7 +13,5 @@ class CategoryProduct extends Pivot
     protected $fillable = [
         'category_id',
         'product_id',
-        'category_order',
-        'category_role'
     ];
 }

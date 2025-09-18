@@ -2,25 +2,68 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
+use App\Models\Discount;
 use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Product;
 use App\Models\Feedback;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ShopController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['images' => function ($query) {
-            $query->wherePivot('image_role', 'main');
-        }])
+        $products = Product::with('brand')
             ->where('status', 1)
             ->orderBy('product_id', 'desc')
-            ->take(8)
+            ->take(10)
             ->get();
-        // dd($products);
+
+        $banners = Banner::where('status', 1)
+            ->get();
+
+        // dd($banners);
+
+        $today = Carbon::today();
+        $discounts = Discount::with(['category.products.brand'])
+            ->where('status', 1)
+            ->where('start', '<=', $today)
+            ->where('end', '>=', $today)
+            ->get();
+
+
+        $productsDiscount = collect();
+
+        foreach ($discounts as $discount) {
+            $category = $discount->category;
+            if (!$category) continue;
+
+            $categoryId = $category->id;
+            $categoryName = $category->name;
+
+            $categoryProducts = $category->products ?? collect();
+            $mapped = $categoryProducts->map(function ($product) use ($categoryId, $categoryName) {
+                $arr = $product->toArray();
+                $arr['discount_category_id'] = $categoryId;
+                $arr['discount_category_name'] = $categoryName;
+
+                $arr['brand_name'] = $product->brand->brand_name ?? null;
+
+                return $arr;
+            });
+
+            $productsDiscount = $productsDiscount->merge($mapped);
+        }
+
+        $productsByCategory = $productsDiscount->groupBy('discount_category_id');
+
+        // $productsDiscount = $productsDiscount->unique('id')->values();
+
+        // dd($productsByCategory);
+
 
         // Lấy 3 đánh giá mới nhất của customer
         $latestFeedbacks = Feedback::with(['customer', 'order.orderDetails.product'])
@@ -33,6 +76,8 @@ class ShopController extends Controller
 
         return view('Customer.home',  [
             'products' => $products,
+            'productsDiscount' => $productsByCategory,
+            'banners' => $banners,
             'sports' => $sports,
             'latestFeedbacks' => $latestFeedbacks,
         ]);

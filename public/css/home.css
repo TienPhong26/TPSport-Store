@@ -1,5 +1,5 @@
 * {
-    font-family: sans-serif, arial;
+    font-family: 'Mulish', sans-serif;
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
@@ -382,7 +382,7 @@ form {
 
 .w-100 {
     width: 100%;
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .banner {
@@ -396,7 +396,7 @@ form {
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     padding: 20px;
 }
@@ -411,14 +411,59 @@ form {
 
 .pro .prd-name {
     color: black;
-    font-size: 18px;
-    margin: 25px 10px 15px;
-    font-weight: 600;
-    height: 60px;
+    font-size: 16px;
+    text-align: left;
+    margin: 10px 10px 15px;
+    font-weight: bold;
+}
+
+.pro .prd-price {
+    text-align: left;
+    margin: 10px 10px 15px;
+}
+
+.pro .prd-vendor{
+    font-size: 12px;
+    text-transform: uppercase;
+    /* display: inline-block; */
+    line-height: initial;
+    margin-left: 10px;
+    margin-top: 10px;
+    text-align: left;
+    color: #969696 !important;
+    letter-spacing: 1.8px;
+}
+
+
+.show-all-prd {
+    text-align: center; /* căn giữa nội dung */
+    margin-top: 20px;   /* tạo khoảng cách phía trên */
+}
+
+.show-all-prd a:hover {
+    background: #444;
+    color: white !important; 
+}
+
+.show-all-prd i {
+    color: black !important; 
+}
+
+.show-all-prd a:hover i {
+    color: white !important; 
+}
+
+.show-all-prd a {
+    color: black !important; 
+    border: 1px solid #000;    /* Có viền */
+    padding: 8px 16px;         /* Khoảng cách */
+    display: inline-block;     /* Để text-align center có tác dụng */
+    text-decoration: none;     /* bỏ gạch chân */
+    border-radius: 4px;        /* bo góc nhẹ */
 }
 .pro b {
     color: red;
-    font-size: 18px;
+    font-size: 16px;
 }
 .pro strike {
     color: rgb(140, 140, 140);
@@ -427,10 +472,10 @@ form {
 .pro a {
     text-align: center;
     background: black;
-    padding: 13px 60px;
+    /* padding: 13px 60px; */
     display: inline-block;
     border-radius: 100px;
-    margin-top: 20px;
+    /* margin-top: 20px; */
 }
 
 /**********END PRODUCT SECTION**********/
@@ -654,7 +699,7 @@ footer {
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-    padding: 18px 12px;
+    /* padding: 18px 12px; */
     text-align: center;
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -677,25 +722,55 @@ footer {
     }
 }
 
-.pro:hover {
-    transform: translateY(-5px) scale(1.03);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+
+.product-image-container {
+  position: relative;
+  overflow: hidden;
 }
-.pro img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 10px;
+
+.product-image,
+.product-image-hover {
+  display: block;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+   transition: opacity 0.3s ease-in-out, transform 0.5s ease-in-out;
 }
+
+/* Ảnh hover chồng lên ảnh chính */
+.product-image-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: scale(1); /* bình thường vẫn 100% */
+  pointer-events: none; /* tránh hover nháy */
+}
+
+/* Hover vào card */
+.pro:hover .product-image {
+  opacity: 0; /* mờ ảnh chính */
+}
+
+.pro:hover .product-image-hover {
+  opacity: 1;
+  transform: scale(0.95); /* nhỏ hơn 5% */
+}
+
+
+.pro:hover .product-image {
+  opacity: 0;
+}
+
 .pro p {
-    margin: 8px 0;
+    /* margin: 8px 0; */
 }
 .pro a {
     display: inline-block;
-    margin-top: 8px;
-    padding: 7px 18px;
-    background: #1ebe0f;
+    /* margin-top: 8px; */
+    /* padding: 7px 18px; */
+    background: #fff;
     color: #fff;
     border-radius: 20px;
     text-decoration: none;
@@ -703,7 +778,7 @@ footer {
     transition: background 0.2s;
 }
 .pro a:hover {
-    background: #0056b3;
+    background: #fff;
 }
 footer {
     background: #222;
@@ -1412,7 +1487,15 @@ h2{
     justify-content: center;
     width: 100%;
 }
-
+.lookbooks-container-2{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 15px;
+    padding-bottom: 10px;
+    margin-top: 25px;
+    justify-content: center;
+    width: 100%;
+}
 .lookbooks-column {
     flex: 0 0 32;
     max-width: 32%;
@@ -1453,4 +1536,65 @@ h2{
         max-width: 100%;
         width: 100%;
     }
+}
+
+/* css cho san pham moi */
+
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image-container img {
+  /* transition: opacity 0.3s ease; */
+  display: block;
+  width: 100%;
+}
+
+.product-image-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.product-image-container:hover .product-image-hover {
+  opacity: 1;
+}
+
+.product-image-container:hover .product-image {
+  opacity: 0;
+}
+
+.voucher-tab-content { margin-top: 10px; }
+
+.d-none { display: none !important; }
+.voucher-tab-btn {
+    background: none;
+    border: none;
+    font-weight: 600;
+    font-size: 18px;
+    color: #1a237e;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.voucher-tab-btn.active {
+    color: #000;
+    border-bottom: 2px solid #1a237e;
+}
+.voucher-tab-btn:not(.active) {
+    color: #888;
+}
+
+.voucher-tabs {
+    text-align: center;
+}
+.voucher-tab-btn {
+    display: inline-block;
+}
+
+.prd-discount .pro{
+    min-height: 445px;
 }

@@ -10,6 +10,8 @@
     <script src="{{ asset('js/alert.js') }}"></script>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+
 
 </head>
 
@@ -45,15 +47,13 @@
     <div class="swiper" id="home_slider">
         <div class="swiper-wrapper">
             <!-- Slides -->
-            <div class="swiper-slide">
-            <img src="{{ asset('images/slider.png') }}" alt="">
-            </div>
-            <div class="swiper-slide">
-            <img src="{{ asset('images/slider.png') }}" alt="">
-            </div>
-            <div class="swiper-slide">
-            <img src="{{ asset('images/slider.png') }}" alt="">
-            </div>
+            @foreach($banners as $banner)
+                <div class="swiper-slide">
+                    <img 
+                        src="{{ $banner->image_path ? asset($banner->image_path) : $banner->image_url }}" 
+                        alt="Banner {{ $loop->iteration }}">
+                </div>
+            @endforeach
         </div>
 
         <div class="swiper-pagination"></div>
@@ -61,6 +61,7 @@
         <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
     </div>
+
 
     <div class="container">
         <div class="sport-favorite">
@@ -124,116 +125,13 @@
 
 
     <!----------PRODUCT HTML STARTS----->
-    {{-- NEW ARRIVALS --}}
-    <div class="container mt-6">
-        <h2 class="text-center mb-4">NEW ARRIVALS</h2>
-        <div class="product-grid">
-            @forelse($products as $product)
-                <div class="pro">
-                    <div class="product-image-container position-relative">
-                        @if ($mainImage = $product->getMainImage())
-                            {{-- <img src="{{ asset($mainImage->image_url) }}" class="w-100"
-                                alt="{{ $product->product_name }}">  --}}
-                            <img src="{{ $mainImage->image_url }}" class="w-100"
-                                alt="{{ $product->product_name }}">
+    
+    @include('Customer.widget._new_product')
+    @include('Customer.widget._voucher')
+    @include('Customer.widget._feedback')
+    @include('Customer.widget._shoes')
 
-                            @if ($product->discount > 0)
-                                <div
-                                    class="discount-label position-absolute top-0 start-0 bg-danger text-white px-2 py-1">
-                                    SALE {{ $product->discount }}%
-                                </div>
-                            @endif
-
-                            @if ($product->quantity <= 0)
-                                <div class="out-of-stock-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                                    style="background-color: rgba(0, 0, 0, 0.5); color: white;">
-                                    <span class="fw-bold">Đã bán hết</span>
-                                </div>
-                            @endif
-                        @else
-                            <img src="{{ asset('images/no-image.png') }}" class="w-100" alt="No image available">
-                        @endif
-                    </div>
-
-
-                    <p class="prd-name">{{ $product->product_name }}</p>
-                    <p>
-                        @if ($product->discount > 0)
-                            <b>{{ number_format($product->getDiscountedPrice()) }} VNĐ</b>
-                            <strike>{{ number_format($product->price) }} VNĐ</strike>
-                        @else
-                            <b>{{ number_format($product->price) }} VNĐ</b>
-                        @endif
-                    </p>
-
-                    <div class="product-actions">
-                        <a href="{{ route('shop.product.show', $product->product_id) }}" class="btn-view">
-                            Xem chi tiết
-                        </a>
-
-                        {{-- Nút add to cart --}}
-                        @auth('customer')
-                            <form class="add-to-cart-form d-inline" data-product-id="{{ $product->product_id }}">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-
-                                <button type="button" class="cart-button" {{ $product->quantity <= 0 ? 'disabled' : '' }}>
-                                    <span style="width: 100%" class="add-to-cart">
-                                        {{ $product->quantity > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng' }}
-                                    </span>
-                                    <span class="added">Đã thêm !</span>
-                                    <i class="fas fa-shopping-cart"></i>
-                                    <i class="fas fa-box"></i>
-                                </button>
-                            </form>
-                        @endauth
-                    </div>
-                </div>
-            @empty
-                <div class="no-products">
-                    <p>Không có sản phẩm nào.</p>
-                </div>
-            @endforelse
-        </div>
-        {{-- Hiển thị 3 feedback mới nhất --}}
-        @if (isset($latestFeedbacks) && $latestFeedbacks->count())
-            <div class="container mb-4 feedback-section">
-                <h2 class="text-center mb-4" style="font-weight:600; color:#1a237e;">Khách hàng nói gì về chúng tôi?
-                </h2>
-                <div class="feedback-row">
-                    @foreach ($latestFeedbacks as $feedback)
-                        <div class="feedback-col">
-                            <div class="card h-100 shadow-sm w-100">
-                                <div class="card-body">
-                                    <!-- Nội dung feedback như cũ -->
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span
-                                            class="fw-bold me-2">{{ $feedback->customer->customer_name ?? 'Khách hàng' }}
-                                        </span>
-                                        <span>
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                <i
-                                                    class="fas fa-star{{ $i <= $feedback->rating ? ' text-warning' : ' text-secondary' }}"></i>
-                                            @endfor
-                                        </span>
-                                    </div>
-                                    <div class="mb-2" style="margin: 10px 0 20px 0">
-                                        <small class="text-muted" style="color: black">
-                                            Đơn hàng #{{ $feedback->order_id }}
-
-                                        </small>
-                                    </div>
-                                    <div>
-                                        <p class="mb-0">"{{ $feedback->comment }}"</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-    </div>
+    
 
     @include('Customer.components.footer')
 
@@ -354,6 +252,21 @@
 
             prevBtn.addEventListener('click', () => {
                 sportsList.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabBtns = document.querySelectorAll('.voucher-tab-btn');
+            const tabContents = document.querySelectorAll('.voucher-tab-content');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.add('d-none'));
+                    // Active tab
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.tab).classList.remove('d-none');
+                });
             });
         });
     </script>
