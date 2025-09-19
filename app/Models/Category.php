@@ -24,4 +24,8 @@ class Category extends Model
             'product_id'           // khóa ngoại của product trong pivot
         );
     }
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class, 'category_id', 'id');
+    }
 }

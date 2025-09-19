@@ -43,8 +43,8 @@
                             <p class="prd-vendor">{{ $pd['brand']['brand_name'] ?? '' }}</p>
                             <p class="prd-name">{{ $pd['name'] }}</p>
                             <p class="prd-price">
-                                @if (!empty($pd['discount']) && $pd['discount'] > 0)
-                                    <b>{{ number_format($pd['price'] - ($pd['price'] * $pd['discount'] / 100)) }} VNĐ</b>
+                                @if (!empty($pd['discount_percent']) && $pd['discount_percent'] > 0)
+                                    <b>{{ number_format($pd['price'] - ($pd['price'] * $pd['discount_percent'] / 100)) }} VNĐ</b>
                                     <strike>{{ number_format($pd['price']) }} VNĐ</strike>
                                 @else
                                     <b>{{ number_format($pd['price']) }} VNĐ</b>

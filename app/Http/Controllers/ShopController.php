@@ -16,7 +16,16 @@ class ShopController extends Controller
 {
     public function index()
     {
-        $products = Product::with('brand')
+        $today = Carbon::today();
+
+        $products = Product::with([
+            'brand',
+            'category.discounts' => function ($q) use ($today) {
+                $q->where('status', 1)
+                    ->where('start', '<=', $today)
+                    ->where('end', '>=', $today);
+            }
+        ])
             ->where('status', 1)
             ->orderBy('product_id', 'desc')
             ->take(10)
@@ -25,9 +34,8 @@ class ShopController extends Controller
         $banners = Banner::where('status', 1)
             ->get();
 
-        // dd($banners);
+        // dd($products);
 
-        $today = Carbon::today();
         $discounts = Discount::with(['category.products.brand'])
             ->where('status', 1)
             ->where('start', '<=', $today)
@@ -43,12 +51,14 @@ class ShopController extends Controller
 
             $categoryId = $category->id;
             $categoryName = $category->name;
+            $discountPercent = $discount->discount_percent;
 
             $categoryProducts = $category->products ?? collect();
-            $mapped = $categoryProducts->map(function ($product) use ($categoryId, $categoryName) {
+            $mapped = $categoryProducts->map(function ($product) use ($categoryId, $categoryName, $discountPercent) {
                 $arr = $product->toArray();
                 $arr['discount_category_id'] = $categoryId;
                 $arr['discount_category_name'] = $categoryName;
+                $arr['discount_percent'] = $discountPercent;
 
                 $arr['brand_name'] = $product->brand->brand_name ?? null;
 
@@ -61,11 +71,18 @@ class ShopController extends Controller
         $productsByCategory = $productsDiscount->groupBy('discount_category_id');
 
         //shoes
-        $prdshoes = Product::with('brand')
+        $prdshoes = Product::with([
+            'brand',
+            'category.discounts' => function ($q) use ($today) {
+                $q->where('status', 1)
+                    ->where('start', '<=', $today)
+                    ->where('end', '>=', $today);
+            }
+        ])
             ->where('status', 1)
             ->where('type', 'shoes')
             ->orderBy('product_id', 'desc')
-            ->take(value: 5)
+            ->take(5)
             ->get();
 
 
@@ -74,7 +91,7 @@ class ShopController extends Controller
             ->orderByDesc('feedback_id')
             ->take(3)
             ->get();
-        // dd($latestFeedbacks);
+        // dd($productsByCategory);
 
         $sports = Sports::where('status', 1)->get();
         // dd($sports);

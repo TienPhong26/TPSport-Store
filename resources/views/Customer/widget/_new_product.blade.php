@@ -33,9 +33,21 @@
 
                     <p class="prd-vendor">{{ $product->brand->brand_name}}</p>
                     <p class="prd-name">{{ $product->name }}</p>
+                    @php
+                        $discountPercent = 0;
+                        if ($product->category->isNotEmpty()) {
+                            foreach ($product->category as $cate) {
+                                if ($cate->discounts->isNotEmpty()) {
+                                    $discountPercent = $cate->discounts->first()->discount_percent;
+                                    break;
+                                }
+                            }
+                        }
+                    @endphp
+
                     <p class="prd-price">
-                        @if (!empty($product->discount) && $product->discount > 0)
-                            <b>{{ number_format($product->price - ($product->price * $product->discount / 100)) }} VNĐ</b>
+                        @if ($discountPercent > 0)
+                            <b>{{ number_format($product->price - ($product->price * $discountPercent / 100)) }} VNĐ</b>
                             <strike>{{ number_format($product->price) }} VNĐ</strike>
                         @else
                             <b>{{ number_format($product->price) }} VNĐ</b>
