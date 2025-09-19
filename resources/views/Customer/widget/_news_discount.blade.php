@@ -90,6 +90,7 @@
         border-radius: 6px 6px 0 0;
         padding: 12px 20px;
         font-size: 20px;
+        text-align: left;
         font-weight: bold;
     }
 
