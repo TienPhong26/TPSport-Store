@@ -22,7 +22,7 @@ li {
 }
 .container {
     width: 100%;
-    max-width: 1500px;
+    max-width: 1650px;
     margin: 0px auto;
     padding: 0px 10px;
 }
@@ -1599,3 +1599,107 @@ h2{
 .prd-discount .pro{
     min-height: 445px;
 }
+
+.breadcrumb-wrapper {
+    background: #f8f9fa;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+.breadcrumb {
+    margin-bottom: 0;
+    gap: 0px;
+    background: transparent;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
+    color: #6c757d;
+    padding: 0 5px;
+}
+.breadcrumb-item {
+    gap: 0px;
+}
+.breadcrumb a {
+    color: #999;
+    text-decoration: none;
+}
+.breadcrumb a:hover {
+    text-decoration: none;
+    color: #0d6efd !important; 
+}
+
+/* Enhanced Pagination Styles for Customer Pages */
+.pagination-wrapper {
+    margin: 40px 0;
+}
+
+.pagination-wrapper .pagination {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination-wrapper .pagination li {
+    margin: 0;
+}
+
+.pagination-wrapper .pagination li a,
+.pagination-wrapper .pagination li span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    color: #666;
+}
+
+.pagination-wrapper .pagination li a:hover {
+    background-color: #f8f9fa;
+    color: #333;
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+.pagination-wrapper .pagination li.active span {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+    font-weight: 600;
+}
+
+.pagination-wrapper .pagination li.disabled span {
+    background-color: #f8f9fa;
+    color: #ccc;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+.pagination-wrapper .pagination li i {
+    font-size: 12px;
+}
+
+/* Responsive pagination */
+@media (max-width: 768px) {
+    .pagination-wrapper .pagination li a,
+    .pagination-wrapper .pagination li span {
+        width: 35px;
+        height: 35px;
+        font-size: 13px;
+    }
+    
+    .pagination-wrapper .pagination {
+        gap: 4px;
+    }
+}
+
+

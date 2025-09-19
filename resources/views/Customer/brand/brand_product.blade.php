@@ -1,24 +1,15 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('customer._layouts.master')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {{-- <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
-    <title>{{ $brand->brand_name }} - Sản phẩm</title>
+@section('title', $brand->brand_name . ' - Sản phẩm')
+
+@push('styles')
     <link rel="stylesheet" href="{{ asset('css/brand_products.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/brand_list.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="{{ asset('js/alert.js') }}"></script>
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
+@endpush
 
-<body>
+@section('content')
     <div class="alerts-container" style="display: flex; justify-content: center;">
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -31,65 +22,61 @@
         @endif
 
         @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
+            <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
         @if (session('success'))
-            <div class="alert alert-success alert-session">
-                {{ session('success') }}
-            </div>
+            <div class="alert alert-success alert-session">{{ session('success') }}</div>
         @endif
     </div>
 
     <div class="brand-products-page">
         <!-- Brand Header Section -->
         <section class="brand-header">
-            <div class="brand-banner">
-                <div class="banner-background">
-                    @if ($brand->brand_image)
-                        <img src="{{ asset('images/brands/' . $brand->brand_image) }}" alt="{{ $brand->brand_name }}"
-                            class="brand-bg-image">
-                    @endif
-                    <div class="banner-overlay"></div>
+            <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('shop.home') }}">Trang chủ</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('brands.list') }}">THƯƠNG
+                                HIỆU</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ $brand->brand_name }}</li>
+
+                    </ol>
                 </div>
+            </nav>
+            <div class="container">
+                <div class="brand-banner">
+                    <div class="banner-background">
+                        @if ($brand->brand_banner)
+                            <img src="{{ asset($brand->brand_banner) }}" alt="{{ $brand->brand_name }}" class="brand-bg-image">
+                        @endif
+                        <div class="banner-overlay"></div>
+                    </div>
 
-                <div class="banner-content">
-                    <div class="container">
-                        <!-- Breadcrumb -->
-                        <nav class="breadcrumb" style="color: black">
-                            <a href="{{ route('shop.home') }}">
-                                <i class="fas fa-home"></i>
-                                Trang chủ
-                            </a>
-                            <span class="separator">/</span>
-                            <a href="{{ route('brands.list') }}">Thương hiệu</a>
-                            <span class="separator">/</span>
-                            <span class="current">{{ $brand->brand_name }}</span>
-                        </nav>
+                    <div class="banner-content">
+                        <div class="container">
 
-                        <!-- Brand Info -->
-                        <div class="brand-info">
-                            <div class="brand-details">
-                                <h1 class="brand-title">{{ $brand->brand_name }}</h1>
-                                @if ($brand->description)
-                                    <p class="brand-description">{{ $brand->description }}</p>
-                                @else
-                                    <p class="brand-description">Khám phá bộ sưu tập đa dạng từ thương hiệu
-                                        {{ $brand->brand_name }}</p>
-                                @endif
+                            <!-- Brand Info -->
+                            <div class="brand-info">
+                                <div class="brand-details">
+                                    <h1 class="brand-title">{{ $brand->brand_name }}</h1>
+                                    <p class="brand-description">
+                                        {{ $brand->description ?? 'Khám phá bộ sưu tập đa dạng từ thương hiệu ' . $brand->brand_name }}
+                                    </p>
 
-                                <div class="brand-stats">
-                                    <div class="stat-item">
-                                        <i class="fas fa-box"></i>
-                                        <span class="stat-number">{{ $products->total() }}</span>
-                                        <span class="stat-label">Sản phẩm</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <i class="fas fa-star"></i>
-                                        <span class="stat-number">4.8</span>
-                                        <span class="stat-label">Đánh giá</span>
+                                    <div class="brand-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-box"></i>
+                                            <span class="stat-number">{{ $products->total() }}</span>
+                                            <span class="stat-label">Sản phẩm</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-star"></i>
+                                            <span class="stat-number">4.8</span>
+                                            <span class="stat-label">Đánh giá</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -97,6 +84,7 @@
                     </div>
                 </div>
             </div>
+
         </section>
 
         <!-- Navigation Buttons -->
@@ -116,185 +104,100 @@
         </section>
 
         <!-- Products Section -->
-        <section class="products-section">
-            <div class="container">
-                @if ($products->count() > 0)
-                    <!-- Products Header -->
-                    <div class="products-header">
-                        <div class="header-left">
-                            <h2 class="products-title">Sản phẩm từ {{ $brand->brand_name }}</h2>
-                            <p class="products-count">{{ $products->total() }} sản phẩm được tìm thấy</p>
-                        </div>
-                        <div class="header-right">
-                            <div class="view-options">
-                                <button class="view-btn active" data-view="grid">
-                                    <i class="fas fa-th-large"></i>
-                                </button>
-                                <button class="view-btn" data-view="list">
-                                    <i class="fas fa-list"></i>
-                                </button>
-                            </div>
-                            <div class="sort-options" style="font-size: 1.6rem">
-                                <select class="sort-select" onchange="sortProducts(this.value)">
-                                    <option value="default" {{ request('sort') == 'default' ? 'selected' : '' }}>Sắp
-                                        xếp mặc định</option>
-                                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>
-                                        Giá: Thấp đến cao</option>
-                                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>
-                                        Giá: Cao đến thấp</option>
-                                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Tên:
-                                        A-Z</option>
-                                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>
-                                        Tên: Z-A</option>
-                                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Mới nhất
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
+        <div class="container brand-products-page">
+            <div class="row">
+                <!-- Cột filter bên trái -->
+                <div class="col-md-3 filter-sidebar">
+                    <div class="filter-box">
+                        <h3>DÒNG SẢN PHẨM</h3>
+                        <ul class="product-line-list">
+                            <li><input type="checkbox"> Bóng đá</li>
+                            <li><input type="checkbox"> Bóng rổ</li>
+                            <li><input type="checkbox"> Cầu lông</li>
+                            <li><input type="checkbox"> Chạy bộ</li>
+                            <li><input type="checkbox"> Golf</li>
+                        </ul>
+
+                        <h3>MỨC GIÁ</h3>
+                        <ul class="price-list">
+                            <li><input type="checkbox"> Giá dưới 500.000₫</li>
+                            <li><input type="checkbox"> 500.000đ - 1.000.000đ</li>
+                            <li><input type="checkbox"> 1.000.000đ - 2.000.000đ</li>
+                            <li><input type="checkbox"> 2.000.000₫ - 3.000.000₫</li>
+                            <li><input type="checkbox"> 3.000.000₫ - 5.000.000₫</li>
+                            <li><input type="checkbox"> Giá trên 5.000.000₫</li>
+                        </ul>
+                        <h3>LOẠI SẢN PHẨM</h3>
+                        <ul class="price-list">
+                            @foreach ($type_product as $tp)
+                                <li><input type="checkbox"> {{ $tp->type_name }}</li>
+                            @endforeach
+                        </ul>
+                        <h3>KÍCH CỠ QUẦN ÁO</h3>
+                        <ul class="price-list">
+                            <li><input type="checkbox"> 2XS</li>
+                            <li><input type="checkbox"> XS</li>
+                            <li><input type="checkbox"> S</li>
+                            <li><input type="checkbox"> M</li>
+                            <li><input type="checkbox"> L</li>
+                            <li><input type="checkbox"> XL</li>
+                            <li><input type="checkbox"> 2XL</li>
+                            <li><input type="checkbox"> 116</li>
+                            <li><input type="checkbox"> 122</li>
+                            <li><input type="checkbox"> 128</li>
+                            <li><input type="checkbox"> 140</li>
+                            <li><input type="checkbox"> 152</li>
+                            <li><input type="checkbox"> 164</li>
+                        </ul>
+                        <h3>KÍCH CỠ GIÀY DÉP</h3>
+                        <ul class="shoe-size-list">
+                            <li><input type="checkbox"> 4</li>
+                            <li><input type="checkbox"> 4-</li>
+                            <li><input type="checkbox"> 5</li>
+                            <li><input type="checkbox"> 5-</li>
+                            <li><input type="checkbox"> 6</li>
+                            <li><input type="checkbox"> 6-</li>
+                            <li><input type="checkbox"> 7-</li>
+                            <li><input type="checkbox"> 8</li>
+                            <li><input type="checkbox"> 8-</li>
+                            <li><input type="checkbox"> 9</li>
+                            <li><input type="checkbox"> 9-</li>
+                            <li><input type="checkbox"> 10</li>
+                            <li><input type="checkbox"> 10-</li>
+                            <li><input type="checkbox"> 11</li>
+                            <li><input type="checkbox"> 1</li>
+                            <li><input type="checkbox"> 2</li>
+                            <li><input type="checkbox"> 2-</li>
+                            <li><input type="checkbox"> 3</li>
+                            <li><input type="checkbox"> 3-</li>
+                            <li><input type="checkbox"> 4</li>
+                            <li><input type="checkbox"> 10K</li>
+                            <li><input type="checkbox"> 11K</li>
+                            <li><input type="checkbox"> 12K</li>
+                            <li><input type="checkbox"> 13K</li>
+                        </ul>
                     </div>
+                </div>
 
-                    <!-- Products Grid -->
-                    <div class="products-grid" id="productsContainer">
-                        @foreach ($products as $index => $product)
-                            <div class="product-card" data-aos="fade-up" data-aos-delay="{{ $index * 50 }}">
-                                <div class="product-image-container">
-                                    <div class="product-image">
-                                        @php
-                                            $mainImage = null;
-                                            if ($product->images && $product->images->count() > 0) {
-                                                $mainImage = $product->images
-                                                    ->where('pivot.image_role', 'main')
-                                                    ->first();
-                                                if (!$mainImage) {
-                                                    $mainImage = $product->images->first();
-                                                }
-                                            }
-                                        @endphp
-
-                                        @if ($mainImage && $mainImage->image_url)
-                                            <img src="{{ asset($mainImage->image_url) }}"
-                                                alt="{{ $product->product_name }}" loading="lazy"
-                                                onerror="this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'fas fa-image\'></i><span>Không có ảnh</span></div>';">
-                                        @else
-                                            <div class="no-image">
-                                                <i class="fas fa-image"></i>
-                                                <span>Không có ảnh</span>
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    <!-- Discount Badge -->
-                                    @if ($product->discount > 0)
-                                        <div class="discount-badge">
-                                            - {{ $product->discount }}%
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="product-info">
-                                    <div class="product-brand">{{ $brand->brand_name }}</div>
-                                    <h3 class="product-name">
-                                        <a href="{{ route('shop.product.show', $product->product_id) }}">
-                                            {{ $product->product_name }}
-                                        </a>
-                                    </h3>
-
-                                    @if ($product->description)
-                                        <p class="product-description">
-                                            {{ Str::limit($product->description, 80) }}
-                                        </p>
-                                    @endif
-
-                                    <div class="product-rating">
-                                        <div class="stars">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                        <span class="rating-text">(4.2)</span>
-                                    </div>
-
-                                    <div class="product-price">
-                                        @if ($product->discount > 0)
-                                            <span class="original-price">{{ number_format($product->price) }}đ</span>
-                                            <span
-                                                class="current-price">{{ number_format($product->getDiscountedPrice()) }}đ</span>
-                                        @else
-                                            <span class="current-price">{{ number_format($product->price) }}đ</span>
-                                        @endif
-                                    </div>
-
-                                    <div class="product-meta">
-                                        <span
-                                            class="stock-status {{ $product->quantity > 0 ? 'in-stock' : 'out-stock' }}">
-                                            <i class="fas fa-{{ $product->quantity > 0 ? 'check' : 'times' }}"></i>
-                                            {{ $product->quantity > 0 ? 'Còn hàng' : 'Hết hàng' }}
-                                        </span>
-                                    </div>
-
-                                    <div class="product-actions-bottom">
-                                        @auth('customer')
-                                            <form class="add-to-cart-form d-inline" style="display: flex; justify-content: center;"
-                                                data-product-id="{{ $product->product_id }}">
-                                                @csrf
-                                                <input type="hidden" name="product_id"
-                                                    value="{{ $product->product_id }}">
-                                                <button type="button" class="cart-button"
-                                                    {{ $product->quantity <= 0 ? 'disabled' : '' }}>
-                                                    <span
-                                                        class="add-to-cart">{{ $product->quantity > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng' }}</span>
-                                                    <span class="added">Đã thêm !</span>
-                                                    <i class="fas fa-shopping-cart"></i>
-                                                    <i class="fas fa-box"></i>
-                                                </button>
-                                            </form>
-                                        @else
-                                            <a href="{{ route('customer.login') }}" class="cart-button">
-                                                <span class="add-to-cart">Đăng nhập để mua hàng</span>
-                                                <i class="fas fa-sign-in-alt"></i>
-                                            </a>
-                                        @endauth
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="pagination-section">
-                        {{ $products->links() }}
-                    </div>
-                @else
-                    <!-- No Products -->
-                    <div class="no-products">
-                        <div class="no-products-illustration">
-                            <i class="fas fa-box-open"></i>
-                        </div>
-                        <h3>Không có sản phẩm</h3>
-                        <p>Thương hiệu {{ $brand->brand_name }} hiện chưa có sản phẩm nào.</p>
-                        <div class="no-products-actions">
-                            <a href="{{ route('brands.list') }}" class="btn-primary">
-                                <i class="fas fa-building" style="margin-right: 8px"></i>
-                                Xem thương hiệu khác
-                            </a>
-                        </div>
-                    </div>
-                @endif
+                <!-- Cột sản phẩm bên phải -->
+                <div class="col-md-9 brand-product-list">
+                    @include('customer.widget._products_grid')
+                </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Back to Top -->
-        <button class="back-to-top" onclick="scrollToTop()">
+
+        {{-- <button class="back-to-top" onclick="scrollToTop()">
             <i class="fas fa-chevron-up"></i>
-        </button>
+        </button> --}}
     </div>
 
-    <!-- Scripts -->
+
+@endsection
+
+@push('scripts')
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Initialize AOS
         AOS.init({
             duration: 600,
             easing: 'ease-out-cubic',
@@ -302,89 +205,6 @@
             offset: 50
         });
 
-        // View toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const viewBtns = document.querySelectorAll('.view-btn');
-            const productsContainer = document.getElementById('productsContainer');
-
-            viewBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    viewBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-
-                    const view = this.dataset.view;
-                    productsContainer.className = view === 'list' ? 'products-list' :
-                        'products-grid';
-                });
-            });
-
-            const cartButtons = document.querySelectorAll('.cart-button');
-
-            cartButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (button.disabled) return;
-
-                    const form = button.closest('.add-to-cart-form');
-                    const productId = form.dataset.productId;
-
-                    // Add clicked animation
-                    button.classList.add('clicked');
-
-                    // Send AJAX request
-                    fetch('{{ route('cart.add-to-cart') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                product_id: productId
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Update cart count if you have one
-                                if (data.cartCount) {
-                                    document.querySelector('.cart-count').textContent = data
-                                        .cartCount;
-                                }
-
-                                // Show success message
-                                showAlert('success', 'Sản phẩm đã được thêm vào giỏ hàng');
-                            } else {
-                                showAlert('error', data.message || 'Có lỗi xảy ra');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showAlert('error', 'Có lỗi xảy ra khi thêm sản phẩm');
-                        })
-                        .finally(() => {
-                            // Remove clicked animation after 2 seconds
-                            setTimeout(() => {
-                                button.classList.remove('clicked');
-                            }, 2000);
-                        });
-                });
-            });
-        });
-
-        function showAlert(type, message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.textContent = message;
-
-            const alertsContainer = document.querySelector('.alerts-container');
-            alertsContainer.appendChild(alertDiv);
-
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 3000);
-        }
-
-        // Functions
         function goBack() {
             if (document.referrer && document.referrer.includes(window.location.host)) {
                 window.history.back();
@@ -400,22 +220,13 @@
         }
 
         function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Back to top button visibility
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const backToTop = document.querySelector('.back-to-top');
-            if (window.pageYOffset > 300) {
-                backToTop.classList.add('show');
-            } else {
-                backToTop.classList.remove('show');
-            }
+            backToTop.classList.toggle('show', window.pageYOffset > 300);
         });
     </script>
-</body>
-
-</html>
+@endpush
