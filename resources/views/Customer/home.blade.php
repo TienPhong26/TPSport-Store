@@ -42,7 +42,6 @@
         @endif
     </div>
 
-    {{-- <img src="{{ asset('images/slider.png') }}" class="w-100" alt="Slider"> --}}
     <!-- Slider main container -->
     <div class="swiper" id="home_slider">
         <div class="swiper-wrapper">
@@ -128,8 +127,9 @@
     
     @include('Customer.widget._new_product')
     @include('Customer.widget._voucher')
-    @include('Customer.widget._feedback')
     @include('Customer.widget._shoes')
+    @include('Customer.widget._feedback')
+    @include('Customer.widget._news_discount')
 
     
 

@@ -1166,8 +1166,9 @@ footer {
 }
 
 /* Feedback section */
-.feedback-section {
-    margin: 40px 0 30px 0;
+.feedback-section .text-success {
+    /* margin: 40px 0 30px 0; */
+    color: #000 !important;
 }
 .feedback-row {
     display: flex;

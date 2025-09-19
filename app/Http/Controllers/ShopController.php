@@ -60,9 +60,13 @@ class ShopController extends Controller
 
         $productsByCategory = $productsDiscount->groupBy('discount_category_id');
 
-        // $productsDiscount = $productsDiscount->unique('id')->values();
-
-        // dd($productsByCategory);
+        //shoes
+        $prdshoes = Product::with('brand')
+            ->where('status', 1)
+            ->where('type', 'shoes')
+            ->orderBy('product_id', 'desc')
+            ->take(value: 5)
+            ->get();
 
 
         // Lấy 3 đánh giá mới nhất của customer
@@ -70,6 +74,7 @@ class ShopController extends Controller
             ->orderByDesc('feedback_id')
             ->take(3)
             ->get();
+        // dd($latestFeedbacks);
 
         $sports = Sports::where('status', 1)->get();
         // dd($sports);
@@ -77,6 +82,7 @@ class ShopController extends Controller
         return view('Customer.home',  [
             'products' => $products,
             'productsDiscount' => $productsByCategory,
+            'prdshoes' => $prdshoes,
             'banners' => $banners,
             'sports' => $sports,
             'latestFeedbacks' => $latestFeedbacks,
