@@ -2,32 +2,106 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
+use App\Models\Discount;
+use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Product;
 use App\Models\Feedback;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ShopController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['images' => function ($query) {
-            $query->wherePivot('image_role', 'main');
-        }])
-            ->where('status', true)
+        $today = Carbon::today();
+
+        $products = Product::with([
+            'brand',
+            'category.discounts' => function ($q) use ($today) {
+                $q->where('status', 1)
+                    ->where('start', '<=', $today)
+                    ->where('end', '>=', $today);
+            }
+        ])
+            ->where('status', 1)
             ->orderBy('product_id', 'desc')
-            ->take(8)
+            ->take(10)
             ->get();
+
+        $banners = Banner::where('status', 1)
+            ->get();
+
+        // dd($products);
+
+        $discounts = Discount::with(['category.products.brand'])
+            ->where('status', 1)
+            ->where('start', '<=', $today)
+            ->where('end', '>=', $today)
+            ->get();
+
+
+        $productsDiscount = collect();
+
+        foreach ($discounts as $discount) {
+            $category = $discount->category;
+            if (!$category) continue;
+
+            $categoryId = $category->id;
+            $categoryName = $category->name;
+            $discountPercent = $discount->discount_percent;
+
+            $categoryProducts = $category->products ?? collect();
+            $mapped = $categoryProducts->map(function ($product) use ($categoryId, $categoryName, $discountPercent) {
+                $arr = $product->toArray();
+                $arr['discount_category_id'] = $categoryId;
+                $arr['discount_category_name'] = $categoryName;
+                $arr['discount_percent'] = $discountPercent;
+
+                $arr['brand_name'] = $product->brand->brand_name ?? null;
+
+                return $arr;
+            });
+
+            $productsDiscount = $productsDiscount->merge($mapped);
+        }
+
+        $productsByCategory = $productsDiscount->groupBy('discount_category_id');
+
+        //shoes
+        $prdshoes = Product::with([
+            'brand',
+            'category.discounts' => function ($q) use ($today) {
+                $q->where('status', 1)
+                    ->where('start', '<=', $today)
+                    ->where('end', '>=', $today);
+            }
+        ])
+            ->where('status', 1)
+            ->where('type', 'shoes')
+            ->orderBy('product_id', 'desc')
+            ->take(5)
+            ->get();
+
 
         // Lấy 3 đánh giá mới nhất của customer
         $latestFeedbacks = Feedback::with(['customer', 'order.orderDetails.product'])
             ->orderByDesc('feedback_id')
             ->take(3)
             ->get();
+        // dd($productsByCategory);
+
+        $sports = Sports::where('status', 1)->get();
+        // dd($sports);
 
         return view('Customer.home',  [
             'products' => $products,
+            'productsDiscount' => $productsByCategory,
+            'prdshoes' => $prdshoes,
+            'banners' => $banners,
+            'sports' => $sports,
             'latestFeedbacks' => $latestFeedbacks,
         ]);
     }

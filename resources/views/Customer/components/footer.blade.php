@@ -15,15 +15,14 @@
         <div class="footer-content">
             <div class="row">
                 <div class="column">
-                    <h3><i class="fa fa-info-circle"></i> Về chúng tôi</h3>
                     <div class="about-us-content">
                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="footer-logo">
-                        <p>Chúng tôi tự hào là điểm đến mua sắm thời trang uy tín hàng đầu, cam kết mang đến những sản phẩm chất lượng cao với giá cả hợp lý nhất.</p>
+                        <p>Chúng tôi tự hào là điểm đến mua sắm uy tín hàng đầu, cam kết mang đến những sản phẩm chất lượng cao với giá cả hợp lý nhất.</p>
                         <div class="social-links">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                            <a href="#"><i class="fa fa-linkedin"></i></a>
+                            <a href="https://web.facebook.com/ngo.phong.320740"><i class="fa fa-facebook"></i></a>
+                            <a href="https://www.tiktok.com/foryou?enter_from=video_detail&is_copy_url=1&is_from_webapp=v1"><i class="fab fa-tiktok"></i></a>
+                            <a href="https://www.instagram.com/tieenphong/?hl=vi"><i class="fa fa-instagram"></i></a>
+                            <a href="https://www.linkedin.com/in/phong-ng%C3%B4-b151b3228/"><i class="fa fa-linkedin"></i></a>
                         </div>
                     </div>
                 </div>

@@ -57,14 +57,11 @@ class BrandController extends Controller
             $image = $request->file('brand_image');
             $filename = time() . '_' . $image->getClientOriginalName();
 
-            // 1️⃣ Lưu vào storage/app/public/brands
             $image->storeAs('brands', $filename, 'public');
 
-            // 2️⃣ Copy file thực tế sang public/storage/brands
             $sourcePath = storage_path("app/public/brands/{$filename}");
             $destinationPath = public_path("storage/brands/{$filename}");
 
-            // Đảm bảo thư mục public/storage/brands tồn tại
             if (!File::exists(public_path('storage/brands'))) {
                 File::makeDirectory(public_path('storage/brands'), 0755, true);
             }
@@ -172,12 +169,26 @@ class BrandController extends Controller
     {
         $brand = Brand::findOrFail($brandId);
 
+        $type_product = Product::select('type')
+            ->distinct()
+            ->get();
+        // dd($type_product);
+        $typeMap = [
+            'shirt'    => 'Áo',
+            'trousers' => 'Quần',
+            'ball'     => 'Bóng',
+            'socks'    => 'Tất',
+            'shoes'    => 'Giày',
+        ];
+        $type_product = $type_product->map(function ($item) use ($typeMap) {
+            $item->type_name = $typeMap[$item->type] ?? $item->type;
+            return $item;
+        });
         $query = Product::where('brand_id', $brandId)
             ->with(['brand', 'images'])
-            ->where('status', 'active')
-            ->where('quantity', '>', 0);
+            ->where('status', '1')
+            ->where('amount', '>', 0);
 
-        // Xử lý sort nếu có
         switch ($request->input('sort')) {
             case 'price_asc':
                 $query->orderBy('price', 'asc');
@@ -198,8 +209,12 @@ class BrandController extends Controller
                 $query->orderBy('product_id', 'asc');
         }
 
-        $products = $query->paginate(12);
+        $products = $query->paginate(perPage: 16);
 
-        return view('Customer.brand.brand_product', compact('brand', 'products'));
+        return view('Customer.brand.brand_product', [
+            'products' => $products,
+            'brand' => $brand,
+            'type_product' => $type_product,
+        ]);
     }
 }

@@ -12,29 +12,31 @@ class Product extends Model
     use SearchElastic;
 
     protected $table = 'products';
-    protected $primaryKey = 'product_id';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
-        'product_name',
-        'status',
-        'quantity',
+        'name',
+        'type',
+        'image',
+        'image_hover',
+        'short_description',
+        'amount',
         'price',
-        'discount',
-        'description',
+        'product_id',
         'brand_id',
-        'material_id',
-        'NumberOfSize',
-        'NumberOfCategory',
-        'NumberOfImage'
+        'status',
+        'created_at',
+        'updated_at',
+        'deleted_at'
     ];
 
     protected $casts = [
+        'amount' => 'integer',
+        'price' => 'decimal:2',
         'status' => 'boolean',
-        'price' => 'integer',
-        'discount' => 'decimal:2',
-        'NumberOfSize' => 'integer',
-        'NumberOfCategory' => 'integer',
-        'NumberOfImage' => 'integer'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'date',
     ];
 
     public $timestamps = false;
@@ -44,12 +46,16 @@ class Product extends Model
         return $this->hasMany(OrderDetail::class, 'product_id', 'product_id');
     }
 
-    public function categories(): BelongsToMany
+    public function category()
     {
-        return $this->belongsToMany(Category::class, 'category_product', 'product_id', 'category_id')
-            ->using(CategoryProduct::class)
-            ->withPivot('category_order', 'category_role');
+        return $this->belongsToMany(
+            Category::class,
+            'category_product',
+            'product_id',
+            'category_id'
+        );
     }
+
 
     public function images(): BelongsToMany
     {

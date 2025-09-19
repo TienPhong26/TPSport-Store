@@ -1,26 +1,15 @@
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-body {
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #2d3748;
-    background-color: #f7fafc;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
 
 /* Brand Page */
 .brand-page {
     min-height: 100vh;
+}
+.brand-logo-1{
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
 
 /* Hero Section */
@@ -190,7 +179,7 @@ body {
 
 /* Brands Section */
 .brands-section {
-    padding: 4rem 0;
+    padding: 2rem 0;
 }
 
 .section-header {
@@ -199,14 +188,15 @@ body {
 }
 
 .section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 500;
+    text-align: left;
     color: #ffffff;
     margin-bottom: 1rem;
     position: relative;
 }
 
-.section-title::after {
+/* .section-title::after {
     content: '';
     position: absolute;
     bottom: -0.5rem;
@@ -216,13 +206,14 @@ body {
     height: 4px;
     background: linear-gradient(45deg, #667eea, #764ba2);
     border-radius: 2px;
-}
+} */
 
 .section-subtitle {
     font-size: 1.1rem;
     color: #718096;
     max-width: 600px;
-    margin: 0 auto;
+    /* margin: 0 auto; */
+    text-align: left;
 }
 
 /* Brands Grid */
@@ -239,6 +230,9 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
+     display: flex;
+    flex-direction: column;
+    height: 100%; 
 }
 
 .brand-card:hover {
@@ -380,7 +374,10 @@ body {
 
 /* Brand Card Body */
 .brand-card-body {
-    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* chiếm hết chiều cao còn lại */
+    padding: 15px; /* ví dụ */
 }
 
 .brand-info {
@@ -425,6 +422,7 @@ body {
 .brand-action {
     display: flex;
     justify-content: flex-end;
+    margin-top: auto;
 }
 
 .brand-btn {
