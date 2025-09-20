@@ -189,6 +189,51 @@ class BrandController extends Controller
             ->where('status', '1')
             ->where('amount', '>', 0);
 
+        // Apply filters
+        // Product type filter
+        if ($request->has('types') && !empty($request->input('types'))) {
+            $types = $request->input('types');
+            $query->whereIn('type', $types);
+        }
+
+        // Price range filter
+        if ($request->has('price_ranges') && !empty($request->input('price_ranges'))) {
+            $priceRanges = $request->input('price_ranges');
+            $query->where(function ($q) use ($priceRanges) {
+                foreach ($priceRanges as $range) {
+                    switch ($range) {
+                        case 'under_500k':
+                            $q->orWhere('price', '<', 500000);
+                            break;
+                        case '500k_1m':
+                            $q->orWhereBetween('price', [500000, 1000000]);
+                            break;
+                        case '1m_2m':
+                            $q->orWhereBetween('price', [1000000, 2000000]);
+                            break;
+                        case '2m_3m':
+                            $q->orWhereBetween('price', [2000000, 3000000]);
+                            break;
+                        case '3m_5m':
+                            $q->orWhereBetween('price', [3000000, 5000000]);
+                            break;
+                        case 'over_5m':
+                            $q->orWhere('price', '>', 5000000);
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Size filter
+        if ($request->has('sizes') && !empty($request->input('sizes'))) {
+            $sizes = $request->input('sizes');
+            $query->whereHas('sizes', function ($q) use ($sizes) {
+                $q->whereIn('size_name', $sizes);
+            });
+        }
+
+        // Sort products
         switch ($request->input('sort')) {
             case 'price_asc':
                 $query->orderBy('price', 'asc');
@@ -197,10 +242,10 @@ class BrandController extends Controller
                 $query->orderBy('price', 'desc');
                 break;
             case 'name_asc':
-                $query->orderBy('product_name', 'asc');
+                $query->orderBy('name', 'asc');
                 break;
             case 'name_desc':
-                $query->orderBy('product_name', 'desc');
+                $query->orderBy('name', 'desc');
                 break;
             case 'newest':
                 $query->orderBy('created_at', 'desc');
@@ -210,6 +255,19 @@ class BrandController extends Controller
         }
 
         $products = $query->paginate(perPage: 16);
+
+        // Check if it's an AJAX request
+        if ($request->ajax()) {
+            return response()->json([
+                'products_html' => view('Customer.widget._products_grid', [
+                    'products' => $products,
+                    'brand' => $brand,
+                ])->render(),
+                'filters_html' => view('Customer.widget._active_filters', [
+                    'brand' => $brand,
+                ])->render()
+            ]);
+        }
 
         return view('Customer.brand.brand_product', [
             'products' => $products,
