@@ -25,6 +25,8 @@ class Product extends Model
         'product_id',
         'brand_id',
         'status',
+        'entry_date',
+        'gender',
         'created_at',
         'updated_at',
         'deleted_at'

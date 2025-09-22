@@ -1,6 +1,6 @@
 @extends('customer._layouts.master')
 
-@section('title', 'Tất cả sản phẩm')
+@section('title', 'Sản phẩm mới')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/brand_products.css') }}">
@@ -39,8 +39,7 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('shop.home') }}">Trang chủ</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('brands.list') }}">Tất cả
-                                sản phẩm</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('brands.list') }}">Sản phẩm mới</a></li>
 
                     </ol>
                 </div>
@@ -64,7 +63,7 @@
         <div class="brand-products-header mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="brand-title-products">
-                    {{ $sports->title ?? 'Tất cả sản phẩm' }}
+                    Sản phẩm mới
                 </h2>
                 <div class="sort-dropdown">
                     <label for="sortSelect" class="sort-label">Sắp xếp:</label>

@@ -58,6 +58,11 @@ Route::post('customer/change-password', [CustomerController::class, 'changePassw
     ->middleware(CustomerAuthentication::class)
     ->name('customer.change-password.update');
 
+Route::get('/product/new-arrivals', [ProductController::class, 'newProduct'])
+    ->name('product.new-arrivals');
+Route::get('/product/male-female/{gender}', [ProductController::class, 'maleFemale'])
+    ->name('product.male-female');
+Route::get('/product/{product_id}/reviews', [FeedbackController::class, 'showProductReviews'])->name('product.reviews');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('shop.product.show');
 
 Route::middleware('auth:customer')->group(function () {
@@ -100,15 +105,15 @@ Route::get('/search', [ShopController::class, 'search'])
     ->name('products.search');
 
 //Trang hiển thị danh mục sản phẩm
-Route::get('/categories', [CategoryController::class, 'categoryList'])->name('categories.list');
-Route::get('/categories/1', [CategoryController::class, 'showCategoryProducts'])->name('categories.show');
-
+Route::get('/categories/{sportId?}', [CategoryController::class, 'categoryList'])
+    ->name('categories.list');
 //Trang hiển thị thương hiệu sản phẩm
 Route::get('/brands', [BrandController::class, 'brandList'])->name('brands.list');
 Route::get('/brands/{brand}', [BrandController::class, 'showBrandProducts'])->name('brands.show');
 
 
-Route::get('/product/{product_id}/reviews', [FeedbackController::class, 'showProductReviews'])->name('product.reviews');
+
+
 
 //Login route mặc định của Admin
 Route::get('login', function () {

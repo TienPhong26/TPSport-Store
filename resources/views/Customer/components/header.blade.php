@@ -34,14 +34,61 @@
                                 </a>
                             </li>
                         @endauth
+                        <ul class="menu_aside">
+                            <li>
+                                <a href="{{ route('brands.list') }}"
+                                    class="{{ request()->routeIs('brands.list') ? 'active' : '' }}">THƯƠNG HIỆU</a>
+                            </li>
 
-                        <li><a href="{{ route('brands.list') }}">THƯƠNG HIỆU</a></li>
-                        <li><a href="{{ route('categories.list') }}">MÔN THỂ THAO</a></li>
-                        <li><a href="{{ route('brands.list') }}">SẢN PHẨM MỚI</a></li>
-                        <li><a href="{{ route('brands.list') }}">NAM</a></li>
-                        <li><a href="{{ route('brands.list') }}">NỮ</a></li>
-                        <li><a href="{{ route('brands.list') }}">OUTLET</a></li>
-                        <li><a href="{{ route('customer.about') }}">GIỚI THIỆU</a></li>
+                            <li class="user-dropdown">
+                                <a href="{{ route('categories.list') }}"
+                                    class="{{ request()->routeIs('categories.list') ? 'active' : '' }}">
+                                    MÔN THỂ THAO
+                                </a>
+                                @if(isset($type_sport) && $type_sport->count())
+                                    <ul class="dropdown-menu">
+                                        @foreach($type_sport as $sport)
+                                            <li>
+                                                <a href="{{ route('categories.list', ['sports[]' => $sport->id]) }}">
+                                                    {{ $sport->title }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </li>
+
+                            <li>
+                                <a href="{{ route('product.new-arrivals') }}"
+                                    class="{{ request()->routeIs('product.new-arrivals') ? 'active' : '' }}">
+                                    SẢN PHẨM MỚI
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ route('product.male-female', ['gender' => 'male']) }}"
+                                    class="{{ request()->routeIs('product.male-female') && request('gender') == 'male' ? 'active' : '' }}">
+                                    NAM
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ route('product.male-female', ['gender' => 'female']) }}"
+                                    class="{{ request()->routeIs('product.male-female') && request('gender') == 'female' ? 'active' : '' }}">
+                                    NỮ
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{ route('brands.list') }}"
+                                    class="{{ request()->routeIs('brands.list') ? 'active' : '' }}">OUTLET</a>
+                            </li>
+
+                            <li>
+                                <a href="{{ route('customer.about') }}"
+                                    class="{{ request()->routeIs('customer.about') ? 'active' : '' }}">GIỚI THIỆU</a>
+                            </li>
+                        </ul>
 
 
                         {{-- Ô tìm kiếm --}}
@@ -96,6 +143,13 @@
     </div>
 </header>
 <script>
+    const menuLinks = document.querySelectorAll('.menu_aside li a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function () {
+            menuLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
         const searchForm = document.getElementById('searchForm');
@@ -147,45 +201,45 @@
         });
     });
     document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('searchInput');
+        const input = document.getElementById('searchInput');
 
-    // Danh sách placeholder luân phiên
-    const placeholders = [
-        "Tìm theo thương hiệu...",
-        "Tìm theo tên sản phẩm..."
-    ];
+        // Danh sách placeholder luân phiên
+        const placeholders = [
+            "Tìm theo thương hiệu...",
+            "Tìm theo tên sản phẩm..."
+        ];
 
-    let currentIndex = 0; // đang ở placeholder nào
-    let charIndex = 0;    // ký tự thứ mấy trong chuỗi
-    let isDeleting = false; // có đang xóa không
+        let currentIndex = 0; // đang ở placeholder nào
+        let charIndex = 0;    // ký tự thứ mấy trong chuỗi
+        let isDeleting = false; // có đang xóa không
 
-    function typeEffect() {
-        const currentText = placeholders[currentIndex];
+        function typeEffect() {
+            const currentText = placeholders[currentIndex];
 
-        if (!isDeleting && charIndex <= currentText.length) {
-            // Gõ thêm từng chữ
-            input.setAttribute('placeholder', currentText.substring(0, charIndex));
-            charIndex++;
-            setTimeout(typeEffect, 70); // tốc độ gõ
-        } else if (isDeleting && charIndex >= 0) {
-            // Xóa từng chữ
-            input.setAttribute('placeholder', currentText.substring(0, charIndex));
-            charIndex--;
-            setTimeout(typeEffect, 50); // tốc độ xóa
-        } else {
-            if (!isDeleting) {
-                // Tạm dừng trước khi xóa
-                isDeleting = true;
-                setTimeout(typeEffect, 1000);
+            if (!isDeleting && charIndex <= currentText.length) {
+                // Gõ thêm từng chữ
+                input.setAttribute('placeholder', currentText.substring(0, charIndex));
+                charIndex++;
+                setTimeout(typeEffect, 70); // tốc độ gõ
+            } else if (isDeleting && charIndex >= 0) {
+                // Xóa từng chữ
+                input.setAttribute('placeholder', currentText.substring(0, charIndex));
+                charIndex--;
+                setTimeout(typeEffect, 50); // tốc độ xóa
             } else {
-                // Chuyển sang placeholder tiếp theo
-                isDeleting = false;
-                currentIndex = (currentIndex + 1) % placeholders.length;
-                setTimeout(typeEffect, 300);
+                if (!isDeleting) {
+                    // Tạm dừng trước khi xóa
+                    isDeleting = true;
+                    setTimeout(typeEffect, 1000);
+                } else {
+                    // Chuyển sang placeholder tiếp theo
+                    isDeleting = false;
+                    currentIndex = (currentIndex + 1) % placeholders.length;
+                    setTimeout(typeEffect, 300);
+                }
             }
         }
-    }
 
-    typeEffect();
-});
+        typeEffect();
+    });
 </script>

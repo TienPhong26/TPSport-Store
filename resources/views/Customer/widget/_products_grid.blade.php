@@ -63,7 +63,7 @@
 
         <!-- Pagination -->
         @if($products->hasPages())
-            <div class="pagination-wrapper d-flex justify-content-center mt-4">
+            <div class="pagination-wrapper d-flex justify-content-end mt-4">
                 <ul class="pagination">
                     {{-- Previous Page Link --}}
                     @if ($products->onFirstPage())

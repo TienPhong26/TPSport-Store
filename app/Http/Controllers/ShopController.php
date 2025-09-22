@@ -41,7 +41,8 @@ class ShopController extends Controller
             ->where('start', '<=', $today)
             ->where('end', '>=', $today)
             ->get();
-
+        $type_sport = Sports::select('id', 'title')
+            ->get();
 
         $productsDiscount = collect();
 
@@ -103,6 +104,7 @@ class ShopController extends Controller
             'banners' => $banners,
             'sports' => $sports,
             'latestFeedbacks' => $latestFeedbacks,
+            'type_sport' => $type_sport,
         ]);
     }
 

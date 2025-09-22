@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controller;
@@ -158,8 +159,10 @@ class BrandController extends Controller
         $brands = Brand::withCount('products')
             ->orderBy('brand_name')
             ->get();
+        $type_sport = Sports::select('id', 'title')
+            ->get();
 
-        return view('Customer.brand.brand_list', compact(var_name: 'brands'));
+        return view('Customer.brand.brand_list', compact('brands', 'type_sport'));
     }
 
     /**
@@ -172,6 +175,9 @@ class BrandController extends Controller
         $type_product = Product::select('type')
             ->distinct()
             ->get();
+        $type_sport = Sports::select('id', 'title')
+            ->get();
+
         // dd($type_product);
         $typeMap = [
             'shirt'    => 'Áo',
@@ -273,6 +279,7 @@ class BrandController extends Controller
             'products' => $products,
             'brand' => $brand,
             'type_product' => $type_product,
+            'type_sport' => $type_sport,
         ]);
     }
 }

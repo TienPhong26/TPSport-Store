@@ -103,16 +103,24 @@ class CategoryController extends Controller
         }
     }
 
-    public function categoryList(Request $request)
+    public function categoryList(Request $request, $sportId = null)
     {
         $brand = Brand::select('id', 'brand_name')->get();
 
         $type_product = Product::select('type')
             ->distinct()
             ->get();
-        $type_sport = Sports::select('id','title')
+        $type_sport = Sports::select('id', 'title')
             ->get();
-        // dd($type_product);
+
+
+        $sportsIds = $request->input('sports'); // nhận từ ?sports[]=15
+        // lấy 1 ID duy nhất
+        $sportId = is_array($sportsIds) ? reset($sportsIds) : $sportsIds;
+
+        $sportsPro = $sportId ? Sports::find($sportId) : null;
+        // dd($sportsPro);
+
         $typeMap = [
             'shirt'    => 'Áo',
             'trousers' => 'Quần',
@@ -127,7 +135,9 @@ class CategoryController extends Controller
         $query = Product::with(['brand', 'images', 'sport'])
             ->where('status', '1')
             ->where('amount', '>', 0);
-
+        if ($sportId) {
+            $query->where('sport_id', $sportId);
+        }
         // Apply filters
         // Product type filter
         if ($request->has('types') && !empty($request->input('types'))) {
@@ -222,52 +232,8 @@ class CategoryController extends Controller
             'brand' => $brand,
             'type_product' => $type_product,
             'type_sport' => $type_sport,
+            'sport_id' => $sportId,
+            'sports' => $sportsPro,
         ]);
-    }
-
-    /**
-     * Hiển thị sản phẩm trong một danh mục cụ thể
-     */
-    public function showCategoryProducts(Request $request, $categoryId)
-    {
-        // Lấy category và eager load products (active, còn hàng, kèm brand, images)
-        $category = Category::with(['products' => function ($query) {
-            $query->where('status', 'active')
-                ->where('quantity', '>', 0)
-                ->with(['brand', 'images']);
-        }])->findOrFail($categoryId);
-
-        // Query sản phẩm thuộc category này
-        $query = Product::whereHas('categories', function ($q) use ($categoryId) {
-            $q->where('categories.category_id', $categoryId);
-        })
-            ->where('status', 'active')
-            ->where('quantity', '>', 0)
-            ->with(['brand', 'images']);
-
-        // Xử lý sort nếu có
-        switch ($request->input('sort')) {
-            case 'price_asc':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_desc':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'name_asc':
-                $query->orderBy('product_name', 'asc');
-                break;
-            case 'name_desc':
-                $query->orderBy('product_name', 'desc');
-                break;
-            case 'newest':
-                $query->orderBy('created_at', 'desc');
-                break;
-            default:
-                $query->orderBy('product_id', 'asc');
-        }
-
-        $products = $query->paginate(12);
-
-        return view('Customer.category.filter_product', compact('category', 'products'));
     }
 }
