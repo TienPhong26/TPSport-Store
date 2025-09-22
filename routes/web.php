@@ -101,7 +101,7 @@ Route::get('/search', [ShopController::class, 'search'])
 
 //Trang hiển thị danh mục sản phẩm
 Route::get('/categories', [CategoryController::class, 'categoryList'])->name('categories.list');
-Route::get('/categories/{category}', [CategoryController::class, 'showCategoryProducts'])->name('categories.show');
+Route::get('/categories/1', [CategoryController::class, 'showCategoryProducts'])->name('categories.show');
 
 //Trang hiển thị thương hiệu sản phẩm
 Route::get('/brands', [BrandController::class, 'brandList'])->name('brands.list');

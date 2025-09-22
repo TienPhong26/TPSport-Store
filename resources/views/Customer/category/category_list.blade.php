@@ -1,202 +1,431 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('customer._layouts.master')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Shop')</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Add search CSS -->
-    <link rel="stylesheet" href="{{ asset('css/category_list.css') }}">
-</head>
+@section('title', 'Tất cả sản phẩm')
 
-<body>
-    @include('Customer.components.header')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/brand_products.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/brand_list.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+@endpush
 
-    @section('title', 'Danh mục sản phẩm')
-
-    <div class="category-list-container">
-        <!-- Hero Banner -->
-
-        <!-- Categories Section -->
-        <div class="categories-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Tất cả danh mục</h2>
-                    <p class="section-subtitle">Chọn danh mục để khám phá những sản phẩm tuyệt vời</p>
-                </div>
-
-                @if ($categories->count() > 0)
-                    <div class="categories-grid">
-                        @foreach ($categories as $index => $category)
-                            <div class="category-card" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
-                                <div class="card-inner">
-                                    <div class="category-image-wrapper">
-                                        <div class="category-image">
-                                            {{-- Sử dụng ảnh mặc định dựa trên tên danh mục --}}
-                                            @php
-                                                $defaultImages = [
-                                                    'áo' => 'ao-thun.jpg',
-                                                    'quần' => 'quan-jeans.jpg',
-                                                    'giày' => 'giay.jpg',
-                                                    'phụ kiện' => 'phu-kien.jpg',
-                                                    'khoác' => 'ao-khoac.jpg',
-                                                    'túi' => 'tui-deo.jpg',
-                                                    'găng tay' => 'gang-tay.jpg',
-                                                    'vợt' => 'vot.jpg',
-                                                    'bóng' => 'bong-da.jpg',
-                                                    'mũ' => 'mu.jpg',
-                                                    'yoga' => 'yoga.jpg',
-                                                    'bảo hộ' => 'bao-ho.jpg',
-                                                    'tank-top' => 'tank-top.jpg',
-                                                    't-shirt' => 't-shirt.jpg',
-                                                    'gym' => 'gym.jpg',
-                                                    'quần' => 'quan-short.jpg',
-                                                    'polo' => 'polo.jpg',
-                                                ];
-
-                                                $imageName = 'default-category.jpg';
-                                                foreach ($defaultImages as $keyword => $image) {
-                                                    if (stripos($category->category_name, $keyword) !== false) {
-                                                        $imageName = $image;
-                                                        break;
-                                                    }
-                                                }
-                                            @endphp
-
-                                            <img src="{{ asset('images/categories/' . $imageName) }}"
-                                                alt="{{ $category->category_name }}"
-                                                onerror="this.parentElement.innerHTML='<div class=\'default-category-image\'><i class=\'fas fa-tags\'></i></div>';">
-                                        </div>
-                                        <div class="image-overlay">
-                                            <div class="overlay-content">
-                                                <i class="fa fa-arrow-right"></i>
-                                                <span>Khám phá ngay</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="category-content">
-                                        <div class="category-header">
-                                            <h3 class="category-name">{{ $category->category_name }}</h3>
-                                            <div class="category-badge">
-                                                <span class="product-count">{{ $category->products_count }} SP</span>
-                                            </div>
-                                        </div>
-
-                                        <p class="category-description">
-                                            Khám phá những sản phẩm chất lượng cao trong danh mục
-                                            {{ $category->category_name }}.
-                                            Đa dạng mẫu mã, phong cách và giá cả phù hợp.
-                                        </p>
-
-                                        <div class="category-footer">
-                                            <a href="{{ route('categories.show', $category->category_id) }}"
-                                                class="view-category-btn">
-                                                <span>Xem sản phẩm</span>
-                                                <i class="fas fa-chevron-right"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="no-categories">
-                        <div class="no-categories-illustration">
-                            <i class="fas fa-folder-open"></i>
-                        </div>
-                        <h3>Chưa có danh mục nào</h3>
-                        <p>Hiện tại chưa có danh mục sản phẩm nào được hiển thị.</p>
-                        <a href="{{ route('shop.home') }}" class="back-home-btn">
-                            <i class="fas fa-home"></i>
-                            Về trang chủ
-                        </a>
-                    </div>
-                @endif
+@section('content')
+    <div class="alerts-container" style="display: flex; justify-content: center;">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
+        @endif
 
-        <!-- Featured Categories -->
-        @if ($categories->count() >= 3)
-            <div class="featured-section">
-                <div class="container">
-                    <div class="section-header">
-                        <h2 class="section-title">Danh mục nổi bật</h2>
-                        <p class="section-subtitle">Những danh mục có nhiều sản phẩm nhất</p>
-                    </div>
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
 
-                    <div class="featured-grid">
-                        @foreach ($categories->sortByDesc('products_count')->take(3) as $category)
-                            <div class="featured-card">
-                                <div class="featured-image">
-                                    @php
-                                        $defaultImages = [
-                                            'áo' => 'ao-thun.jpg',
-                                            'quần' => 'quan-jeans.jpg',
-                                            'giày' => 'giay.jpg',
-                                            'phụ kiện' => 'phu-kien.jpg',
-                                            'khoác' => 'ao-khoac.jpg',
-                                            'túi' => 'tui-deo.jpg',
-                                            'găng tay' => 'gang-tay.jpg',
-                                            'vợt' => 'vot.jpg',
-                                            'bóng' => 'bong-da.jpg',
-                                            'mũ' => 'mu.jpg',
-                                            'yoga' => 'yoga.jpg',
-                                            'bảo hộ' => 'bao-ho.jpg',
-                                            'tank-top' => 'tank-top.jpg',
-                                            't-shirt' => 't-shirt.jpg',
-                                            'gym' => 'gym.jpg',
-                                        ];
-
-                                        $imageName = 'default-category.jpg';
-                                        foreach ($defaultImages as $keyword => $image) {
-                                            if (stripos($category->category_name, $keyword) !== false) {
-                                                $imageName = $image;
-                                                break;
-                                            }
-                                        }
-                                    @endphp
-
-                                    <img src="{{ asset('images/categories/' . $imageName) }}"
-                                        alt="{{ $category->category_name }}"
-                                        onerror="this.parentElement.innerHTML='<div class=\'default-featured-image\'><i class=\'fas fa-star\'></i></div>';">
-
-                                    <div class="featured-overlay">
-                                        <div class="featured-badge">
-                                            <i class="fas fa-crown"></i>
-                                            <span>Nổi bật</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="featured-content">
-                                    <h4>{{ $category->category_name }}</h4>
-                                    <p>{{ $category->products_count }} sản phẩm có sẵn</p>
-                                    <a href="{{ route('categories.show', $category->category_id) }}"
-                                        class="featured-btn">
-                                        Khám phá ngay
-                                    </a>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
+        @if (session('success'))
+            <div class="alert alert-success alert-session">{{ session('success') }}</div>
         @endif
     </div>
 
-    <!-- AOS Animation -->
+    <div class="brand-products-page">
+        <!-- Brand Header Section -->
+        <section class="brand-header">
+            <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('shop.home') }}">Trang chủ</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('brands.list') }}">Tất cả
+                                sản phẩm</a></li>
+
+                    </ol>
+                </div>
+            </nav>
+        </section>
+
+        <!-- Brand Header with Sort -->
+        <div class="brand-products-header mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="brand-title-products">Tất cả sản phẩm</h2>
+                <div class="sort-dropdown">
+                    <label for="sortSelect" class="sort-label">Sắp xếp:</label>
+                    <select id="sortSelect" class="form-select sort-select" onchange="sortProducts(this.value)">
+                        <option value="" {{ request('sort') == '' ? 'selected' : '' }}>Mặc định</option>
+                        <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Tên A → Z</option>
+                        <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Tên Z → A</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Giá tăng dần</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Giá giảm dần
+                        </option>
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Hàng mới</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Products Section -->
+        <div class="container brand-products-page">
+            <div class="row">
+                <!-- Cột filter bên trái -->
+                <div class="col-md-3 filter-sidebar">
+                    <form id="filterForm" method="GET">
+                  <div class="filter-box">
+
+                            <h3>THƯƠNG HIỆU</h3>
+                            <ul class="price-list">
+                                @foreach ($brand as $brd)
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="brands[]" value="{{ $brd->id }}"
+                                                {{ in_array($brd->brand_name, request('brands', [])) ? 'checked' : '' }}>
+                                            {{ $brd->brand_name }}
+                                        </label>
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            <h3>DÒNG SẢN PHẨM</h3>
+                            <ul class="price-list">
+                                @foreach ($type_sport as $tsp)
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="sports[]" value="{{ $tsp->id ?? '' }}"
+                                                {{ in_array($tsp->id, request('sports', [])) ? 'checked' : '' }}>
+                                            {{ $tsp->title }}
+                                        </label>
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            <h3>MỨC GIÁ</h3>
+                            <ul class="price-list">
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="price_ranges[]" value="under_500k"
+                                            {{ in_array('under_500k', request('price_ranges', [])) ? 'checked' : '' }}>
+                                        Giá dưới 500.000₫
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="price_ranges[]" value="500k_1m"
+                                            {{ in_array('500k_1m', request('price_ranges', [])) ? 'checked' : '' }}>
+                                        500.000đ - 1.000.000đ
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="price_ranges[]" value="1m_2m"
+                                            {{ in_array('1m_2m', request('price_ranges', [])) ? 'checked' : '' }}>
+                                        1.000.000đ - 2.000.000đ
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="price_ranges[]" value="2m_3m"
+                                            {{ in_array('2m_3m', request('price_ranges', [])) ? 'checked' : '' }}>
+                                        2.000.000₫ - 3.000.000₫
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="price_ranges[]" value="3m_5m"
+                                            {{ in_array('3m_5m', request('price_ranges', [])) ? 'checked' : '' }}>
+                                        3.000.000₫ - 5.000.000₫
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="price_ranges[]" value="over_5m"
+                                            {{ in_array('over_5m', request('price_ranges', [])) ? 'checked' : '' }}>
+                                        Giá trên 5.000.000₫
+                                    </label>
+                                </li>
+                            </ul>
+
+                            <h3>LOẠI SẢN PHẨM</h3>
+                            <ul class="price-list">
+                                @foreach ($type_product as $tp)
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="types[]" value="{{ $tp->type }}"
+                                                {{ in_array($tp->type, request('types', [])) ? 'checked' : '' }}>
+                                            {{ $tp->type_name }}
+                                        </label>
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            <h3>KÍCH CỠ QUẦN ÁO</h3>
+                            <ul class="price-list">
+                                @php
+                                    $clothingSizes = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '116', '122', '128', '140', '152', '164'];
+                                @endphp
+                                @foreach ($clothingSizes as $size)
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="sizes[]" value="{{ $size }}"
+                                                {{ in_array($size, request('sizes', [])) ? 'checked' : '' }}>
+                                            {{ $size }}
+                                        </label>
+                                    </li>
+                                @endforeach
+                            </ul>
+
+                            <h3>KÍCH CỠ GIÀY DÉP</h3>
+                            <ul class="shoe-size-list">
+                                @php
+                                    $shoeSizes = ['4', '4-', '5', '5-', '6', '6-', '7-', '8', '8-', '9', '9-', '10', '10-', '11', '1', '2', '2-', '3', '3-', '4', '10K', '11K', '12K', '13K'];
+                                @endphp
+                                @foreach ($shoeSizes as $size)
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="sizes[]" value="{{ $size }}"
+                                                {{ in_array($size, request('sizes', [])) ? 'checked' : '' }}>
+                                            {{ $size }}
+                                        </label>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Cột sản phẩm bên phải -->
+                <div class="col-md-9 brand-product-list">
+
+
+                    <!-- Active Filters Display -->
+                    <div id="activeFiltersContainer">
+                        @include('customer.widget._active_filters')
+                    </div>
+
+                    <div id="productsContainer">
+                        @include('customer.widget._products_grid')
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        {{-- <button class="back-to-top" onclick="scrollToTop()">
+            <i class="fas fa-chevron-up"></i>
+        </button> --}}
+    </div>
+
+
+@endsection
+
+@push('scripts')
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
+            duration: 600,
+            easing: 'ease-out-cubic',
             once: true,
-            offset: 100
+            offset: 50
+        });
+
+        function showLoading() {
+            const loadingHtml = `
+                            <div class="loading-overlay">
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Đang tải...</p>
+                                </div>
+                            </div>
+                        `;
+            const productsContainer = document.getElementById('productsContainer');
+            if (productsContainer) {
+                productsContainer.insertAdjacentHTML('beforeend', loadingHtml);
+            }
+        }
+
+        function hideLoading() {
+            const productsContainer = document.getElementById('productsContainer');
+            if (productsContainer) {
+                const loadingOverlay = productsContainer.querySelector('.loading-overlay');
+                if (loadingOverlay) {
+                    loadingOverlay.remove();
+                }
+            }
+        }
+
+        function sortProducts(sortBy) {
+            // Show loading indicator
+            showLoading();
+
+            // Build URL with current parameters
+            const formData = new FormData(document.getElementById('filterForm'));
+            const params = new URLSearchParams();
+
+            // Add filter parameters
+            for (let [key, value] of formData.entries()) {
+                params.append(key, value);
+            }
+
+            // Add sort parameter
+            if (sortBy) {
+                params.set('sort', sortBy);
+            }
+
+            // Build the URL
+            const newUrl = window.location.pathname + '?' + params.toString();
+
+            // Update browser URL without reload
+            window.history.pushState({}, '', newUrl);
+
+            // Make AJAX request
+            fetch(newUrl, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Update active filters
+                    const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+                    if (activeFiltersContainer) {
+                        activeFiltersContainer.innerHTML = data.filters_html;
+                    }
+
+                    // Update products
+                    const productsContainer = document.getElementById('productsContainer');
+                    if (productsContainer) {
+                        productsContainer.innerHTML = data.products_html;
+                    }
+
+                    // Hide loading indicator
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hideLoading();
+                    // Fallback to page reload if AJAX fails
+                    window.location.href = newUrl;
+                });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Back to top button visibility
+        window.addEventListener('scroll', function () {
+            const backToTop = document.querySelector('.back-to-top');
+            if (backToTop) {
+                backToTop.classList.toggle('show', window.pageYOffset > 300);
+            }
+        });
+
+        // Filter functionality with AJAX
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterForm = document.getElementById('filterForm');
+            const checkboxes = filterForm.querySelectorAll('input[type="checkbox"]');
+            const productsContainer = document.querySelector('.brand-product-list');
+
+            // Auto-search when checkbox changes
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    applyFilters();
+                });
+            });
+
+            // Handle filter tag removal
+            document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('fa-times') || e.target.closest('.filter-tag')) {
+                    e.preventDefault();
+                    const filterTag = e.target.closest('.filter-tag');
+                    if (filterTag) {
+                        const filterType = filterTag.dataset.filter;
+                        const filterValue = filterTag.dataset.value;
+
+                        // Find and uncheck the corresponding checkbox
+                        const checkbox = document.querySelector(`input[name="${filterType}[]"][value="${filterValue}"]`);
+                        if (checkbox) {
+                            checkbox.checked = false;
+                        }
+
+                        applyFilters();
+                    }
+                }
+            });
+
+            function applyFilters() {
+                // Show loading indicator
+                showLoading();
+
+                // Build URL with current parameters
+                const formData = new FormData(filterForm);
+                const params = new URLSearchParams();
+
+                // Add filter parameters
+                for (let [key, value] of formData.entries()) {
+                    params.append(key, value);
+                }
+
+                // Add current sort parameter if exists
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('sort')) {
+                    params.set('sort', urlParams.get('sort'));
+                }
+
+                // Build the URL
+                const newUrl = window.location.pathname + '?' + params.toString();
+
+                // Update browser URL without reload
+                window.history.pushState({}, '', newUrl);
+
+                // Make AJAX request
+                fetch(newUrl, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update active filters
+                        const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+                        if (activeFiltersContainer) {
+                            activeFiltersContainer.innerHTML = data.filters_html;
+                        }
+
+                        // Update products
+                        const productsContainer = document.getElementById('productsContainer');
+                        if (productsContainer) {
+                            productsContainer.innerHTML = data.products_html;
+                        }
+
+                        // Hide loading indicator
+                        hideLoading();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        hideLoading();
+                        // Fallback to page reload if AJAX fails
+                        window.location.href = newUrl;
+                    });
+            }
+
         });
     </script>
-</body>
+@endpush
 
-</html>
+<style>
+    .filter-box label {
+        color: black; 
+         display: inline-flex;       /* hiển thị ngang */
+    align-items: center;        /* căn giữa theo chiều dọc */
+    cursor: pointer;    
+        gap: 6px;                      /* trỏ chuột dạng pointer */
+    }
+
+</style>

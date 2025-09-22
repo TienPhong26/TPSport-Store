@@ -75,6 +75,10 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class, 'brand_id');
     }
+    public function sport(): BelongsTo
+    {
+        return $this->belongsTo(Sports::class, 'sport_id');
+    }
 
     public function material(): BelongsTo
     {

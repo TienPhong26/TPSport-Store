@@ -68,7 +68,7 @@
                     {{-- Previous Page Link --}}
                     @if ($products->onFirstPage())
                         <li class="disabled">
-                            <span><i class="fas fa-chevron-left"style="color: black"></i></span>
+                            <span><i class="fas fa-chevron-left" style="color: black"></i></span>
                         </li>
                     @else
                         <li>
@@ -95,12 +95,12 @@
                     @if ($products->hasMorePages())
                         <li>
                             <a href="{{ $products->nextPageUrl() }}" rel="next" style="color: black">
-                                <i class="fas fa-chevron-right"style="color: black"></i>
+                                <i class="fas fa-chevron-right" style="color: black"></i>
                             </a>
                         </li>
                     @else
                         <li class="disabled">
-                            <span><i class="fas fa-chevron-right"style="color: black"></i></span>
+                            <span><i class="fas fa-chevron-right" style="color: black"></i></span>
                         </li>
                     @endif
                 </ul>
@@ -112,7 +112,12 @@
                 <i class="fas fa-box-open"></i>
             </div>
             <h3>Không có sản phẩm</h3>
-            <p>Thương hiệu {{ $brand->brand_name }} hiện chưa có sản phẩm nào.</p>
+            {{-- <p>Thương hiệu {{ $brand->brand_name }} hiện chưa có sản phẩm nào.</p> --}}
+            @if (is_a($brand, \Illuminate\Support\Collection::class))
+                <p>Chưa có thương hiệu cụ thể.</p>
+            @else
+                <p>Thương hiệu {{ $brand->brand_name }} hiện chưa có sản phẩm nào.</p>
+            @endif
             <div class="no-products-actions">
                 <a href="{{ route('brands.list') }}" class="btn-primary">
                     <i class="fas fa-building" style="margin-right: 8px"></i>

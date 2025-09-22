@@ -1,12 +1,14 @@
-@if(request()->has('types') || request()->has('price_ranges') || request()->has('sizes'))
+@if(request()->has('types') || request()->has('brands') || request()->has('sports') || request()->has('price_ranges') || request()->has('sizes'))
     <div class="active-filters mb-3">
         <div class="filter-tags">
+
+            {{-- TYPES --}}
             @if(request()->has('types'))
                 @foreach(request('types') as $type)
                     @php
                         $typeMap = [
                             'shirt' => 'Áo',
-                            'trousers' => 'Quần', 
+                            'trousers' => 'Quần',
                             'ball' => 'Bóng',
                             'socks' => 'Tất',
                             'shoes' => 'Giày'
@@ -19,7 +21,34 @@
                     </span>
                 @endforeach
             @endif
-            
+
+            {{-- BRANDS --}}
+            @if(request()->has('brands'))
+                @foreach(request('brands') as $brdId)
+                    @php
+                        $brandName = $brand->firstWhere('id', $brdId)->brand_name ?? $brdId;
+                    @endphp
+                    <span class="filter-tag" data-filter="brands" data-value="{{ $brdId }}">
+                        {{ $brandName }}
+                        <i class="fas fa-times"></i>
+                    </span>
+                @endforeach
+            @endif
+
+            {{-- SPORTS --}}
+            @if(request()->has('sports'))
+                @foreach(request('sports') as $sportId)
+                    @php
+                        $sportName = $type_sport->firstWhere('id', $sportId)->title ?? $sportId;
+                    @endphp
+                    <span class="filter-tag" data-filter="sports" data-value="{{ $sportId }}">
+                        {{ $sportName }}
+                        <i class="fas fa-times"></i>
+                    </span>
+                @endforeach
+            @endif
+
+            {{-- PRICE RANGES --}}
             @if(request()->has('price_ranges'))
                 @foreach(request('price_ranges') as $range)
                     @php
@@ -39,7 +68,8 @@
                     </span>
                 @endforeach
             @endif
-            
+
+            {{-- SIZES --}}
             @if(request()->has('sizes'))
                 @foreach(request('sizes') as $size)
                     <span class="filter-tag" data-filter="sizes" data-value="{{ $size }}">
@@ -48,10 +78,13 @@
                     </span>
                 @endforeach
             @endif
-            
-            <a href="{{ url('/brands/' . $brand->id) }}" class="clear-all-filters">
-                Xóa tất cả
-            </a>
+
+            {{-- CLEAR ALL --}}
+            @if (is_a($brand, \Illuminate\Support\Collection::class))
+                <a href="{{ url('/categories') }}" class="clear-all-filters">Xóa tất cả</a>
+            @else
+                <a href="{{ url('/brands/' . $brand->id) }}" class="clear-all-filters">Xóa tất cả</a>
+            @endif
         </div>
     </div>
 @endif

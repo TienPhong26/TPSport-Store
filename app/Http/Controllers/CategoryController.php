@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
@@ -101,13 +103,126 @@ class CategoryController extends Controller
         }
     }
 
-    public function categoryList()
+    public function categoryList(Request $request)
     {
-        $categories = Category::withCount('products')
-            ->orderBy('products_count', 'desc')
-            ->get();
+        $brand = Brand::select('id', 'brand_name')->get();
 
-        return view('Customer.category.category_list', compact('categories'));
+        $type_product = Product::select('type')
+            ->distinct()
+            ->get();
+        $type_sport = Sports::select('id','title')
+            ->get();
+        // dd($type_product);
+        $typeMap = [
+            'shirt'    => 'Áo',
+            'trousers' => 'Quần',
+            'ball'     => 'Bóng',
+            'socks'    => 'Tất',
+            'shoes'    => 'Giày',
+        ];
+        $type_product = $type_product->map(function ($item) use ($typeMap) {
+            $item->type_name = $typeMap[$item->type] ?? $item->type;
+            return $item;
+        });
+        $query = Product::with(['brand', 'images', 'sport'])
+            ->where('status', '1')
+            ->where('amount', '>', 0);
+
+        // Apply filters
+        // Product type filter
+        if ($request->has('types') && !empty($request->input('types'))) {
+            $types = $request->input('types');
+            $query->whereIn('type', $types);
+        }
+        if ($request->has('brands') && !empty($request->input('brands'))) {
+            $brands = $request->input('brands');
+            $query->whereIn('brand_id', $brands);
+        }
+        if ($request->has('sports') && !empty($request->input('sports'))) {
+            $sports = $request->input('sports');
+            $query->whereIn('sport_id', $sports);
+        }
+
+        // Price range filter
+        if ($request->has('price_ranges') && !empty($request->input('price_ranges'))) {
+            $priceRanges = $request->input('price_ranges');
+            $query->where(function ($q) use ($priceRanges) {
+                foreach ($priceRanges as $range) {
+                    switch ($range) {
+                        case 'under_500k':
+                            $q->orWhere('price', '<', 500000);
+                            break;
+                        case '500k_1m':
+                            $q->orWhereBetween('price', [500000, 1000000]);
+                            break;
+                        case '1m_2m':
+                            $q->orWhereBetween('price', [1000000, 2000000]);
+                            break;
+                        case '2m_3m':
+                            $q->orWhereBetween('price', [2000000, 3000000]);
+                            break;
+                        case '3m_5m':
+                            $q->orWhereBetween('price', [3000000, 5000000]);
+                            break;
+                        case 'over_5m':
+                            $q->orWhere('price', '>', 5000000);
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Size filter
+        if ($request->has('sizes') && !empty($request->input('sizes'))) {
+            $sizes = $request->input('sizes');
+            $query->whereHas('sizes', function ($q) use ($sizes) {
+                $q->whereIn('size_name', $sizes);
+            });
+        }
+
+        // Sort products
+        switch ($request->input('sort')) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('product_id', 'asc');
+        }
+
+        $products = $query->paginate(perPage: 16);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'products_html' => view('Customer.widget._products_grid', [
+                    'products' => $products,
+                    'brand' => $brand,
+                ])->render(),
+                'filters_html' => view('Customer.widget._active_filters', [
+                    'brand' => $brand,
+                    'type_sport' => $type_sport,
+                    'type_product' => $type_product,
+                ])->render()
+            ]);
+        }
+
+        return view('Customer.category.category_list', [
+            'products' => $products,
+            'brand' => $brand,
+            'type_product' => $type_product,
+            'type_sport' => $type_sport,
+        ]);
     }
 
     /**

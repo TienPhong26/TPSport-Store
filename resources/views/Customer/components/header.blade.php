@@ -36,7 +36,7 @@
                         @endauth
 
                         <li><a href="{{ route('brands.list') }}">THƯƠNG HIỆU</a></li>
-                        <li><a href="{{ route('categories.list') }}">DANH MỤC</a></li>
+                        <li><a href="{{ route('categories.list') }}">MÔN THỂ THAO</a></li>
                         <li><a href="{{ route('brands.list') }}">SẢN PHẨM MỚI</a></li>
                         <li><a href="{{ route('brands.list') }}">NAM</a></li>
                         <li><a href="{{ route('brands.list') }}">NỮ</a></li>
