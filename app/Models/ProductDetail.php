@@ -15,7 +15,7 @@ class ProductDetail extends Model
         'origin',
         'long_description',
         'weight',
-        'size',
+        'material',
         'length',
         'color',
     ];

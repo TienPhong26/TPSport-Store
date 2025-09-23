@@ -42,9 +42,9 @@
                     <li class="breadcrumb-item">
                         <a href="{{ route('shop.home') }}">Trang chủ</a>
                     </li>
-                    <li class="breadcrumb-item">
-                        {{-- <a href="{{ route('shop.home') }}">Trang chủ</a> --}}
-                    </li>
+                    {{-- <li class="breadcrumb-item">
+                        <a href="{{ route('shop.home') }}">Trang chủ</a>
+                    </li> --}}
                     <li class="breadcrumb-item active" aria-current="page"><a
                             href="{{ route('brands.list') }}">{{$product->name}}</a></li>
 
@@ -119,42 +119,77 @@
             <div class="product-details">
                 <p><strong style="color: #000000">Số lượng còn:</strong> {{ $product->amount }}</p>
 
-                <p>{{ $product->short_description }}</p>
+                {{-- <p>{{ $product->short_description }}</p> --}}
             </div>
             <div class="sizes">
-                <p>Kích cỡ:</p>
-                <div class="size-options">
-                    @php
-                        $sizes = [];
-                        if (!empty($product->productDetail->size)) {
-                            $sizes = explode(',', $product->productDetail->size);
-                        }
-                    @endphp
+                <p>
+                    Kích cỡ:
+                    <span id="selected-size" style="color:rgb(0, 0, 0);"></span>
+                </p>
 
-                    @foreach ($sizes as $size)
-                        <label class="size-label">
-                            <input type="radio" name="size_id" value="{{ trim($size) }}" required>
-                            <span>{{ trim($size) }}</span>
+                <div class="size-options">
+                    @foreach ($product->sizes as $index => $size)
+                        @php
+                            $stock = $size->pivot->size_order; // số lượng tồn
+                            $disabled = $stock == 0 ? 'disabled' : '';
+                            $classOutOfStock = $stock == 0 ? 'out-of-stock' : '';
+                        @endphp
+
+                        <label class="size-label {{ $classOutOfStock }}">
+                            <input type="radio"
+                                name="size_id"
+                                value="{{ $size->size_id }}"
+                                data-size-name="{{ $size->size_name }}"
+                                @if($index === 0 && $stock > 0) checked @endif
+                                {{ $disabled }} required>
+                            <span>{{ $size->size_name }}</span>
                         </label>
                     @endforeach
                 </div>
             </div>
 
+            <div class="colors mt-4">
+                <p>Màu sắc: {{ $product->productDetail->color }}</p>
+                <div class="color-img-wrapper">
+                    <img src="{{ asset($product->image) }}" alt="color-img" class="color-img-icon">
+                    <span class="tooltip-text">{{ $product->productDetail->color }}</span>
+                </div>
+                <p class="mt-4">Chất liệu: {{ $product->productDetail->material }}</p>
 
-            @if ($product->amount > 0)
+                <a data-fancybox="gallery" href="{{ asset('images/adidas-ao.png') }}" >
+                    <i class="fas fa-ruler"></i>
+                    Hướng dẫn chọn kích cỡ
+                </a>
+            </div>
+
+
+
+           <form action="{{ route('cart.add-to-cart') }}" method="POST" class="product-form" id="addToCartForm">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+                <input type="hidden" name="size_id" id="selected_size_id">
+
+                <div class="product-actions">
+                    <!-- Số lượng -->
+                    <div class="quantity">
+                        <button type="button" class="quantity-btn minus">−</button>
+                        <input type="number" name="quantity" value="1" min="1" max="5"   maxlength="3"    oninput="this.value = this.value.slice(0,3)"  id="quantityInput">
+                        <button type="button" class="quantity-btn plus">+</button>
+                    </div>
+
+                    <!-- Nút thêm vào giỏ -->
+                    <button type="submit" class="add-to-cart">THÊM VÀO GIỎ</button>
+
+                    <!-- Nút mua ngay -->
+                    {{-- <a href="{{ route('checkout.buy-now', ['product_id' => $product->product_id]) }}" class="buy-now">MUA NGAY</a> --}}
+                </div>
+                <div class="buy-now">
+                    <a href="#" class="" style="color: #ffcb08 !important;">MUA NGAY</a>
+                </div>
+                <p style="color: #000000; text-align: center; max-width: 761px;">Gọi đặt mua 0397760835 (8:00 - 22:00)</p>
+            </form>
+            {{-- @if ($product->amount > 0)
                 @auth('customer')
-                    <form action="{{ route('cart.add-to-cart') }}" method="POST" class="product-form" id="addToCartForm">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                        <input type="hidden" name="size_id" id="selected_size_id">
-                        <div class="quantity">
-                            <label style="color: #000000">Số lượng:</label>
-                            <input type="number" name="quantity" value="1" min="1" max="{{ $product->amount }}">
-                            <button type="submit" class="add-to-cart">
-                                <i class="lni lni-cart"></i> Thêm vào giỏ
-                            </button>
-                        </div>
-                    </form>
                 @else
                     <div class="alert alert-warning mt-2">
                         Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.
@@ -166,37 +201,50 @@
                         Sản phẩm đã hết hàng
                     </span>
                 </div>
-            @endif
-
-            <div class="shipping-info">
-                <p><strong style="color: blue">Thông tin vận chuyển:</strong></p>
-                <p>Miễn phí vận chuyển cho đơn hàng trên 500.000đ</p>
-
-                <div class="delivery">
-                    <p>HÌNH THỨC</p>
-                    <p>PHÍ VẬN CHUYỂN</p>
-                </div>
-
-                @forelse($shippingMethods as $method)
-                    <hr>
-                    <div class="delivery">
-                        <p>{{ $method->method_name }}</p>
-                        <p>{{ number_format($method->shipping_fee) }}đ</p>
-                    </div>
-                @empty
-                    <hr>
-                    <div class="delivery">
-                        <p>Giao hàng tiêu chuẩn</p>
-                        <p>30.000đ</p>
-                    </div>
-                @endforelse
-            </div>
+            @endif --}}
         </div>
+        {{-- mo ta san pham --}}
+        
     </section>
+    @include('Customer.widget._describe_product')
 
 @endsection
 @push('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const minusBtn = document.querySelector('.quantity-btn.minus');
+            const plusBtn = document.querySelector('.quantity-btn.plus');
+            const quantityInput = document.getElementById('quantityInput');
+            const MAX_QUANTITY = 5;
+
+            minusBtn.addEventListener('click', () => {
+                let value = parseInt(quantityInput.value);
+                if(value > 1) {
+                    quantityInput.value = value - 1;
+                }
+            });
+
+            plusBtn.addEventListener('click', () => {
+                let value = parseInt(quantityInput.value);
+                if(value < MAX_QUANTITY) {
+                    quantityInput.value = value + 1;
+                } else {
+                    alert(`Bạn chỉ được mua tối đa ${MAX_QUANTITY} sản phẩm`);
+                }
+            });
+
+            // Giới hạn nhập tay
+            quantityInput.addEventListener('input', () => {
+                let value = parseInt(quantityInput.value) || 1;
+                if(value > MAX_QUANTITY) {
+                    quantityInput.value = MAX_QUANTITY;
+                    alert(`Bạn chỉ được mua tối đa ${MAX_QUANTITY} sản phẩm`);
+                } else if(value < 1) {
+                    quantityInput.value = 1;
+                }
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             // Xử lý ảnh
             const featuredImage = document.getElementById('featured-image');
@@ -323,6 +371,22 @@
             thumbnails[currentIndex].classList.add('active');
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const sizeInputs = document.querySelectorAll('input[name="size_id"]:not(:disabled)');
+            const selectedSizeSpan = document.getElementById('selected-size');
+
+            // lấy input đầu tiên còn hàng
+            const checkedInput = document.querySelector('input[name="size_id"]:checked');
+            if (checkedInput) {
+                selectedSizeSpan.textContent = checkedInput.dataset.sizeName;
+            }
+
+            sizeInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    selectedSizeSpan.textContent = this.dataset.sizeName;
+                });
+            });
+        });
 
 
     </script>
