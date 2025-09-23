@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html>
+@extends('customer._layouts.master')
 
-<head>
-    <title>Chi tiết sản phẩm</title>
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+@section('title', $product->name)
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/brand_products.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/brand_list.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
-    <script src="{{ asset('js/alert.js') }}"></script>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
 
-</head>
-
-<body>
+@section('content')
     <div class="alerts-container">
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -37,66 +35,113 @@
         @endif
     </div>
 
-    @include('Customer.components.header')
+    <section class="brand-header">
+        <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('shop.home') }}">Trang chủ</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        {{-- <a href="{{ route('shop.home') }}">Trang chủ</a> --}}
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page"><a
+                            href="{{ route('brands.list') }}">{{$product->name}}</a></li>
 
-    <div class="pagination">
-        <p>Trang chủ > {{ $product->categories->first()->category_name ?? 'Sản phẩm' }} > {{ $product->product_name }}
-        </p>
-    </div>
+                </ol>
+            </div>
+        </nav>
+    </section>
 
     <section class="product-container">
         <!-- Left side - Product Images -->
-        <div class="img-card" style="min-width: 35%;">
-            @if ($mainImage)
-                <img src="{{ asset($mainImage->image_url) }}" alt="{{ $product->product_name }}" id="featured-image">
-            @else
-                <img src="{{ asset('images/no-image.png') }}" alt="No image" id="featured-image">
-            @endif
+        <div class="product-gallery">
+            <!-- ảnh nhỏ bên trái -->
+            <div class="small-Card">
+                <img src="{{ asset($product->image) }}" alt="Main" class="small-Img active">
+                <img src="{{ asset($product->image_hover) }}" alt="{{ $product->name }}" id="small-Img">
+                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" id="small-Img">
+                <img src="{{ asset($product->image_hover) }}" alt="{{ $product->name }}" id="small-Img">
 
-            <div class="small-Card mt-2 d-flex gap-2 flex-wrap">
-                @if ($mainImage)
-                    <img src="{{ asset($mainImage->image_url) }}" alt="Main" class="small-Img active">
-                @endif
+                {{-- @foreach($images as $image) --}}
 
-                @foreach ($subImages as $image)
-                    <img src="{{ asset($image->image_url) }}" alt="Sub image" class="small-Img">
-                @endforeach
+                {{-- @endforeach --}}
+            </div>
+
+            <!-- ảnh chính bên phải -->
+            <div class="img-card">
+                <button class="prev-btn">&#10094;</button> <!-- mũi tên trái -->
+                <a data-fancybox="gallery" href="{{ asset($product->image) }}">
+                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" id="featured-image">
+                </a>
+                <button class="next-btn">&#10095;</button> <!-- mũi tên phải -->
             </div>
         </div>
 
+
         <!-- Right side - Product Info -->
         <div class="product-info">
-            <h3 style="color: #000000">{{ $product->product_name }}</h3>
-            <div class="price-info">
-                @if ($product->discount > 0)
-                    <h5>Giá: {{ number_format($product->price * (1 - $product->discount / 100)) }}đ
-                        <del>{{ number_format($product->price) }}đ</del>
-                        <span class="discount-badge">-{{ $product->discount }}%</span>
-                    </h5>
-                @else
-                    <h5>Giá: {{ number_format($product->price) }}đ</h5>
-                @endif
+
+            <h3 style="color: #000000">{{ $product->name }}</h3>
+            <div class="product-details">
+                <span style="margin-right:20px;">
+                    <strong>Thương hiệu:</strong>
+                    <a href="/brands/{{ $product->brand->id }}">{{ $product->brand->brand_name ?? 'N/A' }}</a>
+                </span>
+                <span>
+                    <strong>Mã sản phẩm:</strong>
+                    <a href="#">{{ $product->product_id ?? 'N/A' }}</a>
+                </span>
             </div>
+            @php
+                $discountPercent = 0;
+                if ($product->category->isNotEmpty()) {
+                    foreach ($product->category as $cate) {
+                        if ($cate->discounts->isNotEmpty()) {
+                            $discountPercent = $cate->discounts->first()->discount_percent;
+                            break;
+                        }
+                    }
+                }
+            @endphp
+
+            <p class="prd-price mt-3">
+                @if ($discountPercent > 0)
+                    <b>{{ number_format($product->price - ($product->price * $discountPercent / 100)) }}
+                        VNĐ</b>
+                    <strike>{{ number_format($product->price) }} VNĐ</strike>
+                @else
+                    <b>{{ number_format($product->price) }} VNĐ</b>
+                @endif
+            </p>
+
 
             <div class="product-details">
-                <p><strong style="color: #000000">Thương hiệu:</strong> {{ $product->brand->brand_name }}</p>
-                <p><strong style="color: #000000">Chất liệu:</strong> {{ $product->material->material_name }}</p>
-                <p><strong style="color: #000000">Số lượng còn:</strong> {{ $product->quantity }}</p>
+                <p><strong style="color: #000000">Số lượng còn:</strong> {{ $product->amount }}</p>
 
-                <p>{{ $product->description }}</p>
+                <p>{{ $product->short_description }}</p>
             </div>
-
             <div class="sizes">
-                <p>Size:</p>
-                <select name="size_id" id="size" class="size-option" required>
-                    @foreach ($product->sizes as $size)
-                        <option style="color: #000000" value="{{ $size->size_id }}">{{ $size->size_name }}
-                        </option>
+                <p>Kích cỡ:</p>
+                <div class="size-options">
+                    @php
+                        $sizes = [];
+                        if (!empty($product->productDetail->size)) {
+                            $sizes = explode(',', $product->productDetail->size);
+                        }
+                    @endphp
+
+                    @foreach ($sizes as $size)
+                        <label class="size-label">
+                            <input type="radio" name="size_id" value="{{ trim($size) }}" required>
+                            <span>{{ trim($size) }}</span>
+                        </label>
                     @endforeach
-                </select>
+                </div>
             </div>
 
-            @if ($product->quantity > 0)
+
+            @if ($product->amount > 0)
                 @auth('customer')
                     <form action="{{ route('cart.add-to-cart') }}" method="POST" class="product-form" id="addToCartForm">
                         @csrf
@@ -104,8 +149,7 @@
                         <input type="hidden" name="size_id" id="selected_size_id">
                         <div class="quantity">
                             <label style="color: #000000">Số lượng:</label>
-                            <input type="number" name="quantity" value="1" min="1"
-                                max="{{ $product->quantity }}">
+                            <input type="number" name="quantity" value="1" min="1" max="{{ $product->amount }}">
                             <button type="submit" class="add-to-cart">
                                 <i class="lni lni-cart"></i> Thêm vào giỏ
                             </button>
@@ -150,69 +194,54 @@
         </div>
     </section>
 
-    {{-- @push('scripts')
-        <script>
-            const featuredImg = document.getElementById('featured-image');
-            const smallImgs = document.getElementsByClassName('small-Img');
+@endsection
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Xử lý ảnh
+            const featuredImage = document.getElementById('featured-image');
+            const smallImages = document.querySelectorAll('.small-Img');
 
-            Array.from(smallImgs).forEach((img, index) => {
-                img.addEventListener('click', () => {
-                    featuredImg.src = img.src;
-                    Array.from(smallImgs).forEach((otherImg) => {
-                        otherImg.classList.remove('active');
+            smallImages.forEach(smallImg => {
+                smallImg.addEventListener('click', function () {
+                    featuredImage.src = this.src;
+                    smallImages.forEach(img => {
+                        img.classList.remove('active');
                     });
-                    img.classList.add('active');
+                    this.classList.add('active');
                 });
             });
-        </script>
-    @endpush --}}
-</body>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Xử lý ảnh
-        const featuredImage = document.getElementById('featured-image');
-        const smallImages = document.querySelectorAll('.small-Img');
 
-        smallImages.forEach(smallImg => {
-            smallImg.addEventListener('click', function() {
-                featuredImage.src = this.src;
-                smallImages.forEach(img => {
-                    img.classList.remove('active');
+            // Xử lý form add to cart
+            const form = document.getElementById('addToCartForm');
+            const sizeSelect = document.getElementById('size');
+            const selectedSizeInput = document.getElementById('selected_size_id');
+
+            // Set initial size value
+            if (sizeSelect && selectedSizeInput) {
+                selectedSizeInput.value = sizeSelect.value;
+
+                // Update size when changed
+                sizeSelect.addEventListener('change', function () {
+                    selectedSizeInput.value = this.value;
                 });
-                this.classList.add('active');
-            });
-        });
+            }
 
-        // Xử lý form add to cart
-        const form = document.getElementById('addToCartForm');
-        const sizeSelect = document.getElementById('size');
-        const selectedSizeInput = document.getElementById('selected_size_id');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
 
-        // Set initial size value
-        if (sizeSelect && selectedSizeInput) {
-            selectedSizeInput.value = sizeSelect.value;
+                    // Lấy số lượng khách chọn
+                    const quantity = form.querySelector('input[name="quantity"]').value;
 
-            // Update size when changed
-            sizeSelect.addEventListener('change', function() {
-                selectedSizeInput.value = this.value;
-            });
-        }
+                    // Hiển thị hộp thoại xác nhận trước khi gửi request
+                    if (!confirm(`Bạn có chắc chắn muốn thêm ${quantity} sản phẩm này vào giỏ hàng?`)) {
+                        // Nếu khách chọn Cancel thì không gửi request, không reload
+                        return;
+                    }
 
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                // Lấy số lượng khách chọn
-                const quantity = form.querySelector('input[name="quantity"]').value;
-
-                // Hiển thị hộp thoại xác nhận trước khi gửi request
-                if (!confirm(`Bạn có chắc chắn muốn thêm ${quantity} sản phẩm này vào giỏ hàng?`)) {
-                    // Nếu khách chọn Cancel thì không gửi request, không reload
-                    return;
-                }
-
-                // Nếu khách xác nhận, mới gửi request
-                fetch(this.action, {
+                    // Nếu khách xác nhận, mới gửi request
+                    fetch(this.action, {
                         method: 'POST',
                         body: new FormData(this),
                         headers: {
@@ -222,29 +251,79 @@
                             'Accept': 'application/json'
                         }
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            const cartCountElement = document.querySelector('.cart-count');
-                            if (cartCountElement && data.cartCount) {
-                                cartCountElement.textContent = data.cartCount;
-                            }
-                            // Thông báo thành công và reload
-                            alert(data.message);
-                            window.location.reload();
-                        } else {
-                            if (data.redirect) {
-                                window.location.href = data.redirect;
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const cartCountElement = document.querySelector('.cart-count');
+                                if (cartCountElement && data.cartCount) {
+                                    cartCountElement.textContent = data.cartCount;
+                                }
+                                // Thông báo thành công và reload
+                                alert(data.message);
+                                window.location.reload();
                             } else {
-                                alert(data.message || 'Có lỗi xảy ra');
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                } else {
+                                    alert(data.message || 'Có lỗi xảy ra');
+                                }
                             }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
-                    });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
+                        });
+                });
+            }
+        });
+        const thumbnails = document.querySelectorAll('.small-Card img');
+        const featuredImage = document.getElementById('featured-image');
+        // lấy thẻ a bọc ảnh chính
+        const featuredLink = featuredImage.closest('a');
+
+        // Lấy tất cả src từ thumbnail để làm mảng images
+        let images = Array.from(thumbnails).map(img => img.src);
+
+        // Chỉ số ảnh hiện tại
+        let currentIndex = 0;
+
+        // --- Khi click thumbnail ---
+        thumbnails.forEach((img, index) => {
+            img.addEventListener('click', function () {
+                currentIndex = index; // cập nhật index
+                featuredImage.src = this.src;
+
+                // đổi href của thẻ a fancybox
+                featuredLink.href = this.src;
+
+                thumbnails.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
             });
-        }
-    });
-</script>
+        });
+
+        // --- Khi click Prev ---
+        document.querySelector('.prev-btn').addEventListener('click', function () {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            featuredImage.src = images[currentIndex];
+            featuredLink.href = images[currentIndex];
+
+            // đổi active thumbnail
+            thumbnails.forEach(i => i.classList.remove('active'));
+            thumbnails[currentIndex].classList.add('active');
+        });
+
+        // --- Khi click Next ---
+        document.querySelector('.next-btn').addEventListener('click', function () {
+            currentIndex = (currentIndex + 1) % images.length;
+            featuredImage.src = images[currentIndex];
+            featuredLink.href = images[currentIndex];
+
+            // đổi active thumbnail
+            thumbnails.forEach(i => i.classList.remove('active'));
+            thumbnails[currentIndex].classList.add('active');
+        });
+
+
+
+    </script>
+@endpush

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Customer extends Authenticatable
 {
     use HasFactory, Notifiable;
-    protected $table = 'customer';
+    protected $table = 'users';
     protected $primaryKey = 'customer_id';
     public $timestamps = false;
     protected $guard_name = 'customer';

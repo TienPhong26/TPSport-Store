@@ -134,4 +134,9 @@ class Product extends Model
             'brand_name' => $this->brand ? $this->brand->brand_name : null
         ];
     }
+
+    public function productDetail()
+    {
+        return $this->hasOne(ProductDetail::class, 'product_id', 'product_id');
+    }
 }

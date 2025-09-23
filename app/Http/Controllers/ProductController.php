@@ -350,35 +350,20 @@ class ProductController extends Controller
             $product->load([
                 'brand',
                 'material',
-                'categories',
+                'category',
                 'sizes',
-                'images' => function ($query) {
-                    $query->orderByPivot('image_order');
-                }
+                'productDetail'
             ]);
 
-            $mainImage = $product->images()
-                ->wherePivot('image_role', 'main')
-                ->first();
-
-            $subImages = $product->images()
-                ->wherePivot('image_role', 'sub')
-                ->orderByPivot('image_order')
-                ->get();
+            // dd($product);
 
             // Load shipping methods
             $shippingMethods = ShippingMethod::all();
 
-            // Debug log
-            Log::info('ShippingMethods in shop controller:', [
-                'count' => $shippingMethods->count(),
-                'data' => $shippingMethods->toArray()
-            ]);
-
             return view('Customer.product-details', [
                 'product' => $product,
-                'mainImage' => $mainImage,
-                'subImages' => $subImages,
+                // 'mainImage' => $mainImage,
+                // 'subImages' => $subImages,
                 'shippingMethods' => $shippingMethods
             ]);
         } catch (\Exception $e) {
@@ -386,6 +371,7 @@ class ProductController extends Controller
             return back()->with('error', 'Có lỗi xảy ra khi hiển thị sản phẩm');
         }
     }
+
 
     public function adminShow(Product $product)
     {
@@ -573,7 +559,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function maleFemale(Request $request,$gender)
+    public function maleFemale(Request $request, $gender)
     {
         $brand = Brand::select('id', 'brand_name')->get();
 
@@ -599,7 +585,7 @@ class ProductController extends Controller
         $query = Product::with(['brand', 'images', 'sport'])
             ->where('status', 1)
             ->where('entry_date', '>', $date)
-            ->whereIn('gender', [$gender, 'unisex']) 
+            ->whereIn('gender', [$gender, 'unisex'])
             ->where('amount', '>', 0);
 
         // Product type filter
