@@ -192,18 +192,29 @@ class CustomerController extends Controller
 
     public function updateProfile(Request $request)
     {
+        // $authCustomer = Auth::guard(name: 'customer')->user();
+        // $customer = Customer::find($authCustomer->customer_id);
+
         $authCustomer = Auth::guard('customer')->user();
-        $customer = Customer::find($authCustomer->customer_id);
+        if (!$authCustomer) {
+            return redirect()->back()->withErrors('Bạn chưa đăng nhập.');
+        }
+
+        $customer = Customer::find($authCustomer->id);
+        if (!$customer) {
+            return redirect()->back()->withErrors('Không tìm thấy khách hàng.');
+        }
+
 
         $rules = [
             'customer_name' => 'required|string|max:255',
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => 'nullable|string|max:10',
             'address' => 'nullable|string|max:255',
         ];
 
         // Nếu email thay đổi thì check unique
         if ($request->email !== $customer->email) {
-            $rules['email'] = 'required|email|unique:customer,email';
+            $rules['email'] = 'required|email|unique:users,email';
         } else {
             $rules['email'] = 'required|email';
         }

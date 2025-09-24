@@ -22,27 +22,38 @@ class CartController extends Controller
                 'redirect' => route('customer.login')
             ], 401);
         }
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'size_id'    => 'required|exists:sizes,size_id',
+            'quantity'   => 'nullable|integer|min:1'
+        ]);
 
         try {
             DB::beginTransaction();
 
-            $product = Product::findOrFail($request->product_id);
+            $product = Product::where('id', $request->product_id)->firstOrFail();
             $customer = Auth::guard('customer')->user();
             $requestedQuantity = $request->quantity ?? 1;
+            $sizeId = $request->size_id;
 
-            // Check stock
-            if ($product->quantity <= 0) {
+            // Lấy số lượng tồn kho theo size
+            $sizeStock = DB::table('size_product')
+                ->where('product_id', $product->id)
+                ->where('size_id', $sizeId)
+                ->value('size_order');
+
+            if (!$sizeStock || $sizeStock <= 0) {
                 DB::rollBack();
                 return response()->json([
                     'success' => false,
-                    'message' => 'Sản phẩm đã hết hàng'
+                    'message' => 'Size này đã hết hàng'
                 ], 400);
             }
 
-            // Get or create cart
+            // Lấy order cart hiện tại
             $cartOrder = Order::firstOrCreate(
                 [
-                    'customer_id' => $customer->customer_id,
+                    'customer_id' => $customer->id,
                     'order_status' => 'cart'
                 ],
                 [
@@ -50,38 +61,47 @@ class CartController extends Controller
                 ]
             );
 
-            // Find existing cart item
+            // Kiểm tra xem đã có item này (product + size) trong giỏ chưa
             $orderDetail = OrderDetail::where([
-                'order_id' => $cartOrder->order_id,
-                'product_id' => $product->product_id
+                'order_id'  => $cartOrder->order_id,
+                'product_id' => $product->id,
+                'size_id'   => $sizeId
             ])->first();
 
             if ($orderDetail) {
-                // Update existing item
                 $newQuantity = $orderDetail->sold_quantity + $requestedQuantity;
 
-                if ($newQuantity > $product->quantity) {
+                if ($newQuantity > $sizeStock) {
                     DB::rollBack();
                     return response()->json([
                         'success' => false,
-                        'message' => 'Tổng số lượng vượt quá số lượng tồn kho'
+                        'message' => 'Tổng số lượng vượt quá số lượng tồn kho cho size này'
                     ], 400);
                 }
 
                 DB::table('order_details')
                     ->where([
                         'order_id' => $cartOrder->order_id,
-                        'product_id' => $product->product_id
+                        'product_id' => $product->id,
+                        'size_id' => $sizeId
                     ])
                     ->update([
                         'sold_quantity' => $newQuantity,
-                        'sold_price' => $product->getDiscountedPrice()
+                        'sold_price'    => $product->getDiscountedPrice()
                     ]);
             } else {
-                // Create new item
+                if ($requestedQuantity > $sizeStock) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Số lượng vượt quá số lượng tồn kho cho size này'
+                    ], 400);
+                }
+
                 OrderDetail::create([
                     'order_id' => $cartOrder->order_id,
-                    'product_id' => $product->product_id,
+                    'product_id' => $product->id,
+                    'size_id' => $sizeId,
                     'sold_quantity' => $requestedQuantity,
                     'sold_price' => $product->getDiscountedPrice()
                 ]);
@@ -95,7 +115,7 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Đã thêm $requestedQuantity sản phẩm vào giỏ hàng",
+                'message' => "Đã thêm $requestedQuantity sản phẩm vào giỏ hàng (size: $sizeId)",
                 'cartCount' => $cartCount
             ]);
         } catch (\Exception $e) {
@@ -106,11 +126,12 @@ class CartController extends Controller
             ]);
 
             return response()->json([
-                'success' => 'Đã thêm sản phẩm vào giỏ hàng!',
+                'success' => false,
                 'message' => 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng'
             ], 500);
         }
     }
+
 
     // Thêm method mới để xử lý cập nhật số lượng
     public function updateQuantity(Request $request)
@@ -171,12 +192,14 @@ class CartController extends Controller
     {
         $customer = Auth::guard('customer')->user();
 
-        $cartOrder = Order::where('customer_id', $customer->customer_id)
+        $cartOrder = Order::where('customer_id', $customer->id)
             ->where('order_status', 'cart')
-            ->with(['orderDetails.product'])
+            ->with(['orderDetails.product', 'orderDetails.size', 'orderDetails.product.productDetail']) 
             ->first();
 
         $cartItems = $cartOrder ? $cartOrder->orderDetails : collect();
+
+        // dd($cartItems, $cartOrder);
 
         return view('Customer.shopping.cart', compact('cartOrder', 'cartItems'));
     }

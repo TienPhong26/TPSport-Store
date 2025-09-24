@@ -187,3 +187,8 @@ h1.mb-5 {
     padding-left: 20px;
 }
 
+.in-text{
+        font-size: .8rem;
+    font-weight: 400;
+    color: #898989 !important;
+}

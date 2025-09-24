@@ -274,10 +274,12 @@ class BrandController extends Controller
                 ])->render()
             ]);
         }
-
+        $brands = Brand::select('id', 'brand_name')
+            ->get();
         return view('Customer.brand.brand_product', [
             'products' => $products,
             'brand' => $brand,
+            'brands' => $brands,
             'type_product' => $type_product,
             'type_sport' => $type_sport,
         ]);

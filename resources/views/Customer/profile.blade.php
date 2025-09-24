@@ -1,18 +1,11 @@
-<!DOCTYPE html>
-<html>
+@extends('customer._layouts.master')
 
-<head>
-    <title>Profile</title>
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="{{ asset('js/alert.js') }}"></script>
+@section('title', 'Thông tin cá nhân')
+@push('styles')
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-</head>
 
-<body>
-    @include('Customer.components.header')
-
+@endpush
+@section('content')
     <div class="alerts-container">
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -42,8 +35,8 @@
             <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body text-center">
-                        <h5 class="my-3">{{ $customer->customer_name }}</h5>
-                        <p class="text-muted mb-4">{{ $customer->email }}</p>
+                        <h5 class="my-3">Xin chào, {{ $customer->customer_name }} !</h5>
+                        <p class="text-muted mb-4">Email: {{ $customer->email }}</p>
                     </div>
                 </div>
             </div>
@@ -72,8 +65,7 @@
 
                             <div class="mb-4">
                                 <label class="form-label">Địa chỉ</label>
-                                <input type="text" class="form-control" name="address"
-                                    value="{{ $customer->address }}">
+                                <input type="text" class="form-control" name="address" value="{{ $customer->address }}">
                             </div>
 
                             <div class="text-center">
@@ -86,7 +78,4 @@
         </div>
     </div>
 
-    @include('Customer.components.footer')
-</body>
-
-</html>
+@endsection

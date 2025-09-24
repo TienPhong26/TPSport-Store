@@ -115,12 +115,11 @@
                 @endif
             </p>
 
-
+            
             <div class="product-details">
                 <p><strong style="color: #000000">Số lượng còn:</strong> {{ $product->amount }}</p>
-
-                {{-- <p>{{ $product->short_description }}</p> --}}
             </div>
+            <form action="{{ route('cart.add-to-cart') }}" method="POST" class="product-form" id="addToCartForm">
             <div class="sizes">
                 <p>
                     Kích cỡ:
@@ -164,10 +163,9 @@
 
 
 
-           <form action="{{ route('cart.add-to-cart') }}" method="POST" class="product-form" id="addToCartForm">
                 @csrf
-                <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                <input type="hidden" name="size_id" id="selected_size_id">
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                {{-- <input type="hidden" name="size_id" id="selected_size_id"> --}}
 
                 <div class="product-actions">
                     <!-- Số lượng -->
@@ -207,6 +205,7 @@
         
     </section>
     @include('Customer.widget._describe_product')
+    @include('Customer.widget._same_price_product')
 
 @endsection
 @push('scripts')

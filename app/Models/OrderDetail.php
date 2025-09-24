@@ -15,6 +15,7 @@ class OrderDetail extends Model
         'order_id',
         'product_id',
         'sold_price',
+        'size_id',
         'sold_quantity'
     ];
 
@@ -32,12 +33,16 @@ class OrderDetail extends Model
     // Relationship with Product
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id', 'product_id');
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     // Calculate subtotal for this item
     public function getSubtotal()
     {
         return $this->sold_price * $this->sold_quantity;
+    }
+      public function size(): BelongsTo
+    {
+        return $this->belongsTo(Size::class, 'size_id', 'size_id');
     }
 }

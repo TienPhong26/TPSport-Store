@@ -10,7 +10,7 @@ class Customer extends Authenticatable
 {
     use HasFactory, Notifiable;
     protected $table = 'users';
-    protected $primaryKey = 'customer_id';
+    protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guard_name = 'customer';
 

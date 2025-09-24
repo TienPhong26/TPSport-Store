@@ -112,6 +112,7 @@ class CategoryController extends Controller
             ->get();
         $type_sport = Sports::select('id', 'title')
             ->get();
+            
 
 
         $sportsIds = $request->input('sports'); // nhận từ ?sports[]=15
@@ -230,6 +231,7 @@ class CategoryController extends Controller
         return view('Customer.category.category_list', [
             'products' => $products,
             'brand' => $brand,
+            'brands' => $brand,
             'type_product' => $type_product,
             'type_sport' => $type_sport,
             'sport_id' => $sportId,

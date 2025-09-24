@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('customer._layouts.master')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch sử đặt hàng</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="{{ asset('js/alert.js') }}"></script>
+@section('title', 'Lịch sử mua hàng')
 
-    <style>
+{{-- CSS riêng cho trang brand list --}}
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/brand_list.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+      <style>
         .order-status {
             font-weight: 500;
             font-size: 0.875rem;
@@ -53,8 +52,35 @@
         .btn-sm {
             font-size: 0.8rem;
         }
+          .pagination {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .pagination .page-item .page-link {
+            padding: 8px 16px;
+            color: #666;
+            border-radius: 4px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #999;
+            pointer-events: none;
+            background-color: #f8f9fa;
+        }
     </style>
-</head>
+@endpush
+
+@section('content')
+
 <div class="alerts-container" style="display: flex; justify-content: center;">
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -78,14 +104,24 @@
         </div>
     @endif
 </div>
+<nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ route('shop.home') }}">Trang chủ</a>
+            </li>
+       
+            <li class="breadcrumb-item active" aria-current="page">Lịch sử đặt hàng</li>
 
-<body class="bg-light">
-    <div class="container my-5">
-        <div class="mb-4">
+        </ol>
+    </div>
+</nav>
+ <div class="container my-5">
+        {{-- <div class="mb-4">
             <a href="{{ route('shop.home') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-2"></i>Quay về trang chủ
             </a>
-        </div>
+        </div> --}}
 
         <div class="row">
             <div class="col-12">
@@ -196,7 +232,7 @@
                                         <td colspan="5" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="bi bi-inbox h4 mb-3 d-block"></i>
-                                                <p class="mb-0">Bạn chưa có đơn hàng nào</p>
+                                                <p class="mb-0" style="color: black;">Bạn chưa có đơn hàng nào</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -242,34 +278,6 @@
                 </div>
             </div>
         </div>
+        </div>
+@endsection
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-    <style>
-        .pagination {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .pagination .page-item .page-link {
-            padding: 8px 16px;
-            color: #666;
-            border-radius: 4px;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-            color: white;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            color: #999;
-            pointer-events: none;
-            background-color: #f8f9fa;
-        }
-    </style>
-
-    </html>

@@ -50,6 +50,10 @@
                                     <b>{{ number_format($pd['price']) }} VNĐ</b>
                                 @endif
                             </p>
+                            <div class="color-img-wrapper">
+                                <img src="{{ asset($pd['image']) }}" alt="color-img" class="color-img-icon">
+                                <span class="tooltip-text">{{ $pd['product_detail']['color']  }}</span>
+                            </div>
                         </a>
                     </div>
                 @empty

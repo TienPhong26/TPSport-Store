@@ -108,6 +108,10 @@
                             <b>{{ number_format($product->price) }} VNĐ</b>
                         @endif
                     </p>
+                     <div class="color-img-wrapper">
+                        <img src="{{ asset($product->image) }}" alt="color-img" class="color-img-icon">
+                        <span class="tooltip-text">{{ $product->productDetail->color }}</span>
+                    </div>
                 </a>
             </div>
         @empty

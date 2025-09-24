@@ -92,6 +92,7 @@
 /* Alert styles */
 .alerts-container {
     position: fixed;
+    color:#000;
     top: 20px;
     right: 20px;
     z-index: 1000;
@@ -102,18 +103,25 @@
     padding: 1rem;
     border-radius: 10px;
     margin-bottom: 1rem;
+    color:#000 !important;
     border: none;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .alert-success {
     background-color: #d4edda;
-    color: #155724;
+    /* color: #155724; */
+    color:#000 !important;
+
+
 }
 
 .alert-danger {
+
     background-color: #f8d7da;
-    color: #721c24;
+    /* color: #721c24; */
+    color:#000 !important;
+
 }
 
 /* Custom field styles */
@@ -156,4 +164,13 @@
     .py-5 {
         padding: 2rem 0;
     }
+}
+.alert.alert-danger,
+.alert.alert-danger * {
+  color: #000 !important;
+}
+
+.alert.alert-success,
+.alert.alert-success * {
+  color: #000 !important;
 }

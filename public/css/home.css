@@ -24,7 +24,7 @@ li {
 .menu_aside {
     display: flex;
     gap: 15px;
-    margin-right: 200px;
+    margin-right: 350px;
 }
 .menu_aside li a.active {
    color: #FFD700 !important;
@@ -134,6 +134,8 @@ header {
     max-width: 230px;
     margin: 0 20px;
     display: flex;
+    padding-top:10px;
+    padding-bottom:10px;
     justify-content: center;
 }
 
@@ -459,13 +461,13 @@ form {
     color: black;
     font-size: 16px;
     text-align: left;
-    margin: 10px 10px 15px;
+    margin: 10px 10px 10px;
     font-weight: bold;
 }
 
 .pro .prd-price {
     text-align: left;
-    margin: 10px 10px 15px;
+    margin: 10px;
 }
 
 .pro .prd-vendor{
@@ -717,10 +719,12 @@ footer {
 
 .logo img {
     height: 60px;
+    padding: 5px;
+    border-radius: 15px;
 }
 .menu nav ul {
     display: flex;
-    gap: 30px;
+    gap: 0;
     list-style: none;
 }
 .menu nav ul li {
@@ -2014,3 +2018,52 @@ h2{
 }
 
 
+.pro .color-img-wrapper {
+    position: relative;
+    display: block;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    text-align: left;
+}
+
+.pro .color-img-icon {
+    width: 35px; 
+    height: 35px;
+    border-radius: 50%;
+    border: 1px solid #000000;
+    cursor: pointer;
+    padding: 2px;
+}
+.pro .tooltip-text {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+
+    /* 👉 Chỉnh vị trí */
+    bottom: 100%;          /* sát mép trên của icon */
+    left: 10px;             canh giữa theo chiều ngang
+    transform: translateX(-50%);
+    margin-bottom: 6px;    /* khoảng cách với icon */
+
+    /* 👉 Hiệu ứng */
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+}
+
+
+
+.pro .color-img-wrapper:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+.container .form-label{
+    color:#000;
+}

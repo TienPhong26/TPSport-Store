@@ -30,6 +30,7 @@
 
                             <p class="prd-vendor">{{ $product->brand->brand_name}}</p>
                             <p class="prd-name">{{ $product->name }}</p>
+                            
                             @php
                                 $discountPercent = 0;
                                 if ($product->category->isNotEmpty()) {

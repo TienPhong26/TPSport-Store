@@ -1,16 +1,3 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Profile</title>
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-    <script src="{{ asset('js/alert.js') }}"></script>
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-</head>
-
 <header>
     <div class="container">
         <div class="header">
@@ -27,17 +14,22 @@
                 <nav id="menu">
                     <ul>
 
-                        @auth('customer')
-                            <li>
-                                <a href="{{ route('cart.view') }}">
-                                    <i class="lni lni-shopping-basket"></i> GIỎ HÀNG
-                                </a>
-                            </li>
-                        @endauth
+
                         <ul class="menu_aside">
-                            <li>
+                            <li class="user-dropdown">
                                 <a href="{{ route('brands.list') }}"
                                     class="{{ request()->routeIs('brands.list') ? 'active' : '' }}">THƯƠNG HIỆU</a>
+                                @if(isset($brands) && $brands->count())
+                                    <ul class="dropdown-menu">
+                                        @foreach($brands as $brand)
+                                            <li>
+                                                <a href="{{ route('brands.show', ['brand' => $brand->id]) }}">
+                                                    {{ $brand->brand_name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
                             </li>
 
                             <li class="user-dropdown">
@@ -134,7 +126,13 @@
                                 @endguest
                             </ul>
                         </li>
-
+                        @auth('customer')
+                            <li>
+                                <a href="{{ route('cart.view') }}" style="font-size: 20px;">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </a>
+                            </li>
+                        @endauth
                     </ul>
                 </nav>
             </div>

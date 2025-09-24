@@ -346,7 +346,9 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         try {
-            // Eager load relationships
+            $today = now()->toDateString();
+
+            // Eager load relationships cho sản phẩm hiện tại
             $product->load([
                 'brand',
                 'material',
@@ -355,22 +357,42 @@ class ProductController extends Controller
                 'productDetail'
             ]);
 
-            // dd($product);
-
-            // Load shipping methods
+            // Lấy shipping methods
             $shippingMethods = ShippingMethod::all();
+
+            // Lấy sản phẩm tương tự (giá trong khoảng ±200,000, loại trừ chính nó)
+            $productsSame = Product::with([
+                'brand',
+                'category.discounts' => function ($q) use ($today) {
+                    $q->where('status', 1)
+                        ->where('start', '<=', $today)
+                        ->where('end', '>=', $today);
+                }
+            ])
+                ->where('status', 1)
+                ->where('product_id', '!=', $product->product_id) // bỏ chính sản phẩm hiện tại
+                ->whereBetween('price', [
+                    $product->price - 200000,
+                    $product->price + 200000
+                ])
+                ->orderBy('product_id', 'desc')
+                ->take(5)
+                ->get();
+            $brands = Brand::select('id', 'brand_name')
+                ->get();
 
             return view('Customer.product-details', [
                 'product' => $product,
-                // 'mainImage' => $mainImage,
-                // 'subImages' => $subImages,
-                'shippingMethods' => $shippingMethods
+                'brands' => $brands,
+                'shippingMethods' => $shippingMethods,
+                'productsSame' => $productsSame
             ]);
         } catch (\Exception $e) {
             Log::error('Error in shop show method: ' . $e->getMessage());
             return back()->with('error', 'Có lỗi xảy ra khi hiển thị sản phẩm');
         }
     }
+
 
 
     public function adminShow(Product $product)
@@ -554,6 +576,7 @@ class ProductController extends Controller
         return view('Customer.products.new_product', [
             'products' => $products,
             'brand' => $brand,
+            'brands' => $brand,
             'type_product' => $type_product,
             'type_sport' => $type_sport,
         ]);
@@ -679,6 +702,7 @@ class ProductController extends Controller
         return view('Customer.products.new_product', [
             'products' => $products,
             'brand' => $brand,
+            'brands' => $brand,
             'type_product' => $type_product,
             'type_sport' => $type_sport,
         ]);

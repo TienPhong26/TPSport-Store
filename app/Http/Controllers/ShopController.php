@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
+use App\Models\Brand;
 use App\Models\Discount;
 use App\Models\Sports;
 use Illuminate\Http\Request;
@@ -36,7 +37,10 @@ class ShopController extends Controller
 
         // dd($products);
 
-        $discounts = Discount::with(['category.products.brand'])
+        $discounts = Discount::with([
+            'category.products.brand',
+            'category.products.productDetail'
+        ])
             ->where('status', 1)
             ->where('start', '<=', $today)
             ->where('end', '>=', $today)
@@ -62,6 +66,8 @@ class ShopController extends Controller
                 $arr['discount_percent'] = $discountPercent;
 
                 $arr['brand_name'] = $product->brand->brand_name ?? null;
+
+                $arr['product_detail'] = $product->productDetail ? $product->productDetail->toArray() : null;
 
                 return $arr;
             });
@@ -95,6 +101,8 @@ class ShopController extends Controller
         // dd($productsByCategory);
 
         $sports = Sports::where('status', 1)->get();
+        $brands = Brand::select('id', 'brand_name')
+            ->get();
         // dd($sports);
 
         return view('Customer.home',  [
@@ -103,6 +111,7 @@ class ShopController extends Controller
             'prdshoes' => $prdshoes,
             'banners' => $banners,
             'sports' => $sports,
+            'brands' => $brands,
             'latestFeedbacks' => $latestFeedbacks,
             'type_sport' => $type_sport,
         ]);
