@@ -41,7 +41,7 @@
             <li class="breadcrumb-item">
                 <a href="{{ route('shop.home') }}">Trang chủ</a>
             </li>
-       
+       <li class="breadcrumb-item active" aria-current="page"><a href="/orders">Lịch sử đặt hàng</a></li>
             <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng</li>
 
         </ol>
