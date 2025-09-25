@@ -86,7 +86,7 @@ class OrderController extends Controller
             'receiver_name' => 'required|string|max:100',
             'receiver_phone' => 'required|string|max:20',
             'receiver_address' => 'required|string|max:255',
-            'customer_id' => 'required|exists:customer,customer_id',
+            'customer_id' => 'required|exists:customer,id',
             'employee_id' => 'required|exists:employee,employee_id',
             'voucher_id' => 'nullable|exists:vouchers,voucher_id',
             'payment_method_id' => 'required|exists:payment_methods,method_id',
@@ -133,7 +133,7 @@ class OrderController extends Controller
             'receiver_name' => 'required|string|max:100',
             'receiver_phone' => 'required|string|max:20',
             'receiver_address' => 'required|string|max:255',
-            'customer_id' => 'required|exists:customer,customer_id',
+            'customer_id' => 'required|exists:customer,id',
             'payment_method_id' => 'required|exists:payment_methods,method_id',
             'shipping_method_id' => 'required|exists:shipping_methods,method_id',
         ]);
@@ -277,18 +277,18 @@ class OrderController extends Controller
             $today = now()->format('Y-m-d'); // Format as date string
 
             // Debug current date
-            Log::info('Current date:', ['today' => $today]);
+            // Log::info('Current date:', ['today' => $today]);
 
             // Get cart order and total
             $cartOrder = Order::where([
-                'customer_id' => $customer->customer_id,
+                'customer_id' => $customer->id,
                 'order_status' => 'cart'
             ])->with(['orderDetails.product'])->firstOrFail();
 
             $total = $cartOrder->getTotalAmount();
 
             // Get used vouchers
-            $usedVoucherIds = Order::where('customer_id', $customer->customer_id)
+            $usedVoucherIds = Order::where('customer_id', $customer->id)
                 ->whereNotNull('voucher_id')
                 ->pluck('voucher_id');
 
@@ -371,7 +371,7 @@ class OrderController extends Controller
 
             // Get current cart
             $cartOrder = Order::where([
-                'customer_id' => $customer->customer_id,
+                'customer_id' => $customer->id,
                 'order_status' => 'cart'
             ])->with(['orderDetails.product'])->firstOrFail();
 
@@ -466,7 +466,7 @@ class OrderController extends Controller
 
             // Lấy giỏ hàng hiện tại
             $cartOrder = Order::where([
-                'customer_id' => $customer->customer_id,
+                'customer_id' => $customer->id,
                 'order_status' => 'cart'
             ])->first();
 
@@ -517,17 +517,17 @@ class OrderController extends Controller
             'shipping_method',
             'voucher'
         ])
-            ->where('customer_id', $customer->customer_id)
+            ->where('customer_id', $customer->id)
             ->where('order_status', '!=', 'cart')
             ->orderBy('order_date', 'desc')
             ->paginate(10);
 
-        $totalOrders = Order::where('customer_id', $customer->customer_id)
+        $totalOrders = Order::where('customer_id', $customer->id)
             ->where('order_status', '!=', 'cart')
             ->count();
 
         // Tính tổng chi phí bao gồm cả phí vận chuyển
-        $totalSpent = Order::where('customer_id', $customer->customer_id)
+        $totalSpent = Order::where('customer_id', $customer->id)
             ->where('order_status', '!=', 'cart')
             ->with('shipping_method')
             ->get()
@@ -535,7 +535,7 @@ class OrderController extends Controller
                 return $order->getFinalTotal() + ($order->shipping_method ? $order->shipping_method->shipping_fee : 0);
             });
 
-        $completedOrders = Order::where('customer_id', $customer->customer_id)
+        $completedOrders = Order::where('customer_id', $customer->id)
             ->where('order_status', 'completed')
             ->count();
 

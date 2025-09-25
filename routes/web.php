@@ -72,7 +72,11 @@ Route::middleware('auth:customer')->group(function () {
     Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add-to-cart');
     Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
     Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
-    Route::delete('/cart/delete/{productId}', [CartController::class, 'deleteItem'])->name('cart.delete-item');
+    // Route::delete('/cart/delete/{productId}', [CartController::class, 'deleteItem'])->name('cart.delete-item');
+    Route::delete(
+        '/cart/delete/{productId}/{sizeId}',
+        [CartController::class, 'deleteItem']
+    )->name('cart.delete-item');
     Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
     Route::post('/voucher/apply', [OrderController::class, 'applyVoucher'])->name('voucher.apply');
     Route::get('/checkout', [OrderController::class, 'showCheckout'])->name('checkout');

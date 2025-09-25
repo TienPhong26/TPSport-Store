@@ -192,3 +192,66 @@ h1.mb-5 {
     font-weight: 400;
     color: #898989 !important;
 }
+.quantity {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    width: fit-content;
+}
+
+.quantity-input {
+    width: 50px;
+    text-align: center;
+    border: none;
+    outline: none;
+    color: #000; /* chữ đen */
+}
+
+/* Chrome, Safari, Edge */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+.quantity-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.quantity-btn {
+    background-color: #fff;
+    border: none;
+    width: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #000; /* chữ đen */
+}
+.delete-item i{
+    color:#000;
+    font-size:16px;
+}
+.btn-outline-primary{
+    color:#000;
+    padding:5px;
+    background-color: #fff;
+    border-color:#000;
+}
+.btn-outline-primary:hover{
+    background-color: #000;
+    color:#fff;
+}
+.btn-proceed-checkout-mobile{
+    background: #2d2d2d;
+    color: #fff;
+    margin-bottom: 10px;
+    border-raidus: 5px;
+        padding: 10px 20px;
+
+}
+
+.btn-proceed-checkout-mobile:hover{
+    background: #3d3d3d;
+}

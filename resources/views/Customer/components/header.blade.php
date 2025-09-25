@@ -3,7 +3,7 @@
         <div class="header">
             <div class="logo">
                 <a href="{{ route('shop.home') }}">
-                    <img src="{{ asset('images/logo.png') }}">
+                    <img src="{{ asset('images/tplogo.png') }}">
                 </a>
             </div>
 

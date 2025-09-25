@@ -1,23 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('customer._layouts.master')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Checkout</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('title', 'TP-Sport - Thanh toán hóa đơn')
 
-<body class="bg-light">
+{{-- CSS riêng cho trang brand list --}}
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+@endpush
 
-    <div class="container">
-        <div class="py-5 text-center">
-            <h1>Thanh Toán Đơn Hàng</h1>
+@section('content')
+    <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('shop.home') }}">Trang chủ</a>
+                </li>
+
+                <li class="breadcrumb-item active" aria-current="page">Thanh toán</li>
+
+            </ol>
         </div>
-
+    </nav>
+    <div class="container">
         <div class="row">
             <!-- Cart Summary -->
-            <div class="col-md-4 order-2">
+            <div class="col-md-4 order-2" id="cart-section">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-primary">Giỏ hàng của bạn</span>
                     <span class="badge bg-primary rounded-pill">
@@ -30,10 +38,10 @@
                         <li class="list-group-item d-flex justify-content-between lh-sm">
                             <div>
                                 <h6 class="my-0">{{ $item->product->product_name }}</h6>
-                                <small class="text-muted">Số lượng: {{ $item->sold_quantity }}</small>
+                                <small class="text-st">Số lượng: {{ $item->sold_quantity }}</small>
                             </div>
                             <span
-                                class="text-muted">{{ number_format($item->sold_price * $item->sold_quantity) }}đ</span>
+                                class="text-muted text-st">{{ number_format($item->sold_price * $item->sold_quantity) }}đ</span>
                         </li>
                     @endforeach
 
@@ -41,86 +49,76 @@
                     <li class="list-group-item d-flex justify-content-between text-success" id="discount-row"
                         style="display: none;">
                         <div>
-                            <h6 class="my-0">Giảm giá</h6>
-                            <small id="voucher-code-display" class="text-muted"></small>
+                            <h6 class="my-0 text-st">Giảm giá</h6>
+                            <small id="voucher-code-display " class="text-muted text-st"></small>
                         </div>
                         <div class="text-end">
-                            <span id="discount-amount" class="d-block">đ</span>
-                            <small id="discount-details" class="text-muted"></small>
+                            <span id="discount-amount" class="d-block text-st">đ</span>
+                            <small id="discount-details" class="text-muted text-st"></small>
                         </div>
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between lh-sm">
                         <div>
-                            <h6 class="my-0">Phí vận chuyển</h6>
-                            <small class="text-muted" id="shipping-method-name"></small>
+                            <h6 class="my-0 text-st">Phí vận chuyển</h6>
+                            <small class="text-muted text-st" id="shipping-method-name"></small>
                         </div>
-                        <span class="text-muted" id="shipping-fee">0đ</span>
+                        <span class="text-muted text-st" id="shipping-fee">0đ</span>
                     </li>
 
+
+                    <li class="list-group-item d-flex justify-content-between ">
+                        <form class="d-flex w-100 mt-2" id="voucherForm">
+                            @csrf
+                            <div class="input-group">
+                                <select class="form-select" name="voucher_code" id="voucher_select">
+                                    <option value="">Chọn mã voucher</option>
+                                    @foreach ($activeVouchers as $voucher)
+                                        @php
+                                            $today = now()->format('Y-m-d');
+                                            $startDate = $voucher->start_date->format('Y-m-d');
+                                            $expiryDate = $voucher->expiry_date->format('Y-m-d');
+                                            $isValid =
+                                                $voucher->status &&
+                                                $startDate <= $today &&
+                                                $expiryDate >= $today &&
+                                                $total >= $voucher->minimum_purchase_amount;
+                                        @endphp
+
+                                        @if ($isValid)
+                                            <option value="{{ $voucher->code }}" data-discount="{{ $voucher->discount_amount }}"
+                                                data-percentage="{{ $voucher->discount_percentage }}"
+                                                data-min="{{ $voucher->minimum_purchase_amount }}">
+                                                {{ $voucher->code }}
+                                                @if ($voucher->discount_percentage)
+                                                    (Giảm {{ $voucher->discount_percentage }}%)
+                                                @else
+                                                    (Giảm {{ number_format($voucher->discount_amount) }}đ)
+                                                @endif
+                                                @if ($voucher->minimum_purchase_amount)
+                                                    - Đơn tối thiểu {{ number_format($voucher->minimum_purchase_amount) }}đ
+                                                @endif
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="btn btn-proceed-checkout-mobile">Áp dụng</button>
+                            </div>
+
+                            <div id="voucher-message" class="mt-2"></div>
+                        </form>
+
+                    </li>
                     <li class="list-group-item d-flex justify-content-between">
-                        <span>Tổng tiền</span>
-                        <strong id="final-total">{{ number_format($total) }}đ</strong>
+                        <span class="text-st">Tổng tiền</span>
+                        {{-- <strong id="final-total" class="text-st">{{ number_format($total) }}đ</strong> --}}
+                        <strong id="final-total" class="text-st"
+                            data-total="{{ $total }}">{{ number_format($total) }}đ</strong>
+
                     </li>
                 </ul>
 
-                <form class="card p-2" id="voucherForm">
-                    @csrf
-                    <div class="input-group">
-                        <select class="form-select" name="voucher_code" id="voucher_select">
-                            <option value="">Chọn mã voucher</option>
-                            @foreach ($activeVouchers as $voucher)
-                                @php
-                                    $today = now()->format('Y-m-d');
-                                    $startDate = $voucher->start_date->format('Y-m-d');
-                                    $expiryDate = $voucher->expiry_date->format('Y-m-d');
-                                    $isValid =
-                                        $voucher->status &&
-                                        $startDate <= $today &&
-                                        $expiryDate >= $today &&
-                                        $total >= $voucher->minimum_purchase_amount;
-                                @endphp
 
-                                @if ($isValid)
-                                    <option value="{{ $voucher->code }}" data-discount="{{ $voucher->discount_amount }}"
-                                        data-percentage="{{ $voucher->discount_percentage }}"
-                                        data-min="{{ $voucher->minimum_purchase_amount }}">
-                                        {{ $voucher->code }}
-                                        @if ($voucher->discount_percentage)
-                                            (Giảm {{ $voucher->discount_percentage }}%)
-                                        @else
-                                            (Giảm {{ number_format($voucher->discount_amount) }}đ)
-                                        @endif
-                                        @if ($voucher->minimum_purchase_amount)
-                                            - Đơn tối thiểu {{ number_format($voucher->minimum_purchase_amount) }}đ
-                                        @endif
-                                    </option>
-                                @endif
-                            @endforeach
-                        </select>
-                        <button type="submit" class="btn btn-secondary">Áp dụng</button>
-                    </div>
-
-                    {{-- Debug information --}}
-                    {{-- @if (config('app.debug'))
-                        <div class="mt-2 small text-muted">
-                            <p>Tổng đơn hàng: {{ number_format($total) }}đ</p>
-                            <p>Số voucher hợp lệ: {{ $activeVouchers->count() }}</p>
-                            @foreach ($activeVouchers as $voucher)
-                                <div class="border-top mt-1 pt-1">
-                                    <p>{{ $voucher->code }}:<br>
-                                        Ngày bắt đầu: {{ $voucher->start_date->format('Y-m-d') }}<br>
-                                        Ngày kết thúc: {{ $voucher->expiry_date->format('Y-m-d') }}<br>
-                                        Trạng thái: {{ $voucher->status ? 'Hoạt động' : 'Không hoạt động' }}<br>
-                                        Đơn tối thiểu: {{ number_format($voucher->minimum_purchase_amount) }}đ
-                                    </p>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif --}}
-
-                    <div id="voucher-message" class="mt-2"></div>
-                </form>
             </div>
 
             <!-- Checkout Form -->
@@ -134,20 +132,29 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label for="receiver_name" class="form-label">Tên người nhận</label>
-                            <input type="text" class="form-control" id="receiver_name" name="receiver_name" required>
+                            <input type="text" placeholder="Người nhận" class="form-control" id="receiver_name"
+                                name="receiver_name" required>
                         </div>
 
                         <div class="col-12">
                             <label for="receiver_phone" class="form-label">Số điện thoại</label>
-                            <input type="tel" class="form-control" id="receiver_phone" name="receiver_phone"
-                                required>
+                            <input type="tel" placeholder="Số điện thoại" class="form-control" id="receiver_phone"
+                                name="receiver_phone" required>
                         </div>
 
                         <div class="col-12">
                             <label for="receiver_address" class="form-label">Địa chỉ giao hàng</label>
-                            <input type="text" class="form-control" id="receiver_address" name="receiver_address"
-                                required>
+                            <input type="text" placeholder="Địa chỉ" class="form-control" id="receiver_address"
+                                name="receiver_address" required>
                         </div>
+                        <div class="col-12">
+                            <label for="receiver_des" class="form-label">Ghi chú</label>
+                            <textarea type="text" placeholder="Ghi chú" class="form-control" id="receiver_des"
+                                name="receiver_des" required></textarea>
+                        </div>
+                        {{-- <select id="province" name="province"></select>
+                        <select id="district" name="district"></select>
+                        <select id="ward" name="ward"></select> --}}
 
                         <div class="col-md-6">
                             <label for="payment_method" class="form-label">Phương thức thanh toán</label>
@@ -179,8 +186,9 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+@endsection
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const shippingMethod = document.getElementById('shipping_method');
@@ -409,5 +417,3 @@
     // Trigger change event to set initial shipping fee
     document.getElementById('shipping_method').dispatchEvent(new Event('change'));
 </script>
-
-</html>

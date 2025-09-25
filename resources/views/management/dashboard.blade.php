@@ -61,7 +61,7 @@
     <aside class="sidebar-nav-wrapper">
         <div class="navbar-logo">
             <a href="{{ route('admin.dashboard') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo"
+                <img src="{{ asset('images/tplogo.png') }}" alt="Logo"
                     style="width: 200px; height: 70px; display:flex; justify-content: center;" />
             </a>
         </div>

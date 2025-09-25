@@ -159,7 +159,7 @@ class PaymentController extends Controller
     {
         $order = Order::findOrFail($orderId);
         $qrCodeUrl = $order->qr_code_url ?? asset('images/qr-tpbank.png');
-        $logoUrl = asset('images/logo.png');
+        $logoUrl = asset('images/tplogo.png');
         return view('Customer.payment.bank_payment', compact('order', 'qrCodeUrl', 'logoUrl'));
     }
 
