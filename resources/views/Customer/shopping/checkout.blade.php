@@ -117,14 +117,17 @@
 
                     </li>
                 </ul>
-
+                <div class="store-pro">
+                    <a href="/cart" class="back-link"><i class="fas fa-chevron-left back-link mr-1"></i> Quay lại giỏ hàng</a>
+                    <button class="btn btn-proceed-checkout-mobile btn-lg " type="submit" form="checkoutForm">Đặt hàng</button>
+                </div>
 
             </div>
 
             <!-- Checkout Form -->
             <div class="col-md-8 order-1">
                 <h4 class="mb-3">Thông tin giao hàng</h4>
-                <form action="{{ route('order.store') }}" method="POST">
+                <form id="checkoutForm" action="{{ route('order.store') }}" method="POST">
                     @csrf
 
                     <input type="hidden" name="voucher_id" value="{{ session('voucher_id') }}">
@@ -132,45 +135,77 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label for="receiver_name" class="form-label">Tên người nhận</label>
-                            <input type="text" placeholder="Người nhận" class="form-control" id="receiver_name"
-                                name="receiver_name" required>
+                            <input type="text"
+                                placeholder="Người nhận"
+                                class="form-control"
+                                id="receiver_name"
+                                name="receiver_name"
+                                value="{{ old('receiver_name') }}"
+                                required>
                         </div>
 
                         <div class="col-12">
                             <label for="receiver_phone" class="form-label">Số điện thoại</label>
-                            <input type="tel" placeholder="Số điện thoại" class="form-control" id="receiver_phone"
-                                name="receiver_phone" required>
+                            <input type="tel"
+                                placeholder="Số điện thoại"
+                                class="form-control"
+                                id="receiver_phone"
+                                name="receiver_phone"
+                                value="{{ old('receiver_phone') }}"
+                                required>
                         </div>
 
                         <div class="col-12">
                             <label for="receiver_address" class="form-label">Địa chỉ giao hàng</label>
-                            <input type="text" placeholder="Địa chỉ" class="form-control" id="receiver_address"
-                                name="receiver_address" required>
+                            <input type="text"
+                                placeholder="Địa chỉ"
+                                class="form-control"
+                                id="receiver_address"
+                                name="receiver_address"
+                                value="{{ old('receiver_address') }}"
+                                required>
                         </div>
+
                         <div class="col-12">
                             <label for="receiver_des" class="form-label">Ghi chú</label>
-                            <textarea type="text" placeholder="Ghi chú" class="form-control" id="receiver_des"
-                                name="receiver_des" required></textarea>
+                            <textarea placeholder="Ghi chú"
+                                    class="form-control"
+                                    id="receiver_des"
+                                    name="receiver_des"
+                                    required>{{ old('receiver_des') }}</textarea>
                         </div>
+
+                        {{-- Nếu có dropdown tỉnh/huyện/xã thì cũng nên old() tương tự --}}
                         {{-- <select id="province" name="province"></select>
                         <select id="district" name="district"></select>
                         <select id="ward" name="ward"></select> --}}
 
                         <div class="col-md-6">
                             <label for="payment_method" class="form-label">Phương thức thanh toán</label>
-                            <select class="form-select" id="payment_method" name="payment_method_id" required>
+                            <select class="form-select"
+                                    id="payment_method"
+                                    name="payment_method_id"
+                                    required>
                                 @foreach ($paymentMethods as $method)
-                                    <option value="{{ $method->method_id }}">{{ $method->method_name }}</option>
+                                    <option value="{{ $method->method_id }}"
+                                        {{ old('payment_method_id') == $method->method_id ? 'selected' : '' }}>
+                                        {{ $method->method_name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="col-md-6">
                             <label for="shipping_method" class="form-label">Phương thức vận chuyển</label>
-                            <select class="form-select" id="shipping_method" name="shipping_method_id" required>
+                            <select class="form-select"
+                                    id="shipping_method"
+                                    name="shipping_method_id"
+                                    required>
                                 <option value="">-- Chọn phương thức vận chuyển --</option>
                                 @foreach ($shippingMethods as $method)
-                                    <option value="{{ $method->method_id }}" data-fee="{{ $method->shipping_fee }}">
+                                    <option value="{{ $method->method_id }}"
+                                            data-fee="{{ $method->shipping_fee }}"
+                                        {{ old('shipping_method_id') == $method->method_id ? 'selected' : '' }}>
                                         {{ $method->method_name }} ({{ number_format($method->shipping_fee) }}đ)
                                     </option>
                                 @endforeach
@@ -179,10 +214,9 @@
                     </div>
 
                     <hr class="my-4">
-
-                    <button class="w-100 btn btn-primary btn-lg" type="submit">Đặt hàng</button>
                 </form>
             </div>
+
         </div>
     </div>
 
@@ -190,7 +224,12 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    let voucherDiscount = 0;
+    let baseTotal = {{ $total }};
+    let currentShippingFee = 0;
+
+
+    document.addEventListener('DOMContentLoaded', function () {
         const shippingMethod = document.getElementById('shipping_method');
         const shippingFeeDisplay = document.getElementById('shipping-fee');
         const finalTotalDisplay = document.getElementById('final-total');
@@ -198,39 +237,41 @@
         const discountAmount = document.getElementById('discount-amount');
         const voucherCodeDisplay = document.getElementById('voucher-code-display');
         const discountDetails = document.getElementById('discount-details');
-        let voucherDiscount = 0;
-        let baseTotal = {{ $total }};
-        let currentShippingFee = 0;
+        // let voucherDiscount = 0;
+        // let baseTotal = {{ $total }};
+        // let currentShippingFee = 0;
 
-        function updateTotalDisplay() {
-            let total = baseTotal;
-            if (shippingMethod.value) {
-                total += currentShippingFee;
-            }
-            total -= voucherDiscount;
-            if (total < 0) total = 0;
-            finalTotalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(total) + 'đ';
-        }
+        // Log các phần tử DOM để xác nhận
+        console.log('DOM Elements:', {
+            shippingMethod,
+            shippingFeeDisplay,
+            finalTotalDisplay,
+            discountRow,
+            discountAmount,
+            voucherCodeDisplay,
+            discountDetails
+        });
 
-        shippingMethod.addEventListener('change', function() {
+
+        shippingMethod.addEventListener('change', function () {
             const selectedOption = this.options[this.selectedIndex];
             if (this.value) {
                 currentShippingFee = parseFloat(selectedOption.dataset.fee) || 0;
-                document.getElementById('shipping-method-name').textContent = selectedOption.text.split(
-                    ' (')[0];
-                shippingFeeDisplay.textContent = new Intl.NumberFormat('vi-VN').format(
-                    currentShippingFee) + 'đ';
+                document.getElementById('shipping-method-name').textContent = selectedOption.text.split(' (')[0];
+                shippingFeeDisplay.textContent = new Intl.NumberFormat('vi-VN').format(currentShippingFee) + 'đ';
             } else {
                 currentShippingFee = 0;
                 document.getElementById('shipping-method-name').textContent = '';
                 shippingFeeDisplay.textContent = '0đ';
             }
+            console.log('Shipping method changed: currentShippingFee=', currentShippingFee);
             updateTotalDisplay();
         });
 
         // Khi áp dụng voucher
-        document.getElementById('voucherForm').addEventListener('submit', function(e) {
+        document.getElementById('voucherForm').addEventListener('submit', function (e) {
             e.preventDefault();
+            console.log('Submitting voucher form...');
             const selectedOption = document.getElementById('voucher_select').options[
                 document.getElementById('voucher_select').selectedIndex
             ];
@@ -239,181 +280,103 @@
                     '<div class="alert alert-danger">Vui lòng chọn mã giảm giá</div>';
                 discountRow.style.display = 'none';
                 voucherDiscount = 0;
+                console.log('No voucher selected, resetting voucherDiscount to 0');
                 updateTotalDisplay();
                 return;
             }
+
             const formData = new FormData();
             formData.append('_token', '{{ csrf_token() }}');
             formData.append('voucher_code', selectedOption.value);
 
             fetch('{{ route('voucher.apply') }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Lấy đúng số tiền giảm giá từ server (đã tính theo % hoặc số tiền)
-                        voucherDiscount = baseTotal - data.new_total;
-                        if (voucherDiscount < 0) voucherDiscount = 0;
-
-                        // Hiển thị dòng giảm giá
-                        discountRow.style.display = 'flex';
-                        discountAmount.textContent = '-' + new Intl.NumberFormat('vi-VN').format(
-                            voucherDiscount) + 'đ';
-
-                        // Hiển thị chi tiết voucher
-                        const isPercentage = selectedOption.dataset.percentage && parseFloat(
-                            selectedOption.dataset.percentage) > 0;
-                        discountDetails.textContent = isPercentage ?
-                            `Giảm ${selectedOption.dataset.percentage}%` :
-                            `Giảm ${new Intl.NumberFormat('vi-VN').format(selectedOption.dataset.discount)}đ`;
-                        voucherCodeDisplay.textContent = `Mã: ${selectedOption.value}`;
-
-                        document.getElementById('voucher-message').innerHTML =
-                            `<div class="alert alert-success">${data.message}</div>`;
-                    } else {
-                        discountRow.style.display = 'none';
-                        voucherDiscount = 0;
-                        document.getElementById('voucher-message').innerHTML =
-                            `<div class="alert alert-danger">${data.message}</div>`;
-                    }
-                    updateTotalDisplay();
-                })
-                .catch(error => {
-                    discountRow.style.display = 'none';
-                    voucherDiscount = 0;
-                    updateTotalDisplay();
-                    document.getElementById('voucher-message').innerHTML =
-                        '<div class="alert alert-danger">Có lỗi xảy ra khi áp dụng mã giảm giá</div>';
-                });
-        });
-
-        // Khởi tạo shipping fee và tổng tiền ban đầu
-        shippingMethod.dispatchEvent(new Event('change'));
-    });
-
-    // Xử lý khi thay đổi voucher để kiểm tra điều kiện
-    document.getElementById('voucher_select').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const total = {{ $total }};
-
-        if (this.value) {
-            const minPurchase = parseFloat(selectedOption.dataset.min);
-            if (minPurchase && total < minPurchase) {
-                alert(
-                    `Đơn hàng cần tối thiểu ${new Intl.NumberFormat('vi-VN').format(minPurchase)}đ để sử dụng voucher này`
-                );
-                this.value = '';
-                return;
-            }
-        }
-    });
-
-    // Xử lý submit form voucher
-    document.getElementById('voucherForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const selectedOption = document.getElementById('voucher_select').options[
-            document.getElementById('voucher_select').selectedIndex
-        ];
-        const originalTotal = {{ $total }};
-
-        if (!selectedOption.value) {
-            document.getElementById('voucher-message').innerHTML =
-                '<div class="alert alert-danger">Vui lòng chọn mã giảm giá</div>';
-            discountRow.style.display = 'none';
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('_token', '{{ csrf_token() }}');
-        formData.append('voucher_code', selectedOption.value);
-
-        fetch('{{ route('voucher.apply') }}', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                const discountRow = document.getElementById('discount-row');
-                const discountAmount = document.getElementById('discount-amount');
-                const discountDetails = document.getElementById('discount-details');
-                const voucherCodeDisplay = document.getElementById('voucher-code-display');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && typeof data.new_total === 'number') {
+                        console.log('API response:', data);
+                        // Cập nhật voucherDiscount
+                        voucherDiscount = baseTotal - data.new_total;
+                        console.log(voucherDiscount);
+                        if (voucherDiscount < 0) voucherDiscount = 0;
 
-                if (data.success) {
-                    // Calculate discount
-                    const discountValue = originalTotal - data.new_total;
+                        // Cập nhật giao diện
+                        discountRow.style.display = 'flex';
 
-                    // Show discount row
-                    discountRow.style.display = 'flex';
 
-                    // Update discount amount
-                    discountDetails.textContent = '-' + new Intl.NumberFormat('vi-VN').format(
-                        discountValue) + 'đ';
 
-                    // Display voucher details
-                    const isPercentage = selectedOption.dataset.percentage;
-                    const discountText = isPercentage ?
-                        `Giảm ${selectedOption.dataset.percentage}%` :
-                        `Giảm ${new Intl.NumberFormat('vi-VN').format(selectedOption.dataset.discount)}đ`;
+                        const isPercentage = selectedOption.dataset.percentage && parseFloat(selectedOption.dataset.percentage) > 0;
 
-                    voucherCodeDisplay.textContent = `Mã: ${selectedOption.value}`;
-                    discountDetails.textContent = discountText;
+                        if (discountAmount) {
+                            discountAmount.textContent = '-' + new Intl.NumberFormat('vi-VN').format(voucherDiscount) + 'đ';
+                        }
+                        if (discountDetails) {
+                            discountDetails.textContent = isPercentage ?
+                                `Giảm ${selectedOption.dataset.percentage}%` :
+                                `Giảm ${new Intl.NumberFormat('vi-VN').format(selectedOption.dataset.discount)}đ`;
+                        }
+                        if (voucherCodeDisplay) {
+                            voucherCodeDisplay.textContent = `Mã: ${selectedOption.value}`;
+                        }
 
-                    // Update final total
-                    document.getElementById('final-total').textContent =
-                        new Intl.NumberFormat('vi-VN').format(data.new_total) + 'đ';
-                } else {
+
+                        document.getElementById('voucher-message').innerHTML =
+                            `<div class="alert alert-success">${data.message}</div>`;
+                    } else {
+                        console.error('API error or invalid new_total:', data);
+                        discountRow.style.display = 'none';
+                        voucherDiscount = 0;
+                        document.getElementById('voucher-message').innerHTML =
+                            `<div class="alert alert-danger">${data.message || 'Dữ liệu từ server không hợp lệ'}</div>`;
+                    }
+                    updateTotalDisplay();
+                })
+                .catch(error => {
+                    console.error('Error applying voucher:', error);
                     discountRow.style.display = 'none';
-                }
+                    voucherDiscount = 0;
+                    document.getElementById('voucher-message').innerHTML =
+                        '<div class="alert alert-danger">Có lỗi xảy ra khi áp dụng mã giảm giá</div>';
+                    updateTotalDisplay();
+                });
+        });
 
-                // Show message
-                document.getElementById('voucher-message').innerHTML =
-                    `<div class="alert alert-${data.success ? 'success' : 'danger'}">${data.message}</div>`;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('discount-row').style.display = 'none';
-                document.getElementById('voucher-message').innerHTML =
-                    '<div class="alert alert-danger">Có lỗi xảy ra khi áp dụng mã giảm giá</div>';
-            });
-    });
-
-    document.getElementById('shipping_method').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const shippingFee = parseFloat(selectedOption.dataset.fee) || 0;
-        const methodName = selectedOption.text.split(' (')[0];
-        const originalTotal = {{ $total }};
-
-        // Update shipping fee display
-        document.getElementById('shipping-fee').textContent =
-            new Intl.NumberFormat('vi-VN').format(shippingFee) + 'đ';
-        document.getElementById('shipping-method-name').textContent = methodName;
-
-        // Lấy số tiền giảm giá hiện tại (nếu có)
-        let discount = 0;
-        const discountRow = document.getElementById('discount-row');
-        const discountAmount = document.getElementById('discount-amount');
-        if (discountRow.style.display !== 'none' && discountAmount.textContent.trim() !== 'đ') {
-            discount = parseInt(discountAmount.textContent.replace(/[^\d]/g, '')) || 0;
+        function updateTotalDisplay() {
+            let total = baseTotal - voucherDiscount;
+            console.log(voucherDiscount);
+            if (shippingMethod.value) {
+                total += currentShippingFee;
+            }
+            if (total < 0) total = 0;
+            console.log('Updating total: baseTotal=', baseTotal, 'voucherDiscount=', voucherDiscount, 'currentShippingFee=', currentShippingFee, 'total=', total);
+            finalTotalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(total) + 'đ';
         }
 
-        // Tính tổng cuối cùng: tổng sản phẩm + phí ship - giảm giá
-        let finalTotal = originalTotal + shippingFee - discount;
-        if (finalTotal < 0) finalTotal = 0;
 
-        // Update final total
-        document.getElementById('final-total').textContent =
-            new Intl.NumberFormat('vi-VN').format(finalTotal) + 'đ';
+        // Xử lý khi thay đổi voucher để kiểm tra điều kiện
+        document.getElementById('voucher_select').addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const total = {{ $total }};
+
+            if (this.value) {
+                const minPurchase = parseFloat(selectedOption.dataset.min);
+                if (minPurchase && total < minPurchase) {
+                    alert(
+                        `Đơn hàng cần tối thiểu ${new Intl.NumberFormat('vi-VN').format(minPurchase)}đ để sử dụng voucher này`
+                    );
+                    this.value = '';
+                    return;
+                }
+            }
+        });
+
+        // Khởi tạo shipping fee và tổng tiền ban đầu
+        console.log('Initial baseTotal:', baseTotal);
+        shippingMethod.dispatchEvent(new Event('change'));
     });
-
-    // Trigger change event to set initial shipping fee
-    document.getElementById('shipping_method').dispatchEvent(new Event('change'));
 </script>

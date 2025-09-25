@@ -72,3 +72,36 @@
 .btn-proceed-checkout-mobile:hover{
     background: #3d3d3d;
 }
+
+.store-pro {
+  display: flex;                /* Cho nằm cùng 1 hàng */
+  justify-content: space-between; /* Khoảng cách 2 bên */
+  align-items: center;
+  gap: 10px;                    /* Khoảng cách giữa link và nút */
+}
+
+.store-pro .back-link {
+ margin-left: 10px;
+  color: #000 !important;       /* Chữ màu đen */
+  text-decoration: none;        /* Bỏ gạch chân */
+}
+
+.store-pro .back-link:hover,
+.store-pro .back-link:focus {
+  color: #000 !important;       /* Hover vẫn đen */
+  text-decoration: underline;   /* hoặc bỏ underline nếu muốn */
+}
+
+.store-pro button {
+  /* flex: 1;                      Cho button chiếm phần còn lại */
+}
+.btn-proceed-checkout-mobile{
+    background: #2d2d2d;
+    color: #fff;
+    border-raidus: 5px;
+}
+
+.btn-proceed-checkout-mobile:hover{
+    background: #3d3d3d;
+    color: #FFD700;
+}

@@ -76,6 +76,36 @@
             pointer-events: none;
             background-color: #f8f9fa;
         }
+        .orders-table,
+        .orders-table th,
+        .orders-table td,
+        .orders-table span,
+        .orders-table small,
+        .orders-table a {
+        color: #000 !important;
+        }
+        .orders-table td,
+.orders-table th {
+  vertical-align: middle; /* căn giữa theo chiều dọc */
+}
+
+
+        /* nếu muốn các link khi hover vẫn đen */
+        .orders-table a:hover {
+        color: #000 !important;
+        text-decoration: underline; /* tùy bạn */
+        }
+
+        .btn-outline-primary{
+            color:#000;
+            padding:5px;
+            background-color: #fff;
+            border-color:#000;
+        }
+        .btn-outline-primary:hover{
+            background-color: #fff;
+            color:#fff !important;
+        }
     </style>
 @endpush
 
@@ -134,7 +164,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover  orders-table mb-0">
                         <thead>
                             <tr>
                                 <th scope="col">Mã đơn hàng</th>
@@ -152,7 +182,7 @@
                                         <span class="fw-bold text-primary">#{{ $order->order_id }}</span>
                                     </td>
                                     <td>
-                                        <div>{{ $order->order_date->format('d/m/Y') }}</div>
+                                        <span>{{ $order->order_date->format('d/m/Y') }}</span>
                                     </td>
                                     <td>
                                         <span> {{ number_format($order->shipping_method->shipping_fee) }}đ</span>

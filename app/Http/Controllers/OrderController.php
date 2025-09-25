@@ -377,8 +377,8 @@ class OrderController extends Controller
 
             // Check stock availability only
             foreach ($cartOrder->orderDetails as $item) {
-                if ($item->sold_quantity > $item->product->quantity) {
-                    throw new \Exception("Sản phẩm {$item->product->product_name} chỉ còn {$item->product->quantity} trong kho");
+                if ($item->sold_quantity > $item->product->amount) {
+                    throw new \Exception("Sản phẩm {$item->product->name} chỉ còn {$item->product->amount} trong kho");
                 }
             }
 
@@ -481,7 +481,15 @@ class OrderController extends Controller
             }
 
             // Tính toán giá trị sau khi áp dụng voucher
-            $discountAmount = $voucher->discount_amount ?? ($total * $voucher->discount_percentage / 100);
+            // $discountAmount = $voucher->discount_amount ?? ($total * $voucher->discount_percentage / 100);
+            // $newTotal = max(0, $total - $discountAmount);
+
+
+            if ($voucher->discount_percentage && $voucher->discount_percentage > 0) {
+                $discountAmount = $total * $voucher->discount_percentage / 100;
+            } else {
+                $discountAmount = $voucher->discount_amount ?? 0;
+            }
             $newTotal = max(0, $total - $discountAmount);
 
             // Lưu thông tin voucher vào session
