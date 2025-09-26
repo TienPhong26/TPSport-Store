@@ -11,47 +11,47 @@ use App\Traits\PreventBackHistory;
 class OwnerController extends Controller
 {
     use PreventBackHistory;
-    public function login(Request $request)
-    {
-        try {
-            $credentials = $request->validate([
-                'email' => ['required', 'email'],
-                'password' => ['required'],
-                'role' => ['required', 'in:owner,employee']
-            ]);
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         $credentials = $request->validate([
+    //             'email' => ['required', 'email'],
+    //             'password' => ['required'],
+    //             // 'role' => ['required', 'in:owner,employee']
+    //         ]);
 
-            $guard = $credentials['role'];
-            unset($credentials['role']);
+    //         // $guard = $credentials['role'];
+    //         // unset($credentials['role']);
 
-            Log::info('Login attempt', [
-                'email' => $credentials['email'],
-                'guard' => $guard
-            ]);
+    //         Log::info('Login attempt', [
+    //             'email' => $credentials['email'],
+    //             // 'guard' => $guard
+    //         ]);
 
-            if (Auth::guard($guard)->attempt($credentials)) {
-                $request->session()->regenerate();
-                return redirect()->route('admin.dashboard');
-            }
+    //         return redirect()->route('admin.dashboard');
+    //         // if (Auth::guard($guard)->attempt($credentials)) {
+    //         //     $request->session()->regenerate();
+    //         // }
 
-            return back()->withErrors([
-                'email' => 'Thông tin đăng nhập không hợp lệ.'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Login error: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Login failed.']);
-        }
-    }
+    //         // return back()->withErrors([
+    //         //     'email' => 'Thông tin đăng nhập không hợp lệ.'
+    //         // ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Login error: ' . $e->getMessage());
+    //         return back()->withErrors(['error' => 'Login failed.']);
+    //     }
+    // }
 
-    public function showLoginForm()
-    {
-        Log::info('Accessing admin login form');
+    // public function showLoginForm()
+    // {
+    //     Log::info('Accessing admin login form');
 
-        if (Auth::guard('owner')->check() || Auth::guard('employee')->check()) {
-            return redirect()->route('admin.dashboard');
-        }
-        $response = view('management.login');
-        return $this->preventBackHistory($response);
-    }
+    //     if (Auth::guard('owner')->check() || Auth::guard('employee')->check()) {
+    //         return redirect()->route('admin.dashboard');
+    //     }
+    //     $response = view('management.login');
+    //     return $this->preventBackHistory($response);
+    // }
 
     // public function logout(Request $request)
     // {
@@ -103,4 +103,47 @@ class OwnerController extends Controller
     //             ->with('error', 'Có lỗi xảy ra khi truy cập dashboard');
     //     }
     // }
+
+
+
+    public function login(Request $request)
+    {
+        try {
+            // Validate chỉ email và password
+            $credentials = $request->validate([
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ]);
+
+            Log::info('Login attempt', [
+                'email' => $credentials['email'],
+            ]);
+
+            // Dùng guard mặc định 'web' (hoặc guard bạn cấu hình cho users)
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                return redirect()->route('admin.dashboard');
+            }
+
+            return back()->withErrors([
+                'email' => 'Thông tin đăng nhập không hợp lệ.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Login error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Login failed.']);
+        }
+    }
+
+    public function showLoginForm()
+    {
+        
+        // Nếu đã login rồi → chuyển dashboard
+        if (Auth::check()) {
+            Log::info('Accessing admin login form');
+            return redirect()->route('admin.dashboard');
+        }
+
+        $response = view('management.login');
+        return $this->preventBackHistory($response);
+    }
 }

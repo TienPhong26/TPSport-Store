@@ -30,7 +30,7 @@ class ProductController extends Controller
             $materialId = $request->get('material');
             $status = $request->get('status');
 
-            $products = Product::with(['brand', 'material', 'categories', 'size', 'images'])
+            $products = Product::with(['brand', 'material', 'category', 'size', 'images'])
                 ->when($query, function ($q) use ($query) {
                     return $q->where('product_name', 'LIKE', "%{$query}%");
                 })
@@ -221,10 +221,10 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load(['categories', 'images']);
+        $product->load(['category', 'images']);
 
         return view('management.product_mana.edit', [
-            'product' => $product->load(['categories', 'sizes', 'images']),
+            'product' => $product->load(['category', 'sizes', 'images']),
             'categories' => Category::all(),
             'sizes' => Size::all(),
             'brands' => Brand::all(),
@@ -235,7 +235,7 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $product->load(['categories', 'sizes', 'images']);
+        $product->load(['category', 'sizes', 'images']);
 
         $messages = [
             'product_name.required' => 'Vui lòng nhập tên sản phẩm',
@@ -402,7 +402,7 @@ class ProductController extends Controller
             $product->load([
                 'brand',
                 'material',
-                'categories',
+                'category',
                 'sizes',
                 'images'
             ]);

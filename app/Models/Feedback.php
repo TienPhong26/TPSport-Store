@@ -14,7 +14,7 @@ class Feedback extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id',
+        'user_id',
         'order_id',
         'comment',
         'rating'
@@ -23,7 +23,7 @@ class Feedback extends Model
     // Relationship with Customer
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+        return $this->belongsTo(Customer::class, 'user_id', 'id');
     }
 
     // Relationship with Product

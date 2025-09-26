@@ -33,7 +33,7 @@ class Order extends Model
     // Relationship with Customer
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     // Relationship with Employee

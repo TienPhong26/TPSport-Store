@@ -62,12 +62,12 @@
         <div class="navbar-logo">
             <a href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('images/tplogo.png') }}" alt="Logo"
-                    style="width: 200px; height: 70px; display:flex; justify-content: center;" />
+                    style="width: 200px;  display:flex; justify-content: center;" />
             </a>
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li class="nav-item nav-item-has-children">
+                <li class="nav-item ">
                     <a href="#0" data-bs-toggle="collapse" data-bs-target="#ddmenu_1" aria-controls="ddmenu_1"
                         aria-expanded="false" aria-label="Toggle navigation">
                         <span class="icon">
@@ -81,11 +81,11 @@
                         </span>
                         <span class="text">Dashboard</span>
                     </a>
-                    <ul id="ddmenu_1" class="collapse show dropdown-nav">
+                    {{-- <ul id="ddmenu_1" class="collapse show dropdown-nav">
                         <li>
                             <a href="index.html" class="active"> eCommerce </a>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </li>
                 <li class="nav-item nav-item-has-children">
                     <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2"
@@ -102,14 +102,14 @@
                         <span class="text">Quản lý</span>
                     </a>
                     <ul id="ddmenu_2" class="collapse dropdown-nav">
-                        @if (Auth::guard('owner')->check())
-                            <li>
-                                <a href="{{ route('admin.employee') }}"
-                                    class="{{ request()->routeIs('admin.employee') ? 'active' : '' }}">
-                                    <i class="lni lni-users"></i> Quản lý Nhân viên
-                                </a>
-                            </li>
-                        @endif
+                        {{-- @if (Auth::guard('owner')->check())
+                        @endif --}}
+                        <li>
+                            <a href="{{ route('admin.employee') }}"
+                                class="{{ request()->routeIs('admin.employee') ? 'active' : '' }}">
+                                <i class="lni lni-users"></i> Quản lý Nhân viên
+                            </a>
+                        </li>
                         <li>
                             <a href="{{ route('admin.customer') }}">
                                 <i class="lni lni-user"></i> Quản lý Khách hàng
@@ -169,8 +169,8 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.charts') }}">
-                        <span class="icon">
-                            <i class="lni lni-bar-chart" style="font-size: 1.3em;"></i>
+                        <span class="icon ">
+                            <i class="fas fa-chart-line"></i>
                         </span>
                         <span class="text">Quản lý biểu đồ</span>
                     </a>
@@ -327,9 +327,9 @@
                     </div>
                 </div>
                 <!-- End Row -->
-                <div class="row">
-                    <div class="col-lg-7">
-                        <div class="card-style mb-30" style="max-height: 420px; overflow-y: auto;">
+                <div class="row align-items-stretch">
+                    <div class="col-lg-7 d-flex">
+                        <div class="card-style mb-30 flex-fill" style="max-height: 520px; overflow-y: auto;">
                             <div class="title d-flex flex-wrap justify-content-between align-items-center mb-3">
                                 <div class="left">
                                     <h6 class="text-medium mb-10">Tất cả đánh giá của khách hàng</h6>
@@ -341,7 +341,7 @@
                                         class="d-flex align-items-center justify-content-between border-bottom py-2 px-1">
                                         <div>
                                             <div class="fw-bold" style="color:#1a237e;">
-                                                {{ $feedback->customer->customer_name ?? 'Khách hàng' }}
+                                                {{ $feedback->customer ?? 'Khách hàng' }}
                                             </div>
                                             <div class="small text-muted mb-1">
                                                 Đơn hàng #{{ $feedback->order_id }}
@@ -353,10 +353,10 @@
                                                 @endfor
                                             </div>
                                             <div class="fst-italic mt-1" style="color:#444;">
-                                                "{{ $feedback->comment }}"
+                                                "{{ $feedback->feedback }}"
                                             </div>
                                         </div>
-                                        <form action="{{ route('admin.feedback.delete', $feedback->feedback_id) }}"
+                                        <form action="{{ route('admin.feedback.delete', $feedback->id) }}"
                                             method="POST"
                                             onsubmit="return confirm('Bạn có chắc muốn xóa feedback này?')"
                                             style="margin-left: 10px;">
@@ -377,8 +377,8 @@
                     </div>
 
                     <!-- End Col -->
-                    <div class="col-lg-5">
-                        <div class="card-style mb-30">
+                    <div class="col-lg-5 d-flex">
+                        <div class="card-style mb-30 flex-fill">
                             <div class="title d-flex flex-wrap justify-content-between">
                                 <div class="left">
                                     <h6 class="text-medium mb-10">Thống kê doanh thu</h6>
@@ -394,7 +394,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="chart">
+                            <div class="chart" >
                                 <canvas id="Chart2" style="width: 100%; height: 400px;"></canvas>
                             </div>
                         </div>
@@ -429,9 +429,9 @@
                                         <th class="min-width">
                                             <h6 class="text-sm text-medium">Số lượng bán ra</h6>
                                         </th>
-                                        <th class="min-width">
-                                            <h6 class="text-sm text-medium">Doanh thu</h6>
-                                        </th>
+                                        {{-- <th class="min-width">
+                                            <h6 class="text-sm text-medium">Thao tác</h6>
+                                        </th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -440,22 +440,23 @@
                                             <td>
                                                 <div class="product">
                                                     <div class="image">
-                                                        @if ($product->image_url)
-                                                            <img src="{{ asset($product->image_url) }}"
-                                                                alt="{{ $product->product_name }}"
+                                                        @if ($product->image)
+                                                            <img src="{{ asset($product->image) }}"
+                                                                alt="{{ $product->name }}"
                                                                 style="width: 60px; height: 60px; object-fit: cover;" />
                                                         @else
                                                             <img src="{{ asset('images/no-image.png') }}"
                                                                 alt="No image"
                                                                 style="width: 60px; height: 60px; object-fit: cover;" />
                                                         @endif
+                                                        
                                                     </div>
 
-                                                    <p class="text-sm">{{ $product->product_name }}</p>
+                                                    <p class="text-sm">{{ $product->name }}</p>
                                                 </div>
                                             </td>
                                             <td>
-                                                <p class="text-sm">{{ $product->category_name }}</p>
+                                                <p class="text-sm">{{ $product->cate_name }}</p>
                                             </td>
                                             <td>
                                                 <p class="text-sm">{{ number_format($product->price) }}đ</p>
@@ -467,14 +468,14 @@
                                                 <p class="text-sm" style="display: flex; justify-content: center;">
                                                     {{ $product->total_sold }}</p>
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 <div class="action justify-content-center">
-                                                    <a href="{{ route('admin.product.edit', $product->product_id) }}"
+                                                    <a href="{{ route('admin.product.edit', $product->id) }}"
                                                         class="text-gray">
                                                         <i class="lni lni-pencil"></i>
                                                     </a>
                                                 </div>
-                                            </td>
+                                            </td> --}}
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -550,7 +551,7 @@
                                     </ul>
                                 </div>
                                 <canvas id="Chart4"
-                                    style="width: 100%; height: 420px; margin-left: -35px;"></canvas>
+                                    style="width: 100%; max-height: 420px; margin-left: -35px;"></canvas>
                             </div>
                             <!-- End Chart -->
                         </div>

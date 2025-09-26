@@ -148,7 +148,8 @@ Route::prefix('admin')->group(function () {
     });
 
     // Routes yêu cầu Owner đã đăng nhập
-    Route::middleware(['auth:owner,employee'])->group(function () {
+    // Route::middleware(['auth:owner,employee'])->group(function () {
+    Route::middleware([])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('admin.dashboard')
             ->withoutMiddleware(['prevent-back-history']);

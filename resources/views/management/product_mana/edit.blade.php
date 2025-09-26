@@ -178,10 +178,10 @@
                                 <select class="form-select select2 @error('category_ids') is-invalid @enderror"
                                     id="categorySelect" name="category_ids[]" multiple required>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->category_id }}"
-                                            {{ in_array($category->category_id, old('category_ids', $product->categories->pluck('category_id')->toArray())) ? 'selected' : '' }}>
+                                        {{-- <option value="{{ $category->id }}"
+                                            {{ in_array($category->id, old('category_ids', $product->categories->pluck('id')->toArray())) ? 'selected' : '' }}>
                                             {{ $category->category_name }}
-                                        </option>
+                                        </option> --}}
                                     @endforeach
                                 </select>
                                 @error('category_ids')
