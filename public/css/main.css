@@ -7,7 +7,6 @@ html {
 }
 
 body {
-  font-family: "Plus Jakarta Sans", sans-serif !important;
   font-weight: normal;
   font-style: normal;
   color: #5d657b;
@@ -22,7 +21,9 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
+* {
+    font-family: 'Mulish', sans-serif;
+}
 a:focus,
 input:focus,
 textarea:focus,

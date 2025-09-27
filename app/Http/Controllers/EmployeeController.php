@@ -145,14 +145,15 @@ class EmployeeController extends Controller
         try {
             $validated = $request->validate([
                 'employee_name' => 'required|string|max:100',
-                'email' => 'required|email|unique:employee,email',
+                'email' => 'required|email|unique:employees,email',
                 'phone_number' => 'nullable|string|max:20',
                 'password' => 'required|string|min:6|confirmed',
                 'status' => 'required|in:active,inactive',
             ]);
 
             // Thêm owner_id của chủ cửa hàng đang đăng nhập
-            $validated['owner_id'] = Auth::guard('owner')->id();
+            // $validated['owner_id'] = Auth::guard('owner')->id();
+            $validated['owner_id'] = 1;
 
             // Mã hóa mật khẩu
             $validated['password'] = Hash::make($validated['password']);
@@ -180,10 +181,10 @@ class EmployeeController extends Controller
     public function edit(Employee $employee)
     {
         // Kiểm tra xem nhân viên có thuộc owner hiện tại không
-        if ($employee->owner_id !== Auth::guard('owner')->id()) {
-            return redirect()->route('admin.employee')
-                ->with('error', 'Bạn không có quyền chỉnh sửa nhân viên này');
-        }
+        // if ($employee->owner_id !== Auth::guard('owner')->id()) {
+        //     return redirect()->route('admin.employee')
+        //         ->with('error', 'Bạn không có quyền chỉnh sửa nhân viên này');
+        // }
 
         return view('Owner.employee_mana.edit', compact('employee'));
     }
@@ -194,13 +195,13 @@ class EmployeeController extends Controller
             // Validate input
             $validated = $request->validate([
                 'employee_name' => 'required|string|max:100',
-                'email' => 'required|email|unique:employee,email,' . $employee->employee_id . ',employee_id',
+                'email' => 'required|email|unique:employees,email,' . $employee->employee_id . ',employee_id',
                 'phone_number' => 'nullable|string|max:20',
                 'status' => 'required|in:active,inactive',
             ]);
 
             // Thêm owner_id vào dữ liệu cập nhật
-            $validated['owner_id'] = Auth::guard('owner')->id();
+            // $validated['owner_id'] = Auth::guard('owner')->id();
 
             // Cập nhật thông tin nhân viên
             $employee->update($validated);

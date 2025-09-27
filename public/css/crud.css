@@ -64,14 +64,12 @@ body {
 }
 
 .back-btn {
-    margin: 10px 0;
-    padding: 10px 16px !important;
     font-size: 14px;
     font-weight: 500;
     display: inline-block;
-    background-color: #565656 !important;
-    color: #ffffff;
-    border: 3px solid #ffffff;
+    background-color: #fff !important;
+    color: #000;
+    border: 1px solid #000 !important;
     border-radius: 8px;
     transition: all 0.3s ease;
     box-shadow: 0 3px 4px rgba(0, 0, 0, 0.05);
@@ -81,17 +79,17 @@ body {
 
 .back-btn i {
     font-size: 16px;
-    color: #ffffff;
+    color: #000;
     margin-right: 8px;
 }
 
 .back-btn span {
-    color: #ffffff;
+    color: #000;
 }
 
 .back-btn:hover {
     background-color: #f8f9fa;
-    border-color: #c0c0c0;
+    border-color: #000;
     color: #333333;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -185,7 +183,7 @@ table.table td i {
     font-weight: 500;
 }
 .badge-success {
-    background-color: #28a745;
+    background-color: #0d6efd;
     color: #fff;
 }
 .badge-danger {
@@ -237,7 +235,6 @@ table.table td i {
 }
 
 .pagination-info span {
-    font-family: Inter;
     font-weight: 500;
     font-size: 13px;
     color: #344054;
@@ -256,7 +253,6 @@ table.table td i {
 .page-info-text {
     display: flex;
     align-items: center;
-    font-family: Inter;
     font-weight: 500;
     font-size: 13px;
     text-align: center;
@@ -278,7 +274,6 @@ table.table td i {
 }
 
 .all-page-number {
-    font-family: Inter;
     font-weight: 500;
     font-size: 13px;
     color: #333333;
@@ -296,7 +291,6 @@ table.table td i {
 }
 
 .next-page-btn span {
-    font-family: Inter;
     font-weight: 600;
     font-size: 12px;
     background: linear-gradient(90deg, #4FA800 0%, #00844E 100%);
@@ -412,3 +406,6 @@ table.table td i {
     color: #dc3545;
 }
 
+.delete{
+    border:none;
+}
