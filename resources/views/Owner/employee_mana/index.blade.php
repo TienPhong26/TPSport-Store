@@ -19,33 +19,36 @@
 </head>
 
 <body>
-    @include('management.components.admin-header')
-
+    <aside class="sidebar-nav-wrapper">
+        @include('management.components.admin-sidebar')
+    </aside>
+    <div class="overlay"></div>
     <div class="alerts-container">
         @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
-
+        
         @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
         @endif
-
+        
         @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
         @endif
     </div>
-
+    
     <div class="container">
+        @include('management.components.admin-header')
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">

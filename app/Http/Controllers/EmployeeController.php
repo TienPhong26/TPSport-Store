@@ -125,9 +125,10 @@ class EmployeeController extends Controller
                 'status',
                 'owner_id'
             )
-                ->where('owner_id', Auth::guard('owner')->id())
+                // ->where('owner_id', Auth::guard('owner')->id())
                 ->orderBy('employee_name', 'asc')
                 ->paginate(10);
+            // dd($employees);
 
             return view('Owner.employee_mana.index', compact('employees'));
         } catch (\Exception $e) {
