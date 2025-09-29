@@ -1,52 +1,20 @@
-<!DOCTYPE html>
-@php
-    use Illuminate\Support\Facades\Storage;
-@endphp
-<html lang="en">
+@extends('management.layouts.admin_layout') {{-- đường dẫn tới layout chính --}}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý Sản phẩm</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+@section('title', 'Quản lý sản phẩm')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
-    <script src="{{ asset('js/alert.js') }}"></script>
-</head>
+@endpush
 
-<body>
-    @include('management.components.admin-header')
-
-    <div class="alerts-container">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-    </div>
-
-    <div class="container">
+@section('content')
+    @php
+        use Illuminate\Support\Facades\Storage;
+    @endphp
+     <div class="container-fluid">
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
@@ -97,11 +65,14 @@
                                         <option value="0">Ngừng kinh doanh</option>
                                     </select>
                                 </div>
-
-                                <button class="btn btn-secondary reset-filters"
-                                    style="width: 150px; display: flex; align-items: center">
-                                    <i class="material-icons">refresh</i> Reset
+                                 <div class="form-group" style="min-width: 250px;">
+                                   <button class="btn btn-secondary reset-filters"
+                                    style="width: 150px; display: flex; align-items: center;">
+                                    <i class="fas fa-undo-alt"></i>  Reset
                                 </button>
+                                </div>
+
+                               
                             </div>
                         </div>
                     </div>
@@ -109,9 +80,9 @@
 
                 <div class="row mt-3">
                     <div class="col-sm-6">
-                        <h2>Quản lý <b>Sản phẩm</b></h2>
+                        <h2>Quản lý sản phẩm</h2>
                         <a href="{{ route('admin.product.create') }}" class="btn btn-success mt-2 mb-4">
-                            <i class="material-icons">&#xE147;</i>
+                            <i class="fas fa-plus"></i>
                             <span>Thêm mới</span>
                         </a>
                     </div>
@@ -135,7 +106,6 @@
                             <th>Giảm giá</th>
                             <th>Giá sau giảm</th>
                             <th>Số lượng</th>
-                            <th>Size</th>
                             <th>Trạng thái</th>
                             <th>Chức năng</th>
                         </tr>
@@ -143,63 +113,45 @@
                     <tbody>
                         @foreach ($products as $product)
                             <tr>
-                                <td>{{ $product->product_id }}</td>
+                                <td>{{ $product->id }}</td>
                                 <td style="width: 100px; height: 100px">
-                                    @php
-                                        $mainImage = $product->getMainImage();
-                                    @endphp
-
-                                    @if ($mainImage && Storage::disk('public')->exists(str_replace('storage/', '', $mainImage->image_url)))
-                                        <img src="{{ asset($mainImage->image_url) }}"
-                                            alt="{{ $product->product_name }}"
-                                            style="width: 80px; height: 80px; object-fit: cover;">
-                                    @else
-                                        <img src="{{ asset('images/placeholder.png') }}" alt="Placeholder"
-                                            style="width: 80px; height: 80px; object-fit: cover;">
-                                    @endif
-
-                                    <small class="d-block text-muted">
-                                        ({{ $product->NumberOfImage }} ảnh)
-                                    </small>
+                                   <img src="{{ asset($product->image) }}" class="w-100 product-image" alt="{{ $product->name }}">
                                 </td>
-                                <td>{{ $product->product_name }}</td>
+                                <td>{{ $product->name }}</td>
                                 <td>{{ $product->brand->brand_name ?? 'N/A' }}</td>
-                                <td>{{ $product->material->material_name ?? 'N/A' }}</td>
+                                <td>{{ $product->productDetail->material ?? 'N/A' }}</td>
                                 <td>
-                                    @foreach ($product->categories as $category)
-                                        <span>{{ $category->category_name }}</span>
+                                    @foreach ($product->category as $cate)
+                                        <span>{{ $cate->name }}</span>
                                     @endforeach
-                                    <small class="d-block text-muted">
-                                        ({{ $product->NumberOfCategory }} danh mục)
-                                    </small>
                                 </td>
                                 <td>{{ number_format($product->price, 0, ',', '.') }}đ</td>
-                                <td>{{ floatval($product->discount) }}%</td>
-                                <td>{{ number_format($product->getDiscountedPrice(), 0, ',', '.') }}đ</td>
-                                <td>{{ $product->quantity }}</td>
-                                <td>{{ $product->size->size_name ?? 'N/A' }}</td>
+                                <td>{{ $product->current_discount->discount_percent ?? 0 }}%</td>
+                                
+                              <td>{{ number_format($product->getDiscountedPrice(), 0, ',', '.') }}đ</td>
+                                <td>{{ $product->amount }}</td>
                                 <td>
                                     <span class="badge {{ $product->status ? 'bg-success' : 'bg-danger' }}">
                                         {{ $product->status ? 'Đang bán' : 'Ngừng kinh doanh' }}
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.product.details', ['product' => $product->product_id]) }}"
+                                    <a href="{{ route('admin.product.details', ['product' => $product->id]) }}"
                                         class="view" title="Xem chi tiết" data-toggle="tooltip">
-                                        <i class="material-icons">&#xE417;</i>
+                                        <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.product.edit', ['product' => $product->product_id]) }}"
+                                    <a href="{{ route('admin.product.edit', ['product' => $product->id]) }}"
                                         class="edit" title="Sửa" data-toggle="tooltip">
-                                        <i class="material-icons">&#xE254;</i>
+                                        <i class="fas fa-pen"></i>
                                     </a>
-                                    <form action="{{ route('admin.product.delete', $product->product_id) }}"
+                                    <form action="{{ route('admin.product.delete', $product->id) }}"
                                         method="POST" style="display:inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="delete" title="Xóa" data-toggle="tooltip"
                                             style="color: red"
                                             onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">
-                                            <i class="material-icons">&#xE872;</i>
+                                            <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -207,32 +159,16 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="clearfix">
-                    <div class="footer-container">
-                        <div class="pagination-info">
-                            <span>Tổng số lượng : </span>
-                            <span class="total-records">{{ $products->total() }}</span>
-                        </div>
+               
+                {{ $products->links() }}
 
-                        <div class="page-info">
-                            <div class="page-info-text">
-                                Trang <span class="page-number">{{ $products->currentPage() }}</span>
-                                <span class="all-page-number"> / {{ $products->lastPage() }} </span>
-                            </div>
-                            <button class="next-page-btn" onclick="nextPage()"
-                                {{ $products->currentPage() >= $products->lastPage() ? 'disabled' : '' }}>
-                                <span>Trang tiếp</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
-    </div>
-</body>
+@endsection
 
-<script>
+@push('scripts')
+    <script>
     function nextPage() {
         const currentPage = {{ $products->currentPage() }};
         const totalPages = {{ $products->lastPage() }};
@@ -356,17 +292,17 @@
                 </td>
                 <td>
                     <a href="/admin/products/${product.product_id}" class="view" title="Xem chi tiết">
-                        <i class="material-icons">&#xE417;</i>
+                        <i class="fas fa-eye"></i>
                     </a>
                     <a href="/admin/products/${product.product_id}/edit" class="edit" title="Sửa">
-                        <i class="material-icons">&#xE254;</i>
+                        <i class="far fa-pen"></i>
                     </a>
                     <form action="/admin/products/${product.product_id}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="delete" title="Xóa" style="color: red"
                                 onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">
-                            <i class="material-icons">&#xE872;</i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 </td>
@@ -402,4 +338,5 @@
     });
 </script>
 
-</html>
+@endpush
+

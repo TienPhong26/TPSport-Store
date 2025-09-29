@@ -57,7 +57,30 @@ class Product extends Model
             'category_id'
         );
     }
+    public function getCurrentDiscountAttribute()
+    {
+        $today = now();
+        return $this->category
+            ->flatMap->discounts
+            ->where('status', 1)
+            ->where('start', '<=', $today)
+            ->where('end', '>=', $today)
+            ->first();
+    }
 
+
+    public function getDiscountedPrice()
+    {
+        $originalPrice = $this->price;
+
+        $discount = $this->current_discount;
+
+        if ($discount && $discount->discount_percent > 0) {
+            return $originalPrice * (1 - ($discount->discount_percent / 100));
+        }
+
+        return $originalPrice;
+    }
 
     public function images(): BelongsToMany
     {
@@ -116,11 +139,6 @@ class Product extends Model
             ->wherePivot('image_role', 'sub')
             ->orderByPivot('image_order')
             ->get();
-    }
-
-    public function getDiscountedPrice()
-    {
-        return $this->price * (1 - ($this->discount / 100));
     }
 
     public function toSearchableArray()

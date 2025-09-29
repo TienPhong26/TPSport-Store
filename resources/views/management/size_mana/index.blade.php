@@ -86,7 +86,7 @@
                                     <td>
                                         <a href="{{ route('admin.size.edit', ['size' => $size->size_id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="far fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.size.delete', $size->size_id) }}" method="POST"
                                             style="display:inline; color: #e34724">
@@ -94,7 +94,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa" data-toggle="tooltip"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa Size sản phẩm này không?')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -176,14 +176,14 @@
                 <td>${size.size_name}</td>
                 <td>
                     <a href="/admin/sizes/${size.size_id}/edit" class="edit" title="Sửa">
-                        <i class="material-icons">&#xE254;</i>
+                        <i class="far fa-pen"></i>
                     </a>
                     <form action="/admin/sizes/${size.size_id}" method="POST" style="display:inline; color: #e34724">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="delete" title="Xóa"
                                 onclick="return confirm('Bạn có chắc chắn muốn xóa Size sản phẩm này không?')">
-                            <i class="material-icons">&#xE872;</i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 </td>

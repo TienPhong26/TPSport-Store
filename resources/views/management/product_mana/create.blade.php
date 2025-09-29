@@ -1,48 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('management.layouts.admin_layout')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Sản phẩm mới</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/alert.js') }}"></script>
-</head>
+@section('title', 'Thêm sản phẩm mới')
 
-<body>
-    @include('management.components.admin-header')
+@push('styles')
+    <style>
+        .main-image-preview,
+        .sub-images-preview {
+            min-height: 100px;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
 
-    {{-- Thông báo  --}}
-    <div class="alerts-container">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        .sub-images-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
+        .select2-container--default .select2-selection--multiple {
+            min-height: 38px;
+        }
 
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-    </div>
+        .form-group label {
+            font-weight: 600;
+        }
 
-    <div class="container mt-5">
+        .form-control,
+        .form-select {
+            height: 40px;
+            /* cho đều chiều cao */
+        }
+
+        input[type="file"].form-control {
+            padding: 5px;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+        }
+
+        small.text-muted {
+            display: block;
+            margin-top: 4px;
+            font-size: 13px;
+        }
+
+        .mb-6 {
+            margin-bottom: 39px !important;
+        }
+    </style>
+@endpush
+
+@section('content')
+    <div class="container-fluid mt-5">
         <div class="row justify-content-center">
             <div class="col-md-13">
                 <div class="card">
@@ -53,222 +67,211 @@
                         <form action="{{ route('admin.product.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
+                            {{-- Row 1 --}}
                             <div class="row">
                                 <div class="col-md-6">
+                                    {{-- Tên sản phẩm --}}
                                     <div class="form-group mb-3">
-                                        <label>Tên sản phẩm<span class="text-danger">*</span></label>
+                                        <label>Tên sản phẩm <span class="text-danger">*</span></label>
                                         <input type="text" name="product_name"
                                             class="form-control @error('product_name') is-invalid @enderror"
                                             value="{{ old('product_name') }}" required>
-                                        @error('product_name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('product_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
 
+                                    {{-- Giá --}}
                                     <div class="form-group mb-3">
-                                        <label>Giá (VNĐ)<span class="text-danger">*</span></label>
+                                        <label>Giá (VNĐ) <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="text" name="price"
                                                 class="form-control @error('price') is-invalid @enderror"
-                                                value="{{ old('price') }}" required pattern="[0-9]*"
-                                                inputmode="numeric" placeholder="Nhập giá bán (VNĐ)"
-                                                oninput="formatPrice(this)">
+                                                value="{{ old('price') }}" required pattern="[0-9]*" inputmode="numeric"
+                                                placeholder="Nhập giá bán (VNĐ)" oninput="formatPrice(this)">
                                             <span class="input-group-text">VNĐ</span>
                                         </div>
                                         <div class="formatted-price text-muted mt-1"></div>
                                         <small class="text-muted">(Giá ít nhất phải từ 1,000 VNĐ)</small>
-                                        @error('price')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
 
+                                    {{-- Giảm giá --}}
                                     <div class="form-group mb-3">
                                         <label>Giảm giá (%)</label>
                                         <input type="number" name="discount"
                                             class="form-control @error('discount') is-invalid @enderror"
                                             value="{{ old('discount', 0) }}" min="0" max="100">
-                                        @error('discount')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('discount') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        @php
+                                            $typeMap = [
+                                                'shirt'    => 'Áo',
+                                                'trousers' => 'Quần',
+                                                'ball'     => 'Bóng',
+                                                'socks'    => 'Tất',
+                                                'shoes'    => 'Giày',
+                                                'tool'    => 'Dụng cụ',
+                                            ];
+                                        @endphp
+
+                                        <div class="form-group mb-3">
+                                            <label>Loại sản phẩm <span class="text-danger">*</span></label>
+                                            <select name="type_product"
+                                                class="form-control @error('type_product') is-invalid @enderror" required>
+                                                <option value="">Chọn loại sản phẩm</option>
+                                                @foreach ($typeMap as $key => $label)
+                                                    <option value="{{ $key }}" {{ old('type_product') == $key ? 'selected' : '' }}>
+                                                        {{ $label }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('type_product') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        </div>
                                     </div>
 
                                     <div class="form-group mb-3">
-                                        <label>Số lượng<span class="text-danger">*</span></label>
+                                        @php
+                                            $typeMap2 = [
+                                                'male'    => 'Nam',
+                                                'female' => 'Nữ',
+                                                'unisex'     => 'Unisex',
+                                            ];
+                                        @endphp
+
+                                        <div class="form-group mb-3">
+                                            <label>Giới tính <span class="text-danger">*</span></label>
+                                            <select name="gender"
+                                                class="form-control @error('gender') is-invalid @enderror" required>
+                                                <option value="">Chọn giới tính</option>
+                                                @foreach ($typeMap2 as $key => $label)
+                                                    <option value="{{ $key }}" {{ old('gender') == $key ? 'selected' : '' }}>
+                                                        {{ $label }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('gender') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Số lượng --}}
+                                    <div class="form-group mb-3">
+                                        <label>Số lượng <span class="text-danger">*</span></label>
                                         <input type="number" name="quantity"
                                             class="form-control @error('quantity') is-invalid @enderror"
                                             value="{{ old('quantity', 0) }}" required min="0">
-                                        @error('quantity')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('quantity') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
+                                    {{-- Thương hiệu --}}
                                     <div class="form-group mb-3">
-                                        <label>Thương hiệu<span class="text-danger">*</span></label>
-                                        <select name="brand_id"
-                                            class="form-control @error('brand_id') is-invalid @enderror" required>
+                                        <label>Thương hiệu <span class="text-danger">*</span></label>
+                                        <select name="brand_id" class="form-control @error('brand_id') is-invalid @enderror"
+                                            required>
                                             <option value="">Chọn thương hiệu</option>
                                             @foreach ($brands as $brand)
-                                                <option value="{{ $brand->brand_id }}"
-                                                    {{ old('brand_id') == $brand->brand_id ? 'selected' : '' }}>
+                                                <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->brand_id ? 'selected' : '' }}>
                                                     {{ $brand->brand_name }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('brand_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('brand_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
 
-                                    <div class="form-group mb-3">
-                                        <label>Size sản phẩm<span class="text-danger">*</span></label>
-                                        <select name="size_ids[]"
-                                            class="form-control select2 @error('size_ids') is-invalid @enderror"
-                                            multiple required>
-                                            @foreach ($sizes as $size)
-                                                <option value="{{ $size->size_id }}"
-                                                    {{ in_array($size->size_id, old('size_ids', [])) ? 'selected' : '' }}>
-                                                    {{ $size->size_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('size_ids')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mb-3">
-                                        <label>Chất liệu<span class="text-danger">*</span></label>
+                                    {{-- Chất liệu --}}
+                                    <div class="form-group mb-6">
+                                        <label>Chất liệu <span class="text-danger">*</span></label>
                                         <select name="material_id"
                                             class="form-control @error('material_id') is-invalid @enderror" required>
                                             <option value="">Chọn chất liệu</option>
-                                            @foreach ($materials as $material)
-                                                <option value="{{ $material->material_id }}"
-                                                    {{ old('material_id') == $material->material_id ? 'selected' : '' }}>
-                                                    {{ $material->material_name }}
-                                                </option>
-                                            @endforeach
+                                            <option value="100% Polyester" {{ old('material_id') == '100% Polyester' ? 'selected' : '' }}>100% Polyester</option>
+                                            <option value="Tổng hợp" {{ old('material_id') == 'Tổng hợp' ? 'selected' : '' }}>
+                                                Tổng
+                                                hợp</option>
+                                            <option value="Polypropylene" {{ old('material_id') == 'Polypropylene' ? 'selected' : '' }}>Polypropylene</option>
+                                            <option value="100% Cotton" {{ old('material_id') == '100% Cotton' ? 'selected' : '' }}>100% Cotton</option>
                                         </select>
-                                        @error('material_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('material_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
 
+                                    {{-- Danh mục --}}
                                     <div class="form-group mb-3">
-                                        <label>Danh mục<span class="text-danger">*</span></label>
-                                        <select name="category_ids[]"
-                                            class="form-control select2 @error('category_ids') is-invalid @enderror"
-                                            multiple required>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->category_id }}"
-                                                    {{ in_array($category->category_id, old('category_ids', [])) ? 'selected' : '' }}>
-                                                    {{ $category->category_name }}
+                                        <label>Danh mục <span class="text-danger">*</span></label>
+                                        <select name="category_id"
+                                            class="form-control @error('category_id') is-invalid @enderror" required>
+                                            <option value="">Chọn danh mục</option>
+                                            @foreach ($categories as $cate)
+                                                <option value="{{ $cate->id }}" {{ old('category_id') == $cate->id ? 'selected' : '' }}>
+                                                    {{ $cate->name }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('category_ids')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
-
+                                    <div class="form-group mb-3">
+                                        <label>Môn thể thao <span class="text-danger">*</span></label>
+                                        <select name="sport_id"
+                                            class="form-control @error('sport_id') is-invalid @enderror" required>
+                                            <option value="">Chọn môn thể thao</option>
+                                            @foreach ($sports as $spt)
+                                                <option value="{{ $spt->id }}" {{ old('sport_id') == $spt->id ? 'selected' : '' }}>
+                                                    {{ $spt->title }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('sport_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                   
+                                    {{-- Trạng thái --}}
                                     <div class="form-group mb-3">
                                         <label>Trạng thái</label>
-                                        <select name="status"
-                                            class="form-control @error('status') is-invalid @enderror">
-                                            <option value="1" {{ old('status', '1') === '1' ? 'selected' : '' }}>
-                                                Đang bán</option>
-                                            <option value="0" {{ old('status', '1') === '0' ? 'selected' : '' }}>
-                                                Ngừng kinh doanh</option>
+                                        <select name="status" class="form-control @error('status') is-invalid @enderror">
+                                            <option value="1" {{ old('status', '1') === '1' ? 'selected' : '' }}>Đang bán
+                                            </option>
+                                            <option value="0" {{ old('status', '1') === '0' ? 'selected' : '' }}>Ngừng kinh
+                                                doanh
+                                            </option>
                                         </select>
-                                        @error('status')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label>Màu sắc</label>
+                                        <input name="color" class="form-control @error('color') is-invalid @enderror"
+                                            rows="3">{{ old('color') }}</input>
+                                        @error('color') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
                             </div>
 
+                            {{-- Mô tả --}}
                             <div class="form-group mb-3">
                                 <label>Mô tả</label>
-                                <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="3">{{ old('description') }}</textarea>
-                                @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <textarea name="description" class="form-control @error('description') is-invalid @enderror"
+                                    rows="3">{{ old('description') }}</textarea>
+                                @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
+                            
 
+                            {{-- Ảnh --}}
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label>Ảnh chính<span class="text-danger">*</span></label>
-                                        <select name="main_image_id" id="mainImageSelect"
-                                            class="form-control @error('main_image_id') is-invalid @enderror"
-                                            required>
-                                            <option value="">Chọn ảnh chính</option>
-                                            @foreach ($images as $image)
-                                                <option value="{{ $image->image_id }}"
-                                                    data-url="{{ asset($image->image_url) }}"
-                                                    {{ old('main_image_id') == $image->image_id ? 'selected' : '' }}>
-                                                    {{ $image->image_url }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('main_image_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <div class="main-image-preview mt-2">
-                                            @if (isset($product) && ($mainImage = $product->getMainImage()))
-                                                <img id="mainImagePreview" src="{{ asset($mainImage->image_url) }}"
-                                                    alt="Ảnh chính"
-                                                    style="max-width: 150px; max-height: 150px; border: 2px solid #28a745;">
-                                                <div id="mainImagePlaceholder" class="text-muted"
-                                                    style="display: none;">
-                                                    <small>Chưa chọn ảnh chính</small>
-                                                </div>
-                                            @else
-                                                <img id="mainImagePreview" src="" alt="Ảnh chính"
-                                                    style="max-width: 150px; max-height: 150px; display: none; border: 2px solid #28a745;">
-                                                <div id="mainImagePlaceholder" class="text-muted">
-                                                    <small>Chưa chọn ảnh chính</small>
-                                                </div>
-                                            @endif
-                                        </div>
+                                        <label>Ảnh chính</label>
+                                        <input type="file" name="image" class="form-control" accept="image/*">
                                     </div>
                                 </div>
-
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label>Ảnh phụ (tối đa 3 ảnh)</label>
-                                        <select name="sub_image_ids[]" id="subImagesSelect"
-                                            class="form-control select2 @error('sub_image_ids') is-invalid @enderror"
+                                        <input type="file" name="image_hover[]" class="form-control" accept="image/*"
                                             multiple>
-                                            @foreach ($images as $image)
-                                                <option value="{{ $image->image_id }}"
-                                                    data-url="{{ asset($image->image_url) }}"
-                                                    {{ in_array($image->image_id, old('sub_image_ids', [])) ? 'selected' : '' }}>
-                                                    {{ $image->image_url }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('sub_image_ids')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <div class="sub-images-preview mt-2 d-flex gap-2 flex-wrap"
-                                            id="subImagesPreviewContainer">
-                                            @if (isset($product) && $product->getSubImages()->count())
-                                                @foreach ($product->getSubImages() as $subImage)
-                                                    <img src="{{ asset($subImage->image_url) }}" alt="Ảnh phụ"
-                                                        style="max-width: 100px; max-height: 100px; object-fit: cover; border: 1px solid #ddd; border-radius: 4px;">
-                                                @endforeach
-                                            @else
-                                                <div id="subImagesPlaceholder" class="text-muted">
-                                                    <small>Chưa chọn ảnh phụ</small>
-                                                </div>
-                                            @endif
-                                        </div>
+                                        <small class="text-muted">Chọn tối đa 3 ảnh phụ</small>
                                     </div>
                                 </div>
                             </div>
 
+                            {{-- Buttons --}}
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{{ route('admin.product') }}" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left"></i> Quay lại
@@ -283,6 +286,11 @@
             </div>
         </div>
     </div>
+@endsection
+
+@push('scripts')
+
+
     <script>
         function formatPrice(input) {
             // Cho phép nhập số và giữ con trỏ ở đúng vị trí
@@ -315,7 +323,7 @@
             input.setSelectionRange(cursorPosition, cursorPosition);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const priceInput = document.querySelector('input[name="price"]');
             if (priceInput.value) {
                 formatPrice(priceInput);
@@ -327,20 +335,20 @@
         }
 
         // Update price display when input changes
-        document.querySelector('input[name="price"]').addEventListener('input', function(e) {
+        document.querySelector('input[name="price"]').addEventListener('input', function (e) {
             let value = this.value;
             if (value >= 1000) {
                 document.querySelector('.price-display').textContent = formatNumber(value) + ' VNĐ';
             }
         });
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.select2').select2({
                 placeholder: 'Chọn...',
                 allowClear: true
             });
 
-            $('#mainImageSelect').on('change', function() {
+            $('#mainImageSelect').on('change', function () {
                 const selectedOption = $(this).find('option:selected');
                 const imageUrl = selectedOption.data('url');
                 const preview = $('#mainImagePreview');
@@ -356,7 +364,7 @@
             });
 
             // Xử lý ảnh phụ
-            $('#subImagesSelect').on('change', function() {
+            $('#subImagesSelect').on('change', function () {
                 const selectedOptions = $(this).find('option:selected');
                 const previewContainer = $('.sub-images-preview');
                 const placeholder = $('#subImagesPlaceholder');
@@ -365,11 +373,11 @@
 
                 if (selectedOptions.length > 0) {
                     placeholder.hide();
-                    selectedOptions.each(function() {
+                    selectedOptions.each(function () {
                         const imageUrl = $(this).data('url');
                         previewContainer.append(`
-                    <img src="${imageUrl}" alt="Ảnh phụ" class="me-2 mb-2">
-                `);
+                                <img src="${imageUrl}" alt="Ảnh phụ" class="me-2 mb-2">
+                            `);
                     });
                 } else {
                     placeholder.show();
@@ -381,30 +389,4 @@
             $('#subImagesSelect').trigger('change');
         });
     </script>
-</body>
-<style>
-    .main-image-preview,
-    .sub-images-preview {
-        min-height: 100px;
-        border: 1px dashed #ddd;
-        border-radius: 4px;
-        padding: 10px;
-        background-color: #f8f9fa;
-    }
-
-    .sub-images-preview img {
-        max-width: 100px;
-        max-height: 100px;
-        object-fit: cover;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-
-    .select2-container--default .select2-selection--multiple {
-        min-height: 38px;
-    }
-
-    ::after
-</style>
-
-</html>
+@endpush

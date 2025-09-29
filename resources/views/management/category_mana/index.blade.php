@@ -1,50 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('management.layouts.admin_layout')
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý Danh mục</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+@section('title', 'Quản lý sản phẩm')
+
+@push('styles')
     <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
-    <script src="{{ asset('js/alert.js') }}"></script>
-</head>
+    
+@endpush
 
-<body>
-    <!-- Include header của dashboard -->
-    @include('management.components.admin-header')
-
-    <div class="alerts-container">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-    </div>
-
-    <div class="container">
+@section('content')
+    <div class="container-fluid">
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
@@ -59,10 +23,13 @@
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Danh mục</b></h2>
-                            <a href="{{ route(name: 'admin.category.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
-                                <span>Thêm mới</span>
-                            </a>
+                            <a href="javascript:void(0)" 
+                                class="btn btn-success mt-2 mb-4" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#addCategoryModal">
+                                    <i class="material-icons">&#xE147;</i>
+                                    <span>Thêm mới</span>
+                                </a>
                         </div>
                         <div class="col-sm-6">
                             <div class="search-box">
@@ -71,7 +38,7 @@
                             </div>
                         </div>
                     </div>
-                    <table class="table table-striped table-hover table-bordered" id='categoryTable'>
+                    <table class="table table-striped table-hover table-bordered" style="text-align: center;" id='categoryTable'>
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -82,21 +49,21 @@
                         <tbody>
                             @foreach ($categories as $category)
                                 <tr>
-                                    <td>{{ $category->category_id }}</td>
-                                    <td>{{ $category->category_name }}</td>
+                                    <td>{{ $category->id }}</td>
+                                    <td>{{ $category->name }}</td>
                                     <td>
-                                        <a href="{{ route('admin.category.edit', ['category' => $category->category_id]) }}"
+                                        <a href="{{ route('admin.category.edit', ['category' => $category->id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="far fa-pen"></i>
                                         </a>
-                                        <form action="{{ route('admin.category.delete', $category->category_id) }}"
+                                        <form action="{{ route('admin.category.delete', $category->id) }}"
                                             method="POST" style="display:inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa" data-toggle="tooltip"
                                                 style="color: red"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -104,6 +71,40 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <!-- Modal thêm danh mục -->
+                        <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addCategoryModalLabel">Thêm danh mục mới</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <form action="{{ route('admin.category.store') }}" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                <div class="form-group mb-3">
+                                    <label for="name">Tên danh mục</label>
+                                    <input type="text" name="name" id="name"
+                                        class="form-control @error('name') is-invalid @enderror"
+                                        value="{{ old('name') }}" required>
+                                    @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                </div>
+                                
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="submit" class="btn btn-primary">Thêm danh mục</button>
+                                </div>
+                            </form>
+
+                            </div>
+                        </div>
+                        </div>
+
                     <div class="clearfix">
                         <div class="footer-container">
                             <div class="pagination-info">
@@ -126,9 +127,14 @@
                 </div>
             </div>
         </div>
-</body>
+    </div>
 
+@endsection
+
+@push('scripts')
+   
 <script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     function nextPage() {
         const currentPage = {{ $categories->currentPage() }};
         const totalPages = {{ $categories->lastPage() }};
@@ -175,17 +181,17 @@
             categoryTable.innerHTML = categories.map(category => `
             <tr>
                 <td>${category.category_id}</td>
-                <td>${category.category_name}</td>
+                <td>${category.name}</td>
                 <td>
                     <a href="/admin/categories/${category.category_id}/edit" class="edit" title="Sửa">
-                        <i class="material-icons">&#xE254;</i>
+                        <i class="far fa-pen"></i>
                     </a>
                     <form action="/admin/categories/${category.category_id}" method="POST" style="display:inline; color: #e34724">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="delete" title="Xóa"
                                 onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?')">
-                            <i class="material-icons">&#xE872;</i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 </td>
@@ -239,4 +245,5 @@
     });
 </script>
 
-</html>
+@endpush
+

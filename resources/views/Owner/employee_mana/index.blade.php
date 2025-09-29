@@ -165,7 +165,7 @@
                             <div class="btn-group" style="display: flex; justify-content: center;">
                                 <a href="/admin/employees/${employee.employee_id}/edit"
                                    class="btn btn-warning btn-sm">
-                                    <i class="material-icons">&#xE254;</i>
+                                    <i class="far fa-pen"></i>
                                 </a>
                             </div>
                         </td>

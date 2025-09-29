@@ -10,14 +10,18 @@ use App\Models\Category;
 use App\Models\Image;
 use App\Models\ImageProduct;
 use App\Models\CategoryProduct;
+use App\Models\OrderDetail;
+use App\Models\ProductDetail;
 use App\Models\SizeProduct;
 use App\Models\ShippingMethod;
 use App\Models\Sports;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -35,7 +39,7 @@ class ProductController extends Controller
                     return $q->where('product_name', 'LIKE', "%{$query}%");
                 })
                 ->when($categoryId, function ($q) use ($categoryId) {
-                    return $q->whereHas('categories', function ($q) use ($categoryId) {
+                    return $q->whereHas('category', function ($q) use ($categoryId) {
                         $q->where('categories.category_id', $categoryId);
                     });
                 })
@@ -75,13 +79,26 @@ class ProductController extends Controller
     {
         try {
             // Lấy danh sách sản phẩm với relationships
-            $products = Product::with(['brand', 'material', 'categories', 'images'])
+            $today = Carbon::today();
+            $products = Product::with([
+                'brand',
+                'material',
+                'category',
+                'images',
+                'productDetail',
+                'category.discounts' => function ($q) use ($today) {
+                    $q->where('status', 1)
+                        ->where('start', '<=', $today)
+                        ->where('end', '>=', $today);
+                }
+            ])
                 ->paginate(10);
 
-            // Lấy danh sách categories, brands và materials để dùng cho filter
             $categories = Category::all();
             $brands = Brand::all();
             $materials = Material::all();
+
+            // dd($products->toArray()); 
 
             return view('management.product_mana.index', compact(
                 'products',
@@ -102,109 +119,120 @@ class ProductController extends Controller
         $sizes = Size::all();
         $categories = Category::all();
         $images = Image::all();
+        $sports = Sports::all();
 
         return view('management.product_mana.create', compact(
             'brands',
             'materials',
             'sizes',
             'categories',
+            'sports',
             'images'
         ));
     }
 
+
     public function store(Request $request)
     {
-        $messages = [
-            'product_name.required' => 'Vui lòng nhập tên sản phẩm',
-            'price.min' => 'Giá sản phẩm phải từ 1,000 VNĐ trở lên',
-            'price.max' => 'Giá sản phẩm không được vượt quá 1,000,000,000 VNĐ',
-            'price.required' => 'Vui lòng nhập giá sản phẩm',
-            'price.numeric' => 'Giá sản phẩm phải là số',
-            'main_image_id.required' => 'Vui lòng chọn ảnh chính',
-            'category_ids.required' => 'Vui lòng chọn ít nhất một danh mục',
-            'size_ids.required' => 'Vui lòng chọn ít nhất một size',
-        ];
-
+        // Validate
         $request->validate([
             'product_name' => 'required|string|max:150',
-            'status' => 'boolean',
-            'quantity' => 'required|integer|min:0',
-            'price' => [
-                'required',
-                'numeric',
-                'min:1000',
-                'max:1000000000',
-            ],
-            'discount' => 'nullable|numeric|min:0|max:100',
-            'description' => 'nullable|string',
-            'brand_id' => 'required|exists:brands,brand_id',
-            'material_id' => 'required|exists:materials,material_id',
-            'size_ids' => 'required|array|min:1',
-            'size_ids.*' => 'exists:sizes,size_id',
-            'category_ids' => 'required|array|min:1',
-            'category_ids.*' => 'exists:categories,category_id',
-            'main_image_id' => 'required|exists:images,image_id',
-            'sub_image_ids' => 'nullable|array|max:3',
-            'sub_image_ids.*' => 'exists:images,image_id',
-        ], $messages);
+            'price'        => 'required|numeric|min:1000|max:1000000000',
+            'discount'     => 'nullable|numeric|min:0|max:100',
+            'quantity'     => 'required|integer|min:0',
+            'brand_id'     => 'required|exists:brands,id',
+            'material_id'  => 'required|string|max:255',
+            'category_id'  => 'required|exists:categories,id',
+            'type_product'  => 'required|string|max:255',
+            'sport_id'     => 'required|exists:sports,id',
+            'status'       => 'nullable|in:0,1',
+            'gender'       =>  'required|string|max:255',
+            'description'  => 'nullable|string',
+            'color'  => 'nullable|string',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image_hover.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            'product_name.required' => 'Vui lòng nhập tên sản phẩm',
+            'price.required'        => 'Vui lòng nhập giá sản phẩm',
+            'brand_id.required'     => 'Vui lòng chọn thương hiệu',
+            'material_id.required'  => 'Vui lòng chọn chất liệu',
+            'category_id.required'  => 'Vui lòng chọn danh mục',
+            'sport_id.required'     => 'Vui lòng chọn môn thể thao',
+        ]);
 
         try {
             DB::beginTransaction();
 
-            $price = (int) str_replace([',', '.'], '', $request->price);
+            // Giá
+            // $price = (int) str_replace([',', '.'], '', $request->price);
 
-            $product = Product::create([
-                'product_name' => $request->product_name,
-                'status' => $request->status ?? true,
-                'quantity' => $request->quantity,
-                'price' => $price,
-                'discount' => $request->discount ?? 0,
-                'description' => $request->description,
-                'brand_id' => $request->brand_id,
-                'material_id' => $request->material_id,
-                'NumberOfSize' => count($request->size_ids),
-                'NumberOfCategory' => count($request->category_ids),
-                'NumberOfImage' => count(array_merge([$request->main_image_id], $request->sub_image_ids ?? [])),
-            ]);
-
-            // Đính kèm các size
-            foreach ($request->size_ids as $index => $sizeId) {
-                SizeProduct::create([
-                    'product_id' => $product->product_id,
-                    'size_id' => $sizeId,
-                    'size_order' => $index,
-                ]);
+            // Xử lý ảnh chính
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('images/products'), $filename);
+                $imagePath = 'images/products/' . $filename;
             }
 
-            // Đính kèm các danh mục
-            foreach ($request->category_ids as $index => $categoryId) {
-                CategoryProduct::create([
-                    'product_id' => $product->product_id,
-                    'category_id' => $categoryId,
-                    'category_order' => $index,
-                    'category_role' => 'main'
-                ]);
-            }
-
-            // Đính kèm ảnh chính
-            ImageProduct::create([
-                'product_id' => $product->product_id,
-                'image_id' => $request->main_image_id,
-                'image_order' => 0,
-                'image_role' => 'main'
-            ]);
-
-            // Đính kèm ảnh phụ nếu có
-            if ($request->sub_image_ids) {
-                foreach ($request->sub_image_ids as $index => $imageId) {
-                    ImageProduct::create([
-                        'product_id' => $product->product_id,
-                        'image_id' => $imageId,
-                        'image_order' => $index + 1,
-                        'image_role' => 'sub'
-                    ]);
+            $imageHoverPaths = [];
+            if ($request->hasFile('image_hover')) {
+                foreach ($request->file('image_hover') as $file) {
+                    if ($file) {
+                        $filename = time() . '_' . $file->getClientOriginalName();
+                        $file->move(public_path('images/products/hover'), $filename);
+                        $imageHoverPaths[] = 'images/products/hover/' . $filename;
+                    }
                 }
             }
+            $typeMap = [
+                'shirt'    => 'Áo',
+                'trousers' => 'Quần',
+                'ball'     => 'Bóng',
+                'socks'    => 'Tất',
+                'shoes'    => 'Giày',
+                'tool'     => 'Dụng cụ',
+            ];
+
+            // 'discount'     => $request->discount ?? 0,
+            $product_id = 'P' . Str::upper(Str::random(8));
+            // Tạo sản phẩm
+            $product = Product::create([
+                'name' => $request->product_name,
+                'type' => $request->type_product,
+                'price'        =>  $request->price,
+                'short_description'  => $request->description,
+                'amount'     => $request->quantity,
+                'brand_id'     => $request->brand_id,
+                'gender'  => $request->gender,
+                'product_id'  => $product_id,
+                'entry_date' => Carbon::now()->format('Y-m-d'),
+                'sport_id'     => $request->sport_id,
+                'status'       => $request->status ?? 1,
+                'image'        => $imagePath,
+                'image_hover'  => json_encode($imageHoverPaths),
+            ]);
+
+            $product_detail = ProductDetail::create([
+                'product_id'  => $product_id,
+                'material'  => $request->material_id,
+                'color'  => $request->color,
+            ]);
+
+            $typeSize = strtolower($request->type_product) === 'shoes' ? 'shoes' : 'qa';
+            $sizes = Size::where('type', $typeSize)->pluck('size_id'); // lấy danh sách size_id
+
+            foreach ($sizes as $sizeId) {
+                SizeProduct::create([
+                    'product_id' => $product->id,
+                    'size_id'    => $sizeId,
+                ]);
+            }
+
+            $category  = CategoryProduct::create([
+                'category_id' => $request->category_id,
+                'product_id' => $product->id,
+            ]);
 
             DB::commit();
 
@@ -221,10 +249,22 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load(['category', 'images']);
+        $today = Carbon::today();
+
+        $product->load([
+            'brand',
+            'material',
+            'category',
+            'productDetail',
+            'category.discounts' => function ($q) use ($today) {
+                $q->where('status', 1)
+                    ->where('start', '<=', $today)
+                    ->where('end', '>=', $today);
+            }
+        ]);
 
         return view('management.product_mana.edit', [
-            'product' => $product->load(['category', 'sizes', 'images']),
+            'product' => $product,
             'categories' => Category::all(),
             'sizes' => Size::all(),
             'brands' => Brand::all(),
@@ -232,102 +272,57 @@ class ProductController extends Controller
             'images' => Image::all(),
         ]);
     }
-
     public function update(Request $request, Product $product)
     {
-        $product->load(['category', 'sizes', 'images']);
-
         $messages = [
             'product_name.required' => 'Vui lòng nhập tên sản phẩm',
             'price.min' => 'Giá sản phẩm phải từ 1,000 VNĐ trở lên',
             'price.max' => 'Giá sản phẩm không được vượt quá 1,000,000,000 VNĐ',
             'price.required' => 'Vui lòng nhập giá sản phẩm',
             'price.numeric' => 'Giá sản phẩm phải là số',
-            'main_image_id.required' => 'Vui lòng chọn ảnh chính',
-            'category_ids.required' => 'Vui lòng chọn ít nhất một danh mục',
-            'size_ids.required' => 'Vui lòng chọn ít nhất một size',
+            'brand_id.required' => 'Vui lòng chọn thương hiệu',
         ];
 
         $request->validate([
             'product_name' => 'required|string|max:150',
-            'status' => 'boolean',
-            'quantity' => 'required|integer|min:0',
-            'price' => ['required', 'numeric', 'min:1000', 'max:1000000000'],
-            'discount' => 'nullable|numeric|min:0|max:100',
-            'description' => 'nullable|string',
-            'brand_id' => 'required|exists:brands,brand_id',
-            'material_id' => 'required|exists:materials,material_id',
-            'size_ids' => 'required|array|min:1',
-            'size_ids.*' => 'exists:sizes,size_id',
-            'category_ids' => 'required|array|min:1',
-            'category_ids.*' => 'exists:categories,category_id',
-            'main_image_id' => 'required|exists:images,image_id',
-            'sub_image_ids' => 'nullable|array|max:3',
-            'sub_image_ids.*' => 'exists:images,image_id',
+            'status'       => 'nullable|boolean',
+            'amount'       => 'required|integer|min:0',
+            'price'        => ['required', 'numeric', 'min:1000', 'max:1000000000'],
+            'discount'     => 'nullable|numeric|min:0|max:100',
+            'description'  => 'nullable|string',
+            'brand_id'     => 'required|exists:brands,id',
+            'material'     => 'nullable|string|max:255', // bạn nhập trực tiếp material text
+            'image'        => 'nullable|string',         // ảnh chính URL
+            'image_hover'  => 'nullable|string',         // nhiều URL cách nhau dấu phẩy
         ], $messages);
 
         try {
             DB::beginTransaction();
 
-            $price = (int) str_replace([',', '.'], '', $request->price);
 
-            // Cập nhật thông tin cơ bản
+
+            // convert image_hover thành mảng (nếu dùng cast trong model thì Laravel tự convert JSON ↔ array)
+            $imageHoverString = $request->input('image_hover');
+            $subImagesArray = array_filter(array_map('trim', explode(',', $imageHoverString)));
+
+            // cập nhật thông tin cơ bản cho Product
             $product->update([
-                'product_name' => $request->product_name,
-                'status' => $request->status ?? true,
-                'quantity' => $request->quantity,
-                'price' => $price,
-                'discount' => $request->discount,
-                'description' => $request->description,
-                'brand_id' => $request->brand_id,
-                'material_id' => $request->material_id,
-                'NumberOfSize' => count($request->size_ids),
-                'NumberOfCategory' => count($request->category_ids),
-                'NumberOfImage' => count(array_merge([$request->main_image_id], $request->sub_image_ids ?? [])),
+                'name'             => $request->product_name,
+                'status'           => $request->status ?? 1,
+                'amount'           => $request->amount,
+                'price'            => $request->price,
+                'discount'         => $request->discount,
+                'short_description' => $request->description,
+                'brand_id'         => $request->brand_id,
+                'image'            => $request->image,
+                'image_hover'      => $subImagesArray, // nếu model cast 'array', nó lưu JSON
             ]);
 
-            // Cập nhật danh mục
-            CategoryProduct::where('product_id', $product->product_id)->delete();
-            foreach ($request->category_ids as $index => $categoryId) {
-                CategoryProduct::create([
-                    'product_id' => $product->product_id,
-                    'category_id' => $categoryId,
-                    'category_order' => $index,
-                    'category_role' => 'main'
+            // cập nhật material vào bảng product_detail nếu cần
+            if ($product->productDetail) {
+                $product->productDetail->update([
+                    'material' => $request->material,
                 ]);
-            }
-
-            // Cập nhật size
-            SizeProduct::where('product_id', $product->product_id)->delete();
-            foreach ($request->size_ids as $index => $sizeId) {
-                SizeProduct::create([
-                    'product_id' => $product->product_id,
-                    'size_id' => $sizeId,
-                    'size_order' => $index,
-                ]);
-            }
-
-            // Cập nhật ảnh
-            ImageProduct::where('product_id', $product->product_id)->delete();
-
-            // Thêm ảnh chính
-            ImageProduct::create([
-                'product_id' => $product->product_id,
-                'image_id' => $request->main_image_id,
-                'image_order' => 0,
-                'image_role' => 'main'
-            ]);
-
-            // Thêm ảnh phụ
-            if ($request->sub_image_ids) {
-                foreach ($request->sub_image_ids as $index => $imageId) {
-                    ImageProduct::create([
-                        'product_id' => $product->product_id,
-                        'image_id' => $imageId,
-                        'image_order' => $index + 1,
-                        'image_role' => 'sub'
-                    ]);
-                }
             }
 
             DB::commit();
@@ -343,12 +338,12 @@ class ProductController extends Controller
         }
     }
 
+
     public function show(Product $product)
     {
         try {
             $today = now()->toDateString();
 
-            // Eager load relationships cho sản phẩm hiện tại
             $product->load([
                 'brand',
                 'material',
@@ -356,6 +351,8 @@ class ProductController extends Controller
                 'sizes',
                 'productDetail'
             ]);
+
+
 
             // Lấy shipping methods
             $shippingMethods = ShippingMethod::all();
@@ -398,29 +395,24 @@ class ProductController extends Controller
     public function adminShow(Product $product)
     {
         try {
-            // Eager load all relationships
+            $today = Carbon::today();
+
+            // load quan hệ lên chính $product được inject
             $product->load([
                 'brand',
                 'material',
                 'category',
-                'sizes',
-                'images'
+                'productDetail',
+                'category.discounts' => function ($q) use ($today) {
+                    $q->where('status', 1)
+                        ->where('start', '<=', $today)
+                        ->where('end', '>=', $today);
+                }
             ]);
 
-            // Get main image and sub images
-            $mainImage = $product->images()
-                ->wherePivot('image_role', 'main')
-                ->first();
-
-            $subImages = $product->images()
-                ->wherePivot('image_role', 'sub')
-                ->orderByPivot('image_order')
-                ->get();
 
             return view('management.product_mana.detail', [
                 'product' => $product,
-                'mainImage' => $mainImage,
-                'subImages' => $subImages,
                 'shippingMethods' => ShippingMethod::all()
             ]);
         } catch (\Exception $e) {
@@ -429,18 +421,18 @@ class ProductController extends Controller
         }
     }
 
+
     public function destroy(Product $product)
     {
         try {
             DB::beginTransaction();
 
             // Xóa các bản ghi liên quan
-            CategoryProduct::where('product_id', $product->product_id)->delete();
-            ImageProduct::where('product_id', $product->product_id)->delete();
-            SizeProduct::where('product_id', $product->product_id)->delete(); // Thêm dòng này
-
+            CategoryProduct::where('product_id', $product->id)->delete();
+            ProductDetail::where('product_id', $product->product_id)->delete();
+            OrderDetail::where('product_id', $product->id)->delete();
+            SizeProduct::where('product_id', $product->id)->delete();
             // Thêm các bảng liên quan khác nếu có, ví dụ:
-            // OrderDetail::where('product_id', $product->product_id)->delete();
 
             $product->delete();
 

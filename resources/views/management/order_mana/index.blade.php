@@ -151,7 +151,7 @@
 
                                             <a href="{{ route('admin.order.edit', $order->order_id) }}"
                                                 class="btn btn-sm btn-warning" title="Chỉnh sửa">
-                                                <i class="material-icons">&#xE254;</i>
+                                                <i class="far fa-pen"></i>
                                             </a>
 
                                             @if ($order->order_status == 'pending')
@@ -327,7 +327,7 @@
                         <i class="material-icons">visibility</i>
                     </a>
                     <a href="/admin/orders/${order.order_id}/edit" class="btn btn-sm btn-warning" title="Chỉnh sửa">
-                        <i class="material-icons">&#xE254;</i>
+                        <i class="far fa-pen"></i>
                     </a>
                 </div>
             </td>

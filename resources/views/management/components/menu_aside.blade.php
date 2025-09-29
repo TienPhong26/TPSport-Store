@@ -58,27 +58,27 @@
                             <i class="lni lni-grid-alt"></i> Quản lý Danh mục
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('admin.image') }}">
                             <i class="lni lni-image"></i> Quản lý Hình ảnh Sản phẩm
                         </a>
-                    </li>
-                    <li>
+                    </li> --}}
+                    {{-- <li>
                         <a href="{{ route('admin.size') }}">
                             <i class="lni lni-ruler-alt"></i> Quản lý Size Sản phẩm
                         </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{ route(name: 'admin.brand') }}">
                             <i class="lni lni-flag"></i> Quản lý Thương hiệu
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('admin.material') }}">
                             <i class="lni lni-layers"></i> Quản lý Chất liệu
                         </a>
-                    </li>
-                    <li>
+                    </li> --}}
+                    {{-- <li>
                         <a href="{{ route('admin.payment') }}">
                             <i class="lni lni-credit-cards"></i> Quản lý Phương thức thanh toán
                         </a>
@@ -87,7 +87,7 @@
                         <a href="{{ route('admin.shipping') }}">
                             <i class="lni lni-delivery"></i> Quản lý Phương thức vận chuyển
                         </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{ route('admin.voucher') }}">
                             <i class="lni lni-ticket"></i> Quản lý Voucher

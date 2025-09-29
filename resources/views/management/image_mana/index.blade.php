@@ -93,7 +93,7 @@
                                     <td>
                                         <a href="{{ route('admin.image.edit', ['image' => $image->image_id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="far fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.image.delete', $image->image_id) }}"
                                             method="POST" style="display:inline">
@@ -101,7 +101,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa" data-toggle="tooltip"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không? Hình ảnh sẽ bị xóa khỏi tất cả sản phẩm liên quan.')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>

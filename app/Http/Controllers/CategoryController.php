@@ -18,7 +18,7 @@ class CategoryController extends Controller
             $query = $request->get('query', '');
             Log::info('Category search query:', ['query' => $query]);
 
-            $categories = Category::where('category_name', 'LIKE', "%{$query}%")
+            $categories = Category::where('name', 'LIKE', "%{$query}%")
                 ->orWhere('category_id', 'LIKE', "%{$query}%")
                 ->get();
 
@@ -49,7 +49,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'category_name' => 'required|string|max:100|unique:categories'
+            'name' => 'required|string|max:100|unique:categories'
         ]);
 
         try {
@@ -72,7 +72,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'category_name' => 'required|string|max:255|unique:categories,category_name,' . $category->category_id . ',category_id',
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->category_id . ',category_id',
         ]);
 
         try {

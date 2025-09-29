@@ -278,6 +278,8 @@ Route::prefix('admin')->group(function () {
                 ->name('admin.voucher.toggle');
             Route::get('/search', [VoucherController::class, 'search'])
                 ->name('admin.voucher.search');
+            Route::get('{id}/edit-ajax', [VoucherController::class, 'editAjax'])->name('admin.voucher.editAjax');
+
         });
 
         // Routes quản lý payment-methods

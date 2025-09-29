@@ -14,40 +14,39 @@ use Exception;
 class VoucherController extends Controller
 {
     public function search(Request $request)
-{
-    try {
-        $query = $request->get('query', '');
-        $status = $request->get('status');
+    {
+        try {
+            $query = $request->get('query', '');
+            $status = $request->get('status');
 
-        Log::info('Search params:', ['query' => $query, 'status' => $status]);
+            Log::info('Search params:', ['query' => $query, 'status' => $status]);
 
-        $vouchers = Voucher::query();
+            $vouchers = Voucher::query();
 
-        // Search by voucher code
-        if (!empty($query)) {
-            $vouchers->where('code', 'LIKE', "%{$query}%");
+            // Search by voucher code
+            if (!empty($query)) {
+                $vouchers->where('code', 'LIKE', "%{$query}%");
+            }
+
+            // Filter by status
+            if ($status !== '' && $status !== null) {
+                $vouchers->where('status', $status === '1');
+            }
+
+            $results = $vouchers->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $results
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Voucher search error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tìm kiếm'
+            ], 500);
         }
-
-        // Filter by status
-        if ($status !== '' && $status !== null) {
-            $vouchers->where('status', $status === '1');
-        }
-
-        $results = $vouchers->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $results
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Voucher search error: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Có lỗi xảy ra khi tìm kiếm'
-        ], 500);
     }
-}
 
     public function index()
     {
@@ -163,6 +162,12 @@ class VoucherController extends Controller
                 ->with('error', 'Có lỗi xảy ra khi tạo voucher: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    public function editAjax($id)
+    {
+        $voucher = Voucher::findOrFail($id);
+        return view('management.voucher_mana.edit', compact('voucher'));
     }
 
     public function edit(Voucher $voucher)

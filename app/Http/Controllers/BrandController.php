@@ -50,29 +50,51 @@ class BrandController extends Controller
     {
         $validated = $request->validate([
             'brand_name'    => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'brand_image'   => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            'brand_image'   => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'brand_banner'  => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
 
+        // Xử lý ảnh logo thương hiệu
         if ($request->hasFile('brand_image')) {
             $image = $request->file('brand_image');
             $filename = time() . '_' . $image->getClientOriginalName();
 
+            // Lưu vào storage/app/public/brands
             $image->storeAs('brands', $filename, 'public');
 
+            // Copy sang public/storage/brands
             $sourcePath = storage_path("app/public/brands/{$filename}");
             $destinationPath = public_path("storage/brands/{$filename}");
-
             if (!File::exists(public_path('storage/brands'))) {
                 File::makeDirectory(public_path('storage/brands'), 0755, true);
             }
-
             File::copy($sourcePath, $destinationPath);
 
-            // Lưu đường dẫn relative trong DB
+            // Đường dẫn lưu trong DB
             $validated['brand_image'] = "storage/brands/{$filename}";
         }
 
+        // Xử lý ảnh banner thương hiệu (nếu có)
+        if ($request->hasFile('brand_banner')) {
+            $banner = $request->file('brand_banner');
+            $bannerName = time() . '_banner_' . $banner->getClientOriginalName();
+
+            // Lưu vào storage/app/public/brands/banners
+            $banner->storeAs('brands/banners', $bannerName, 'public');
+
+            // Copy sang public/storage/brands/banners
+            $sourceBanner = storage_path("app/public/brands/banners/{$bannerName}");
+            $destinationBanner = public_path("storage/brands/banners/{$bannerName}");
+            if (!File::exists(public_path('storage/brands/banners'))) {
+                File::makeDirectory(public_path('storage/brands/banners'), 0755, true);
+            }
+            File::copy($sourceBanner, $destinationBanner);
+
+            // Đường dẫn lưu trong DB
+            $validated['brand_banner'] = "storage/brands/banners/{$bannerName}";
+        }
+
+        // Lưu dữ liệu vào DB
         Brand::create($validated);
 
         return redirect()->route('admin.brand')->with('success', 'Thêm thương hiệu thành công');
@@ -84,22 +106,25 @@ class BrandController extends Controller
         return view('management.brand_mana.edit', compact('brand'));
     }
 
+
     public function update(Request $request, Brand $brand)
     {
         $validated = $request->validate([
-            'brand_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'brand_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            'brand_name'   => 'required|string|max:255',
+            'description'  => 'nullable|string',
+            'brand_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'brand_banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096'
         ]);
+
 
         if ($request->hasFile('brand_image')) {
             $image = $request->file('brand_image');
             $filename = time() . '_' . $image->getClientOriginalName();
 
-            // 1️⃣ Xóa ảnh cũ nếu có
+            // Xóa ảnh cũ nếu có
             if ($brand->brand_image) {
                 $oldPathInStorage = storage_path('app/public/' . str_replace('storage/', '', $brand->brand_image));
-                $oldPathInPublic = public_path($brand->brand_image);
+                $oldPathInPublic  = public_path($brand->brand_image);
 
                 if (File::exists($oldPathInStorage)) {
                     File::delete($oldPathInStorage);
@@ -110,28 +135,60 @@ class BrandController extends Controller
                 }
             }
 
-            // 2️⃣ Lưu ảnh mới vào storage/app/public/brands
+            // Lưu ảnh mới
             $image->storeAs('brands', $filename, 'public');
 
-            // 3️⃣ Copy sang public/storage/brands
             $sourcePath = storage_path("app/public/brands/{$filename}");
             $destinationPath = public_path("storage/brands/{$filename}");
 
-            // Tạo thư mục nếu chưa có
             if (!File::exists(public_path('storage/brands'))) {
                 File::makeDirectory(public_path('storage/brands'), 0755, true);
             }
 
             File::copy($sourcePath, $destinationPath);
 
-            // 4️⃣ Lưu đường dẫn mới vào DB
             $validated['brand_image'] = 'storage/brands/' . $filename;
+        }
+
+        if ($request->hasFile('brand_banner')) {
+            $banner = $request->file('brand_banner');
+            $bannerFilename = time() . '_' . $banner->getClientOriginalName();
+
+            // Xóa banner cũ nếu có
+            if ($brand->brand_banner) {
+                $oldBannerPathInStorage = storage_path('app/public/' . str_replace('storage/', '', $brand->brand_banner));
+                $oldBannerPathInPublic  = public_path($brand->brand_banner);
+
+                if (File::exists($oldBannerPathInStorage)) {
+                    File::delete($oldBannerPathInStorage);
+                }
+
+                if (File::exists($oldBannerPathInPublic)) {
+                    File::delete($oldBannerPathInPublic);
+                }
+            }
+
+            // Lưu banner mới
+            $banner->storeAs('brands/banner', $bannerFilename, 'public');
+
+            $sourceBannerPath = storage_path("app/public/brands/banner/{$bannerFilename}");
+            $destinationBannerPath = public_path("storage/brands/banner/{$bannerFilename}");
+
+            if (!File::exists(public_path('storage/brands/banner'))) {
+                File::makeDirectory(public_path('storage/brands/banner'), 0755, true);
+            }
+
+            File::copy($sourceBannerPath, $destinationBannerPath);
+
+            $validated['brand_banner'] = 'storage/brands/banner/' . $bannerFilename;
         }
 
         $brand->update($validated);
 
-        return redirect()->route('admin.brand')->with('success', 'Cập nhật thương hiệu thành công');
+        return redirect()->route('admin.brand')
+            ->with('success', 'Cập nhật thương hiệu thành công');
     }
+
     public function destroy(Brand $brand)
     {
         try {

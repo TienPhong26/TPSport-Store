@@ -1,48 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('management.layouts.admin_layout') {{-- đường dẫn tới layout chính --}}
 
-<head>
+@section('title', 'Chỉnh sửa nhân viên')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Quản lý khách hàng</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
-    <script src="{{ asset('js/alert.js') }}"></script>
+@endpush
 
-</head>
-
-<body>
-    @include('management.components.admin-header')
-
-    <div class="alerts-container">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-    </div>
-
+@section('content')
     <div class="container">
         <div class="table-responsive">
             <div class="table-wrapper">
@@ -56,7 +28,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6">
-                                <h2>Danh sách <b>Khách hàng</b></h2>
+                                <h2>Danh sách khách hàng</h2>
                             </div>
                             <div class="col-sm-6">
                                 <div class="search-box">
@@ -67,7 +39,7 @@
                             </div>
                         </div>
                     </div>
-                    <table class="table table-striped table-hover table-bordered" id="customerTable">
+                    <table class="table table-striped table-hover table-bordered text-center" style="font-size: 14px;" id="customerTable">
                         <thead>
                             <tr>
                                 <th>STT</th>
@@ -87,16 +59,19 @@
                                     <td>{{ $customer->email }}</td>
                                     <td>{{ $customer->phone_number }}</td>
                                     <td>{{ $customer->address }}</td>
-                                    <td>
-                                        <span style="font-size: 9px; display: flex; justify-content: center;"
-                                            class="badge status-badge {{ $customer->status == 'active' ? 'badge-success' : 'badge-danger' }}">
+                                     <td class="text-center">
+                                        <span class="badge status-badge {{ $customer->status == 'active' ? 'badge-success' : 'badge-danger' }}"
+                                            style="font-size:14px;">
                                             {{ $customer->status == 'active' ? 'Đang hoạt động' : 'Đã bị cấm' }}
                                         </span>
                                     </td>
+
                                     <td>
-                                        <button onclick="toggleStatus({{ $customer->customer_id }})"
-                                            class="btn btn-sm {{ $customer->status == 'active' ? 'btn-danger' : 'btn-success' }}">
-                                            {{ $customer->status == 'active' ? 'Cấm tài khoản' : 'Mở khóa tài khoản' }}
+                                        <button onclick="toggleStatus({{ $customer->id }})"
+                                            class="btn btn-sm ">
+                                            {!! $customer->status == 'active'
+                                                ? '<i class="fas fa-lock"></i>'
+                                                : '<i class="fas fa-lock-open"></i>' !!}
                                         </button>
                                     </td>
                                 </tr>
@@ -125,8 +100,10 @@
                 </div>
             </div>
         </div>
+        </div>
+@endsection
 
-</body>
+@push('scripts')
 
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
@@ -235,7 +212,7 @@
                     <div class="btn-group">
                         <a href="/admin/customer/${customer.customer_id}/edit"
                            class="btn btn-warning btn-sm">
-                            <i class="material-icons">&#xE254;</i>
+                            <i class="far fa-pen"></i>
                         </a>
                     </div>
                 </td>
@@ -246,5 +223,5 @@
         searchInput.addEventListener('input', handleSearch);
     });
 </script>
+@endpush
 
-</html>

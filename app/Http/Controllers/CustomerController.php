@@ -132,7 +132,7 @@ class CustomerController extends Controller
         ]);
 
         // Create new customer
-        $customer = new \App\Models\Customer();
+        $customer = new Customer();
         $customer->customer_name = $validated['customer_name'];
         $customer->email = $validated['email'];
         $customer->phone_number = $validated['phone_number'] ?? null;
@@ -153,7 +153,7 @@ class CustomerController extends Controller
 
     public function index()
     {
-        $customers = Customer::orderBy('customer_id', 'asc')->paginate(8);
+        $customers = Customer::orderBy('id', 'asc')->paginate(8);
         return view('management.customer_mana.index', compact('customers'));
     }
 

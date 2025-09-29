@@ -1,28 +1,17 @@
-<!DOCTYPE html>
-@php
+@extends('management.layouts.admin_layout')
+
+@section('title', 'Quản lý voucher')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
+    
+@endpush
+
+@section('content')
+   @php
     use Illuminate\Support\Facades\Storage;
 @endphp
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý Voucher</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
-    <script src="{{ asset('js/alert.js') }}"></script>
-</head>
-
-<body>
-    @include('management.components.admin-header')
-
-    <div class="alerts-container">
+<div class="alerts-container">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -46,7 +35,7 @@
         @endif
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
@@ -83,7 +72,7 @@
                             </div>
                         </div>
                     </div>
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="table table-striped table-hover table-bordered text-center">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -124,10 +113,12 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="{{ route('admin.voucher.edit', $voucher->id) }}" class="edit"
+                                            <a href="javascript:void(0)" 
+                                                class="edit-voucher" 
+                                                data-id="{{ $voucher->id }}" 
                                                 title="Sửa">
-                                                <i class="material-icons">&#xE254;</i>
-                                            </a>
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
 
                                             <form action="{{ route('admin.voucher.toggle', $voucher->id) }}"
                                                 method="POST" class="d-inline">
@@ -148,7 +139,7 @@
                                                 <button type="submit" class="delete" title="Xóa"
                                                     onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này không?')"
                                                     style="background: none; border: none; padding: 5px;">
-                                                    <i class="material-icons">&#xE872;</i>
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -157,6 +148,24 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Chỉnh sửa Voucher</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('admin.voucher.update', $voucher->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        
+                                        <button type="submit" class="btn btn-primary">Cập nhật Voucher</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="clearfix">
                         <div class="footer-container">
                             <div class="pagination-info">
@@ -180,9 +189,10 @@
             </div>
         </div>
     </div>
-</body>
+@endsection
 
-<script>
+@push('scripts')
+   <script>
     function nextPage() {
         const currentPage = {{ $vouchers->currentPage() }};
         const totalPages = {{ $vouchers->lastPage() }};
@@ -283,7 +293,7 @@
                 <td>
                     <div class="action-buttons">
                         <a href="/admin/vouchers/${voucher.id}/edit" class="edit" title="Sửa">
-                            <i class="material-icons">&#xE254;</i>
+                            <i class="far fa-pen"></i>
                         </a>
                         <form action="/admin/vouchers/${voucher.id}/toggle" method="POST" class="d-inline">
                             @csrf
@@ -299,7 +309,7 @@
                             <button type="submit" class="delete" title="Xóa"
                                 onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này không?')"
                                 style="background: none; border: none; padding: 5px;">
-                                <i class="material-icons">&#xE872;</i>
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>
                     </div>
@@ -319,4 +329,6 @@
     });
 </script>
 
-</html>
+@endpush
+
+

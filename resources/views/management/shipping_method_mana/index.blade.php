@@ -88,7 +88,7 @@
                                     <td>
                                         <a href="{{ route('admin.shipping.edit', $shipping->method_id) }}"
                                             class="edit-btn">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="far fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.shipping.delete', $shipping->method_id) }}"
                                             method="POST" style="display:inline">
@@ -96,7 +96,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa phương thức vận chuyển này?')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -172,14 +172,14 @@
                 }).format(shipping.shipping_fee)}</td>
                 <td>
                     <a href="/admin/shippings/${shipping.method_id}/edit" class="edit-btn">
-                        <i class="material-icons">&#xE254;</i>
+                        <i class="far fa-pen"></i>
                     </a>
                     <form action="/admin/shippings/${shipping.method_id}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="delete" title="Xóa"
                             onclick="return confirm('Bạn có chắc chắn muốn xóa phương thức vận chuyển này?')">
-                            <i class="material-icons">&#xE872;</i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 </td>
