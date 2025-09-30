@@ -11,6 +11,14 @@
     transition: transform 0.3s ease;
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
+.filter-box ul li label {
+    color: #000; /* màu đen */
+    font-weight: normal; /* nếu muốn chữ không in đậm */
+}
+
+.brand-list li label {
+    color: #000;
+}
 
 /* Hero Section */
 .hero-overlay {

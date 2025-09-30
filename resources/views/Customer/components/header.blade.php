@@ -65,12 +65,31 @@
                                     NỮ
                                 </a>
                             </li>
+                            @php
+                                // Lấy các discount còn hiệu lực
+                                $discounts = \App\Models\Discount::where('status', 1)
+                                    ->where('start', '<=', now())
+                                    ->where('end', '>=', now())
+                                    ->get();
+                            @endphp
 
-                            <li>
-                                <a href="{{ route('brands.list') }}"
-                                    class="{{ request()->routeIs('brands.list') ? 'active' : '' }}">OUTLET</a>
+                            <li class="user-dropdown">
+                                <a href="{{ route('outlet.list') }}"
+                                    class="{{ request()->routeIs('outlet.list') ? 'active' : '' }}">
+                                    OUTLET
+                                </a>
+
+                                <ul class="dropdown-menu price-list">
+                                    @foreach ($discounts as $discount)
+                                        <li>
+                                            <a href="{{ route('outlet.list', ['discounts[]' => $discount->id]) }}"
+                                                class="{{ in_array($discount->id, request('discounts', [])) ? 'active' : '' }}">
+                                                {{ $discount->des ?? 'Giảm giá ' . $discount->discount_percent . '%' }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </li>
-
                             <li>
                                 <a href="{{ route('customer.about') }}"
                                     class="{{ request()->routeIs('customer.about') ? 'active' : '' }}">GIỚI THIỆU</a>

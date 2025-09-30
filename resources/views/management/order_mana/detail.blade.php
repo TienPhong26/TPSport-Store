@@ -101,7 +101,7 @@
                             @foreach ($order->orderDetails as $detail)
                                 <tr>
                                     <td>
-                                        <div>{{ $detail->product->product_name }}</div>
+                                        <div>{{ $detail->product->name }}</div>
                                         <small class="text-muted">Mã SP: {{ $detail->product->product_id }}</small>
                                     </td>
                                     <td>{{ number_format($detail->sold_price) }} VNĐ</td>

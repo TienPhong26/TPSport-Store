@@ -19,6 +19,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\CustomerAuthentication;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\OutletController;
 use App\Models\Customer;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,9 @@ Route::get('/product/male-female/{gender}', [ProductController::class, 'maleFema
     ->name('product.male-female');
 Route::get('/product/{product_id}/reviews', [FeedbackController::class, 'showProductReviews'])->name('product.reviews');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('shop.product.show');
+
+Route::get('/outlet/list', [OutletController::class, 'newProduct'])
+    ->name('outlet.list');
 
 Route::middleware('auth:customer')->group(function () {
     Route::get('/customer/profile', [CustomerController::class, 'profile'])->name('customer.profile');

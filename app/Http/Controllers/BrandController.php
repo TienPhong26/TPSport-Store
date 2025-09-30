@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\Size;
 use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -287,10 +288,15 @@ class BrandController extends Controller
                 }
             });
         }
-
+        $sizesShoes = Size::where('type', 'shoes')->get();
+        $sizesQA    = Size::where('type', 'qa')->get();
         // Size filter
-        if ($request->has('sizes') && !empty($request->input('sizes'))) {
-            $sizes = $request->input('sizes');
+        $sizes = array_merge(
+            $request->input('sizeQA', []),
+            $request->input('sizeSho', [])
+        );
+
+        if (!empty($sizes)) {
             $query->whereHas('sizes', function ($q) use ($sizes) {
                 $q->whereIn('size_name', $sizes);
             });
@@ -339,6 +345,8 @@ class BrandController extends Controller
             'brands' => $brands,
             'type_product' => $type_product,
             'type_sport' => $type_sport,
+            'sizesShoes'   => $sizesShoes,
+            'sizesQA'      => $sizesQA,
         ]);
     }
 }

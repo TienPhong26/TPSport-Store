@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Size;
 use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -112,7 +113,7 @@ class CategoryController extends Controller
             ->get();
         $type_sport = Sports::select('id', 'title')
             ->get();
-            
+
 
 
         $sportsIds = $request->input('sports'); // nhận từ ?sports[]=15
@@ -182,15 +183,19 @@ class CategoryController extends Controller
                 }
             });
         }
-
+        $sizesShoes = Size::where('type', 'shoes')->get();
+        $sizesQA    = Size::where('type', 'qa')->get();
         // Size filter
-        if ($request->has('sizes') && !empty($request->input('sizes'))) {
-            $sizes = $request->input('sizes');
+        $sizes = array_merge(
+            $request->input('sizeQA', []),
+            $request->input('sizeSho', [])
+        );
+
+        if (!empty($sizes)) {
             $query->whereHas('sizes', function ($q) use ($sizes) {
                 $q->whereIn('size_name', $sizes);
             });
         }
-
         // Sort products
         switch ($request->input('sort')) {
             case 'price_asc':
@@ -236,6 +241,8 @@ class CategoryController extends Controller
             'type_sport' => $type_sport,
             'sport_id' => $sportId,
             'sports' => $sportsPro,
+            'sizesShoes'   => $sizesShoes,
+            'sizesQA'      => $sizesQA,
         ]);
     }
 }

@@ -37,7 +37,7 @@
                     @foreach ($cartOrder->orderDetails as $item)
                         <li class="list-group-item d-flex justify-content-between lh-sm">
                             <div>
-                                <h6 class="my-0">{{ $item->product->product_name }}</h6>
+                                <h6 class="my-0">{{ $item->product->name }}</h6>
                                 <small class="text-st">Số lượng: {{ $item->sold_quantity }}</small>
                             </div>
                             <span

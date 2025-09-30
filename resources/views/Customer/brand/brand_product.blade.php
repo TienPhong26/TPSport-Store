@@ -148,22 +148,44 @@
                             </ul>
 
                             <h3>KÍCH CỠ QUẦN ÁO</h3>
-                            <ul class="price-list">
+                            {{-- <ul class="price-list">
                                 @php
                                     $clothingSizes = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '116', '122', '128', '140', '152', '164'];
                                 @endphp
                                 @foreach ($clothingSizes as $size)
                                     <li><input type="checkbox" name="sizes[]" value="{{ $size }}" {{ in_array($size, request('sizes', [])) ? 'checked' : '' }}> {{ $size }}</li>
                                 @endforeach
+                            </ul> --}}
+                            <ul class="price-list">
+                                @foreach ($sizesQA as $qa)
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="sizeQA[]" value="{{ $qa->size_name }}"
+                                                {{ in_array($qa->size_name, request('sizeQA', [])) ? 'checked' : '' }}>
+                                            {{ $qa->size_name }}
+                                        </label>
+                                    </li>
+                                @endforeach
                             </ul>
 
                             <h3>KÍCH CỠ GIÀY DÉP</h3>
-                            <ul class="shoe-size-list">
+                            {{-- <ul class="shoe-size-list">
                                 @php
                                     $shoeSizes = ['4', '4-', '5', '5-', '6', '6-', '7-', '8', '8-', '9', '9-', '10', '10-', '11', '1', '2', '2-', '3', '3-', '4', '10K', '11K', '12K', '13K'];
                                 @endphp
                                 @foreach ($shoeSizes as $size)
                                     <li><input type="checkbox" name="sizes[]" value="{{ $size }}" {{ in_array($size, request('sizes', [])) ? 'checked' : '' }}> {{ $size }}</li>
+                                @endforeach
+                            </ul> --}}
+                             <ul class="price-list">
+                                @foreach ($sizesShoes as $sho)
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="sizeSho[]" value="{{ $sho->size_name }}"
+                                                {{ in_array($qa->size_name, request('sizeSho', [])) ? 'checked' : '' }}>
+                                            {{ $sho->size_name }}
+                                        </label>
+                                    </li>
                                 @endforeach
                             </ul>
 

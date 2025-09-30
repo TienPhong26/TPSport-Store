@@ -213,7 +213,7 @@
                     </div>
 
                     <div class="product-info">
-                        <h4>{{ $detail->product->product_name }}</h4>
+                        <h4>{{ $detail->product->name }}</h4>
                         <p class="product-description">{{ $detail->product->description }}</p>
                         <div class="product-details">
                             <span class="category">

@@ -186,7 +186,7 @@
                 </div>
                 <p style="color: #000000; text-align: center; max-width: 761px;">Gọi đặt mua 0397760835 (8:00 - 22:00)</p>
             </form>
-            {{-- @if ($product->amount > 0)
+            @if ($product->amount > 0)
                 @auth('customer')
                 @else
                     <div class="alert alert-warning mt-2">
@@ -199,7 +199,7 @@
                         Sản phẩm đã hết hàng
                     </span>
                 </div>
-            @endif --}}
+            @endif
         </div>
         {{-- mo ta san pham --}}
         
@@ -281,9 +281,7 @@
                     // Lấy số lượng khách chọn
                     const quantity = form.querySelector('input[name="quantity"]').value;
 
-                    // Hiển thị hộp thoại xác nhận trước khi gửi request
                     if (!confirm(`Bạn có chắc chắn muốn thêm ${quantity} sản phẩm này vào giỏ hàng?`)) {
-                        // Nếu khách chọn Cancel thì không gửi request, không reload
                         return;
                     }
 

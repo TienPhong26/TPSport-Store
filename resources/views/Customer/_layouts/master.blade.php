@@ -188,6 +188,22 @@
                 opacity: 1;
             }
         }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
     </style>
     @stack('styles')
 </head>

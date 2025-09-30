@@ -51,7 +51,7 @@
             <div class="lookbooks-column">
                 <div class="lookbooks-banner lookbooks-1">
                     <div class="lookbooks-banner__photo">
-                        <div class="lookbook-image-wrap"> <a href="/balo"> <img
+                        <div class="lookbook-image-wrap"> <a href="/search?query=balo"> <img
                                     class="img-fluid m-auto object-contain mh-100 w-auto" width="100" height="592"
                                     src="//bizweb.dktcdn.net/100/340/361/themes/913887/assets/lookbook_1_image.jpg?1757583852149"
                                     alt="lookbook_1_image.jpg"> </a> </div>
@@ -61,7 +61,7 @@
             <div class="lookbooks-column">
                 <div class="lookbooks-banner lookbooks-2">
                     <div class="lookbooks-banner__photo">
-                        <div class="lookbook-image-wrap"> <a href="/giay-chay"> <img
+                        <div class="lookbook-image-wrap"> <a href="/search?query=giày"> <img
                                     class="img-fluid m-auto object-contain mh-100 w-auto" width="100" height="592"
                                     src="//bizweb.dktcdn.net/100/340/361/themes/913887/assets/lookbook_2_image.jpg?1757583852149"
                                     alt="lookbook_2_image.jpg"> </a> </div>
@@ -71,7 +71,7 @@
             <div class="lookbooks-column">
                 <div class="lookbooks-banner lookbooks-3">
                     <div class="lookbooks-banner__photo">
-                        <div class="lookbook-image-wrap"> <a href="/sale"> <img
+                        <div class="lookbook-image-wrap"> <a href="/search?query=chạy bộ"> <img
                                     class="img-fluid m-auto object-contain mh-100 w-auto" width="100" height="592"
                                     src="//bizweb.dktcdn.net/100/340/361/themes/913887/assets/lookbook_3_image.jpg?1757583852149"
                                     alt="lookbook_3_image.jpg"> </a> </div>

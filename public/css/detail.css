@@ -565,11 +565,11 @@ hr {
     width: 100%;
 }
 #pills-ecoms {
-    color: #000;   /* chữ màu đen */
+    color: #000;  
 }
 
 /* Nếu cần in đậm các tiêu đề */
-#pills-ecoms h5, p ,li,ul,strong{
+#pills-ecoms h5 ,li,ul,strong{
     color: #000;   
     font-size: 16px;
     font-weight: 500;

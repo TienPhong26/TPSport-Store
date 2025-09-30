@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Image;
 use App\Models\ImageProduct;
 use App\Models\CategoryProduct;
+use App\Models\Discount;
 use App\Models\OrderDetail;
 use App\Models\ProductDetail;
 use App\Models\SizeProduct;
@@ -23,7 +24,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class ProductController extends Controller
+class OutletController extends Controller
 {
     public function search(Request $request)
     {
@@ -452,12 +453,8 @@ class ProductController extends Controller
     public function newProduct(Request $request)
     {
         $brand = Brand::select('id', 'brand_name')->get();
-
-        $type_product = Product::select('type')
-            ->distinct()
-            ->get();
-        $type_sport = Sports::select('id', 'title')
-            ->get();
+        $type_product = Product::select('type')->distinct()->get();
+        $type_sport = Sports::select('id', 'title')->get();
 
         $typeMap = [
             'shirt'    => 'Áo',
@@ -470,29 +467,38 @@ class ProductController extends Controller
             $item->type_name = $typeMap[$item->type] ?? $item->type;
             return $item;
         });
-        $date = now()->subDays(30);
+        $today = Carbon::today();
 
+        $discountQuery = Discount::where('status', 1)
+            ->where('start', '<=', $today)
+            ->where('end', '>=', $today);
+
+        if ($request->filled('discounts')) {
+            $discountQuery->whereIn('id', $request->input('discounts'));
+        }
+
+        $discountCategories = $discountQuery->pluck('category_id');
+
+        // Query sản phẩm trong các category đó
         $query = Product::with(['brand', 'images', 'sport'])
             ->where('status', 1)
-            ->where('entry_date', '>', $date)
-            ->where('amount', '>', 0);
+            ->where('amount', '>', 0)
+            ->whereHas('category', function ($q) use ($discountCategories) {
+                $q->whereIn('categories.id', $discountCategories);
+            });
 
-        // Product type filter
-        if ($request->has('types') && !empty($request->input('types'))) {
-            $types = $request->input('types');
-            $query->whereIn('type', $types);
+        // --- filter giống code cũ ---
+        if ($request->filled('types')) {
+            $query->whereIn('type', $request->input('types'));
         }
-        if ($request->has('brands') && !empty($request->input('brands'))) {
-            $brands = $request->input('brands');
-            $query->whereIn('brand_id', $brands);
+        if ($request->filled('brands')) {
+            $query->whereIn('brand_id', $request->input('brands'));
         }
-        if ($request->has('sports') && !empty($request->input('sports'))) {
-            $sports = $request->input('sports');
-            $query->whereIn('sport_id', $sports);
+        if ($request->filled('sports')) {
+            $query->whereIn('sport_id', $request->input('sports'));
         }
 
-        // Price range filter
-        if ($request->has('price_ranges') && !empty($request->input('price_ranges'))) {
+        if ($request->filled('price_ranges')) {
             $priceRanges = $request->input('price_ranges');
             $query->where(function ($q) use ($priceRanges) {
                 foreach ($priceRanges as $range) {
@@ -520,7 +526,6 @@ class ProductController extends Controller
             });
         }
 
-        // Size filter
         $sizes = array_merge(
             $request->input('sizeQA', []),
             $request->input('sizeSho', [])
@@ -532,8 +537,7 @@ class ProductController extends Controller
             });
         }
 
-
-        // Sort products
+        // sort
         switch ($request->input('sort')) {
             case 'price_asc':
                 $query->orderBy('price', 'asc');
@@ -554,7 +558,7 @@ class ProductController extends Controller
                 $query->orderBy('product_id', 'asc');
         }
 
-        $products = $query->paginate(perPage: 16);
+        $products = $query->paginate(16);
 
         if ($request->ajax()) {
             return response()->json([
@@ -570,11 +574,8 @@ class ProductController extends Controller
             ]);
         }
 
-        $sizesShoes = Size::where('type', 'shoes')
-            ->get();
-
-        $sizesQA = Size::where('type', 'qa')
-            ->get();
+        $sizesShoes = Size::where('type', 'shoes')->get();
+        $sizesQA = Size::where('type', 'qa')->get();
 
         return view('Customer.products.new_product', [
             'products' => $products,

@@ -145,7 +145,7 @@ class Product extends Model
     {
         return [
             'product_id' => $this->product_id,
-            'product_name' => $this->product_name,
+            'name' => $this->product_name,
             'description' => $this->description,
             'price' => $this->price,
             'category_name' => $this->getPrimaryCategory() ? $this->getPrimaryCategory()->category_name : null,

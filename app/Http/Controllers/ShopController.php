@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Product;
 use App\Models\Feedback;
+use App\Models\Size;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -75,8 +76,12 @@ class ShopController extends Controller
             $productsDiscount = $productsDiscount->merge($mapped);
         }
 
-        $productsByCategory = $productsDiscount->groupBy('discount_category_id');
-
+        // $productsByCategory = $productsDiscount->groupBy('discount_category_id');
+        $productsByCategory = $productsDiscount
+            ->groupBy('discount_category_id')
+            ->map(function ($products) {
+                return $products->take(5); // lấy 5 sản phẩm đầu cho mỗi category
+            });
         //shoes
         $prdshoes = Product::with([
             'brand',
@@ -162,29 +167,153 @@ class ShopController extends Controller
 
     public function search(Request $request)
     {
-        $query = $request->get('query');
-
-        if (empty($query)) {
-            return redirect()->route('shop.home');
-        }
-
         try {
-            $products = Product::with(['brand', 'images', 'categories'])
-                ->where('status', 'active')
-                ->where(function ($q) use ($query) {
-                    $q->where('product_name', 'LIKE', "%{$query}%")
-                        ->orWhereHas('brand', function ($q) use ($query) {
-                            $q->where('brand_name', 'LIKE', "%{$query}%");
-                        });
-                })
-                ->paginate(12);
+            // Lấy dữ liệu hỗ trợ filter
+            $brand = Brand::select('id', 'brand_name')->get();
+            $type_product = Product::select('type')->distinct()->get();
+            $type_sport = Sports::select('id', 'title')->get();
 
-            return view('Customer.filter.search_result', compact('products', 'query'));
+            $typeMap = [
+                'shirt'    => 'Áo',
+                'trousers' => 'Quần',
+                'ball'     => 'Bóng',
+                'socks'    => 'Tất',
+                'shoes'    => 'Giày',
+            ];
+
+            $type_product = $type_product->map(function ($item) use ($typeMap) {
+                $item->type_name = $typeMap[$item->type] ?? $item->type;
+                return $item;
+            });
+
+            // Lấy size
+            $sizesShoes = Size::where('type', 'shoes')->get();
+            $sizesQA    = Size::where('type', 'qa')->get();
+
+            // Query chính
+            $productsQuery = Product::with(['brand', 'images', 'sport'])
+                ->where('status', 1);
+
+            // Search query
+            $queryText = $request->get('query', ''); // default rỗng
+
+            if (!empty($queryText)) {
+                $productsQuery->where(function ($q) use ($queryText) {
+                    $q->where('name', 'LIKE', "%{$queryText}%")
+                        ->orWhereHas('brand', function ($q2) use ($queryText) {
+                            $q2->where('brand_name', 'LIKE', "%{$queryText}%");
+                        });
+                });
+            }
+
+            // Filter type
+            if ($request->filled('types')) {
+                $productsQuery->whereIn('type', $request->input('types'));
+            }
+
+            // Filter brand
+            if ($request->filled('brands')) {
+                $productsQuery->whereIn('brand_id', $request->input('brands'));
+            }
+
+            // Filter sport
+            if ($request->filled('sports')) {
+                $productsQuery->whereIn('sport_id', $request->input('sports'));
+            }
+
+            // Filter price
+            if ($request->filled('price_ranges')) {
+                $priceRanges = $request->input('price_ranges');
+                $productsQuery->where(function ($q) use ($priceRanges) {
+                    foreach ($priceRanges as $range) {
+                        switch ($range) {
+                            case 'under_500k':
+                                $q->orWhere('price', '<', 500000);
+                                break;
+                            case '500k_1m':
+                                $q->orWhereBetween('price', [500000, 1000000]);
+                                break;
+                            case '1m_2m':
+                                $q->orWhereBetween('price', [1000000, 2000000]);
+                                break;
+                            case '2m_3m':
+                                $q->orWhereBetween('price', [2000000, 3000000]);
+                                break;
+                            case '3m_5m':
+                                $q->orWhereBetween('price', [3000000, 5000000]);
+                                break;
+                            case 'over_5m':
+                                $q->orWhere('price', '>', 5000000);
+                                break;
+                        }
+                    }
+                });
+            }
+
+            // Filter size
+            $sizes = array_merge(
+                $request->input('sizeQA', []),
+                $request->input('sizeSho', [])
+            );
+
+            if (!empty($sizes)) {
+                $productsQuery->whereHas('sizes', function ($q) use ($sizes) {
+                    $q->whereIn('size_name', $sizes);
+                });
+            }
+
+            // Sort
+            switch ($request->input('sort')) {
+                case 'price_asc':
+                    $productsQuery->orderBy('price', 'asc');
+                    break;
+                case 'price_desc':
+                    $productsQuery->orderBy('price', 'desc');
+                    break;
+                case 'name_asc':
+                    $productsQuery->orderBy('name', 'asc');
+                    break;
+                case 'name_desc':
+                    $productsQuery->orderBy('name', 'desc');
+                    break;
+                case 'newest':
+                    $productsQuery->orderBy('created_at', 'desc');
+                    break;
+                default:
+                    $productsQuery->orderBy('product_id', 'asc');
+            }
+
+            $products = $productsQuery->paginate(16)->withQueryString();
+
+            // AJAX response
+            if ($request->ajax()) {
+                return response()->json([
+                    'products_html' => view('customer.widget._products_grid', compact('products', 'brand'))->render(),
+                    'filters_html'  => view('customer.widget._active_filters', compact('brand', 'type_sport', 'type_product'))->render(),
+                ]);
+            }
+
+            // Nếu user submit search form nhưng query rỗng, redirect về home
+            if (empty($queryText)) {
+                return redirect()->route('shop.home');
+            }
+
+            // View kết quả
+            return view('customer.filter.search_result', [
+                'products'     => $products,
+                'query'        => $queryText,
+                'brand'        => $brand,
+                'type_sport'   => $type_sport,
+                'type_product' => $type_product,
+                'sizesShoes'   => $sizesShoes,
+                'sizesQA'      => $sizesQA,
+            ]);
         } catch (\Exception $e) {
-            Log::error('Search error: ' . $e->getMessage());
+            \Log::error('Search error: ' . $e->getMessage());
             return back()->with('error', 'Có lỗi xảy ra trong quá trình tìm kiếm');
         }
     }
+
 
     public function searchSuggestions(Request $request)
     {
@@ -196,9 +325,9 @@ class ShopController extends Controller
 
         try {
             $suggestions = Product::where('status', 'active')
-                ->where('product_name', 'LIKE', "%{$query}%")
+                ->where('name', 'LIKE', "%{$query}%")
                 ->limit(5)
-                ->pluck('product_name');
+                ->pluck('name');
 
             return response()->json($suggestions);
         } catch (\Exception $e) {

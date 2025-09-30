@@ -214,7 +214,7 @@ class OrderController extends Controller
                     foreach ($order->orderDetails as $orderDetail) {
                         $product = $orderDetail->product;
                         if ($product->quantity < $orderDetail->sold_quantity) {
-                            throw new \Exception("Sản phẩm {$product->product_name} không đủ số lượng trong kho");
+                            throw new \Exception("Sản phẩm {$product->name} không đủ số lượng trong kho");
                         }
                         $product->quantity -= $orderDetail->sold_quantity;
                         $product->save();
