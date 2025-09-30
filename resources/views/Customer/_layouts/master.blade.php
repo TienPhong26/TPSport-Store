@@ -9,7 +9,9 @@
     {{-- CSS chung --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/iconlogo2.png') }}">
+    {{-- <link rel="icon" type="image/x-icon" href="{{ asset('images/iconlogo2.png') }}"> --}}
+    <link rel="icon" type="image/png"  href="{{ asset('images/iconlogo2.png') }}">
+
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
