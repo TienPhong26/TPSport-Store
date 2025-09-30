@@ -140,11 +140,14 @@ class CustomerController extends Controller
         $customer->password = bcrypt($validated['password']);
         $customer->save();
 
-        // Auto-login after registration
-        $request->session()->put('customer_id', $customer->customer_id);
+        // Optionally, auto-login
+        // $request->session()->put('customer_id', $customer->customer_id);
 
-        return redirect()->route('customer.login');
+        // Redirect to login with success message
+        return redirect()->route('customer.login')
+            ->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
     }
+
 
     public function home()
     {
@@ -380,7 +383,7 @@ class CustomerController extends Controller
         ]);
 
         $authCustomer = Auth::guard('customer')->user();
-        $customer = Customer::find($authCustomer->customer_id);
+        $customer = Customer::find($authCustomer->id);
 
         if (!Hash::check($request->current_password, $customer->password)) {
             return back()->with('error', 'Mật khẩu hiện tại không đúng.');

@@ -19,16 +19,16 @@
 @endpush
 
 @section('content')
-<nav class="breadcrumb-wrapper" aria-label="breadcrumb">
-    <div class="container">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{{ route('shop.home') }}">Trang chủ</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page"><a href="#">Đăng nhập tài khoản</a></li>
-        </ol>
-    </div>
-</nav>
+    <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('shop.home') }}">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="#">Đăng nhập tài khoản</a></li>
+            </ol>
+        </div>
+    </nav>
     <div class="login-container">
         <!-- Left Side - Welcome Section -->
         <div class="login-left">
@@ -92,19 +92,19 @@
                         <i class="fas fa-lock text-black"></i>
                         Mật khẩu
                     </label>
-                    <div style="position: relative;">
+                    <div class="password-container">
                         <input type="password" id="password" name="password"
                             class="form-control @error('password') is-invalid @enderror" placeholder="Nhập mật khẩu của bạn"
                             required autocomplete="current-password">
-                        <span class="password-toggle">
-                            <i class="fas fa-eye-slash"></i>
-                        </span>
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Form Options -->
-                <div class="form-options">
-                   
+                <div class="form-options register-link">
+
                     <a href="{{ route('customer.forgot-password') }}" class="forgot-password text-black">
                         Quên mật khẩu?
                     </a>
@@ -124,38 +124,22 @@
     <script src="{{ asset('js/customer_login.js') }}"></script>
 
     <!-- Additional Scripts -->
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            @if(!$errors->any() && !session('error'))
-                document.getElementById('email').focus();
-            @endif
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('i');
 
-                @if(config('app.env') === 'local')
-                    const demoBtn = document.createElement('button');
-                    demoBtn.type = 'button';
-                    demoBtn.className = 'btn-demo';
-                    demoBtn.innerHTML = '<i class="fas fa-user-cog"></i> Demo Account';
-                    demoBtn.style.cssText = `
-                                                    position: fixed;
-                                                    top: 20px;
-                                                    right: 20px;
-                                                    padding: 10px 15px;
-                                                    background: #28a745;
-                                                    color: white;
-                                                    border: none;
-                                                    border-radius: 8px;
-                                                    cursor: pointer;
-                                                    font-size: 0.9rem;
-                                                    z-index: 1000;
-                                                `;
-
-                    demoBtn.addEventListener('click', function () {
-                        document.getElementById('email').value = 'demo@example.com';
-                        document.getElementById('password').value = 'password1@';
-                    });
-
-                    document.body.appendChild(demoBtn);
-                @endif
-                });
-    </script> --}}
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    </script>
 @endpush

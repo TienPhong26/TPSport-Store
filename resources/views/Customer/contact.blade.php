@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="contact-details">
                                     <h5>Địa chỉ</h5>
-                                    <p>123 Đường ABC, Quận 1<br>Thành phố Hồ Chí Minh, Việt Nam</p>
+                                    <p>21 Nam Từ Liêm<br>Hà Nội, Việt Nam</p>
                                 </div>
                             </div>
 
@@ -235,7 +235,7 @@
                     <div class="map-overlay">
                         <div class="map-info">
                             <h4><i class="fas fa-map-marker-alt me-2"></i>Vị trí của chúng tôi</h4>
-                            <p>123 Đường ABC, Quận 1, TP.HCM</p>
+                            <p>21 Nam Từ Liêm, Hà Nội, Việt Nam</p>
                             <a href="https://maps.google.com" target="_blank" class="btn btn-outline-light btn-sm">
                                 <i class="fas fa-directions me-1"></i>Chỉ đường
                             </a>

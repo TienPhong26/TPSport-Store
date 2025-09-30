@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\Permission\Traits\HasRoles; 
+use Spatie\Permission\Traits\HasRoles;
 
 class Customer extends Authenticatable
 {
@@ -21,6 +21,8 @@ class Customer extends Authenticatable
         'email',
         'password',
         'phone_number',
+        'reset_token',
+        'reset_token_expire',
         'address',
         'status',
     ];

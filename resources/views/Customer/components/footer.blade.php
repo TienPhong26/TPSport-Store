@@ -57,7 +57,7 @@
                     <div class="contact-info">
                         <div class="contact-item">
                             <i class="fa fa-map-marker"></i>
-                            <p>123 Đường ABC, Quận XYZ<br>TP. Hà Nội, Việt Nam</p>
+                            <p>21 Nam Từ Liêm<br>Hà Nội, Việt Nam</p>
                         </div>
                         <div class="contact-item">
                             <i class="fa fa-envelope"></i>

@@ -4,16 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Đặt lại mật khẩu - {{ config('app.name') }}</title>
-    <!--[if mso]>
-    <noscript>
-        <xml>
-            <o:OfficeDocumentSettings>
-                <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-        </xml>
-    </noscript>
-    <![endif]-->
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/iconlogo2.png') }}">
+    <title>Đặt lại mật khẩu - TP Sport</title>
+
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
     <!-- Email Container -->
@@ -31,9 +24,7 @@
                                     <td align="center">
                                         <!-- Logo -->
                                         <div style="background-color: rgba(255,255,255,0.2); width: 80px; height: 80px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM12 7C13.1 7 14 7.9 14 9S13.1 11 12 11 10 10.1 10 9 10.9 7 12 7ZM18 15.59C16.5 17.42 14.23 18.5 12 18.5S7.5 17.42 6 15.59V14C6 11.79 9.58 10 12 10S18 11.79 18 14V15.59Z" fill="white"/>
-                                            </svg>
+                                           <img src="{{ asset('images/iconlogo2.png') }}" class="img"> 
                                         </div>
 
                                         <!-- Title -->
@@ -130,7 +121,7 @@
                                         <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0; line-height: 1.5;">
                                             <strong>{{ config('app.name') }}</strong>
                                             <br>
-                                            Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM
+                                            Địa chỉ: 21 Nam Từ Liêm, Hà Nội, Việt Nam
                                             <br>
                                             Website: <a href="{{ config('app.url') }}" style="color: #4299e1; text-decoration: none;">{{ config('app.url') }}</a>
                                         </p>

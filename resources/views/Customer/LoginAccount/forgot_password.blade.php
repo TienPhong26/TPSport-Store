@@ -1,30 +1,22 @@
+@extends('customer._layouts.master')
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Quên mật khẩu - {{ config('app.name', 'Shop') }}</title>
+@section('title', 'Quên mật khẩu')
 
-    <!-- CSS Files -->
+{{-- CSS riêng cho trang brand list --}}
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/brand_list.css') }}">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/customer_auth.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Meta tags -->
-    <meta name="description" content="Khôi phục mật khẩu cho tài khoản của bạn">
-    <meta name="robots" content="noindex, nofollow">
-
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-</head>
-<body>
+
+@endpush
+
+@section('content')
     <div class="auth-container">
         <!-- Header Section -->
         <div class="auth-header">
-            <div class="auth-icon">
-                <i class="fas fa-key"></i>
-            </div>
+       
             <h2>Quên mật khẩu?</h2>
             <p>Đừng lo lắng! Nhập email của bạn và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
         </div>
@@ -76,32 +68,24 @@
 
                 <!-- Email Field -->
                 <div class="form-group">
-                    <label for="email">
-                        <i class="fas fa-envelope"></i>
+                    <label for="email" class="text-black">
+                        <i class="fas fa-envelope text-black"></i>
                         Địa chỉ Email
                     </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        class="form-control @error('email') is-invalid @enderror"
-                        placeholder="Nhập địa chỉ email của bạn"
-                        value="{{ old('email') }}"
-                        required
-                        autocomplete="email"
-                        autofocus
-                    >
+                    <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                        placeholder="Nhập địa chỉ email của bạn" value="{{ old('email') }}" required autocomplete="email"
+                        autofocus>
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn-primary">
+                <button type="submit" class="btn-login mb-3">
                     <i class="fas fa-paper-plane"></i>
                     Gửi liên kết đặt lại
                 </button>
 
                 <!-- Back to Login -->
                 <a href="{{ route('customer.login') }}" class="btn-secondary">
-                    <i class="fas fa-arrow-left"></i>
+                    <i class="fas fa-arrow-left text-black"></i>
                     Quay lại đăng nhập
                 </a>
             </form>
@@ -119,10 +103,10 @@
         </div>
     </div>
 
-    <!-- JavaScript Files -->
+@endsection
+@push('scrpits')
     <script src="{{ asset('js/customer_auth.js') }}"></script>
 
-    <!-- Additional Scripts -->
     <script>
         function resendEmail() {
             const email = document.getElementById('email').value;
@@ -137,12 +121,11 @@
         }
 
         // Auto-focus on email input
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const emailInput = document.getElementById('email');
             if (emailInput && !emailInput.value) {
                 emailInput.focus();
             }
         });
     </script>
-</body>
-</html>
+@endpush
