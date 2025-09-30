@@ -51,7 +51,7 @@
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Voucher</b></h2>
                             <a href="{{ route('admin.voucher.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -113,12 +113,11 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="javascript:void(0)" 
-                                                class="edit-voucher" 
-                                                data-id="{{ $voucher->id }}" 
+                                            <a href="{{ route('admin.voucher.edit', $voucher->id) }}" class="edit"
                                                 title="Sửa">
-                                                    <i class="fas fa-pen"></i>
-                                                </a>
+                                                <i class="material-icons">&#xE254;</i>
+                                            </a>
+
 
                                             <form action="{{ route('admin.voucher.toggle', $voucher->id) }}"
                                                 method="POST" class="d-inline">
@@ -293,7 +292,7 @@
                 <td>
                     <div class="action-buttons">
                         <a href="/admin/vouchers/${voucher.id}/edit" class="edit" title="Sửa">
-                            <i class="far fa-pen"></i>
+                            <i class="fas fa-pen"></i>
                         </a>
                         <form action="/admin/vouchers/${voucher.id}/toggle" method="POST" class="d-inline">
                             @csrf

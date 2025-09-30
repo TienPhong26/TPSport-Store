@@ -60,7 +60,7 @@
     <div class="product-grid">
         @forelse($prdshoes as $product)
             <div class="pro">
-                <a href="{{ route('shop.product.show', $product->product_id) }}" class="btn-view">
+                <a href="{{ route('shop.product.show', $product->id) }}" class="btn-view">
                     <div class="product-image-container position-relative">
                         {{-- Ảnh mặc định --}}
                         <img src="{{ asset($product->image) }}" class="w-100 product-image" alt="{{ $product->name }}">

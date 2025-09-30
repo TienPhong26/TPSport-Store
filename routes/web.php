@@ -19,7 +19,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\CustomerAuthentication;
 use App\Http\Controllers\AdminController;
-
+use App\Models\Customer;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
 
 // 1) Trang chủ khách hàng
@@ -338,3 +339,4 @@ Route::prefix('employee')->group(function () {
         Route::post('/logout', [EmployeeController::class, 'logout'])->name('employee.logout');
     });
 });
+

@@ -6,15 +6,10 @@
                     <img src="{{ asset('images/tplogo.png') }}">
                 </a>
             </div>
-
-
-
             <div class="menu">
                 <a href="#menu" class="openicon">☰</a>
                 <nav id="menu">
                     <ul>
-
-
                         <ul class="menu_aside">
                             <li class="user-dropdown">
                                 <a href="{{ route('brands.list') }}"
@@ -22,7 +17,7 @@
                                 @if(isset($brands) && $brands->count())
                                     <ul class="dropdown-menu">
                                         @foreach($brands as $brand)
-                                            <li>
+                                            <li style="align-items: center;">
                                                 <a href="{{ route('brands.show', ['brand' => $brand->id]) }}">
                                                     {{ $brand->brand_name }}
                                                 </a>

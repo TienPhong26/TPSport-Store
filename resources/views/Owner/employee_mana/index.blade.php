@@ -1,4 +1,4 @@
-@extends('management.layouts.admin_layout') {{-- đường dẫn tới layout chính --}}
+@extends('management.layouts.admin_layout') 
 
 @section('title', 'Quản lý nhân viên')
 
@@ -165,7 +165,7 @@
                             <div class="btn-group" style="display: flex; justify-content: center;">
                                 <a href="/admin/employees/${employee.employee_id}/edit"
                                    class="btn btn-warning btn-sm">
-                                    <i class="far fa-pen"></i>
+                                    <i class="fas fa-pen"></i>
                                 </a>
                             </div>
                         </td>

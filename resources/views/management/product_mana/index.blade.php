@@ -295,7 +295,7 @@
                         <i class="fas fa-eye"></i>
                     </a>
                     <a href="/admin/products/${product.product_id}/edit" class="edit" title="Sửa">
-                        <i class="far fa-pen"></i>
+                        <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/products/${product.product_id}" method="POST" style="display:inline">
                         @csrf

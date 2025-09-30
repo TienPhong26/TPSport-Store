@@ -11,36 +11,36 @@ use App\Traits\PreventBackHistory;
 class OwnerController extends Controller
 {
     use PreventBackHistory;
-    // public function login(Request $request)
-    // {
-    //     try {
-    //         $credentials = $request->validate([
-    //             'email' => ['required', 'email'],
-    //             'password' => ['required'],
-    //             // 'role' => ['required', 'in:owner,employee']
-    //         ]);
+    public function login(Request $request)
+    {
+        try {
+            $credentials = $request->validate([
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+                'role' => ['required', 'in:owner,employee']
+            ]);
 
-    //         // $guard = $credentials['role'];
-    //         // unset($credentials['role']);
+            $guard = $credentials['role'];
+            unset($credentials['role']);
 
-    //         Log::info('Login attempt', [
-    //             'email' => $credentials['email'],
-    //             // 'guard' => $guard
-    //         ]);
+            Log::info('Login attempt', [
+                'email' => $credentials['email'],
+                'guard' => $guard
+            ]);
 
-    //         return redirect()->route('admin.dashboard');
-    //         // if (Auth::guard($guard)->attempt($credentials)) {
-    //         //     $request->session()->regenerate();
-    //         // }
+            if (Auth::guard($guard)->attempt($credentials)) {
+                $request->session()->regenerate();
+                return redirect()->route('admin.dashboard');
+            }
 
-    //         // return back()->withErrors([
-    //         //     'email' => 'Thông tin đăng nhập không hợp lệ.'
-    //         // ]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Login error: ' . $e->getMessage());
-    //         return back()->withErrors(['error' => 'Login failed.']);
-    //     }
-    // }
+            return back()->withErrors([
+                'email' => 'Thông tin đăng nhập không hợp lệ.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Login error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Login failed.']);
+        }
+    }
 
     // public function showLoginForm()
     // {
@@ -53,17 +53,17 @@ class OwnerController extends Controller
     //     return $this->preventBackHistory($response);
     // }
 
-    // public function logout(Request $request)
-    // {
-    //     Auth::guard('owner')->logout();
-    //     Auth::guard('employee')->logout();
+    public function logout(Request $request)
+    {
+        Auth::guard('owner')->logout();
+        Auth::guard('employee')->logout();
 
-    //     $request->session()->invalidate();
-    //     $request->session()->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    //     return redirect()->route('admin.login')
-    //         ->with('success', 'Đăng xuất thành công!');
-    // }
+        return redirect()->route('admin.login')
+            ->with('success', 'Đăng xuất thành công!');
+    }
 
     // public function dashboard()
     // {
@@ -106,33 +106,33 @@ class OwnerController extends Controller
 
 
 
-    public function login(Request $request)
-    {
-        try {
-            // Validate chỉ email và password
-            $credentials = $request->validate([
-                'email' => ['required', 'email'],
-                'password' => ['required'],
-            ]);
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         // Validate chỉ email và password
+    //         $credentials = $request->validate([
+    //             'email' => ['required', 'email'],
+    //             'password' => ['required'],
+    //         ]);
 
-            Log::info('Login attempt', [
-                'email' => $credentials['email'],
-            ]);
+    //         Log::info('Login attempt', [
+    //             'email' => $credentials['email'],
+    //         ]);
 
-            // Dùng guard mặc định 'web' (hoặc guard bạn cấu hình cho users)
-            if (Auth::attempt($credentials)) {
-                $request->session()->regenerate();
-                return redirect()->route('admin.dashboard');
-            }
+    //         // Dùng guard mặc định 'web' (hoặc guard bạn cấu hình cho users)
+    //         if (Auth::attempt($credentials)) {
+    //             $request->session()->regenerate();
+    //             return redirect()->route('admin.dashboard');
+    //         }
 
-            return back()->withErrors([
-                'email' => 'Thông tin đăng nhập không hợp lệ.'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Login error: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Login failed.']);
-        }
-    }
+    //         return back()->withErrors([
+    //             'email' => 'Thông tin đăng nhập không hợp lệ.'
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Login error: ' . $e->getMessage());
+    //         return back()->withErrors(['error' => 'Login failed.']);
+    //     }
+    // }
 
     public function showLoginForm()
     {

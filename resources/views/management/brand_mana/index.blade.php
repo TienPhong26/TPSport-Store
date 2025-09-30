@@ -58,7 +58,7 @@
                         <div class="col-sm-6">
                             <h2>Quản lý Thương hiệu</h2>
                                 <button type="button" class="btn btn-success mt-2 mb-4" data-bs-toggle="modal" data-bs-target="#addBrandModal">
-                                    <i class="material-icons">&#xE147;</i>
+                                    <i class="fas fa-plus"></i>
                                     <span>Thêm mới</span>
                                 </button>
                         </div>
@@ -407,7 +407,7 @@ function previewImage(input, imgSelector) {
                 <td>${limitText(brand.description, 500)}</td>
                 <td>
                     <a href="/admin/brands/${brand.id}/edit">
-                        <i class="far fa-pen"></i>
+                        <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/brands/${brand.id}"
                           method="POST"

@@ -80,6 +80,7 @@ class Order extends Model
     // Helper method to get status label
     // Add constants for order statuses
     public const STATUS_PENDING = 'pending';
+    public const STATUS_CART = 'cart';
     public const STATUS_CONFIRMED = 'confirmed';
     public const STATUS_SHIPPING = 'shipping';
     public const STATUS_COMPLETED = 'completed';
@@ -95,6 +96,7 @@ class Order extends Model
             self::STATUS_SHIPPING => 'Đang giao hàng',
             self::STATUS_COMPLETED => 'Đã hoàn thành',
             self::STATUS_CANCELLED => 'Đã hủy',
+            self::STATUS_CART => 'Đang trong giỏ hàng',
             self::STATUS_RETURNED => 'Đã hoàn trả'
         ];
 

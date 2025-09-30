@@ -31,11 +31,12 @@
                 <div class="sports-list">
                     @foreach($sports as $sport)
                         <div class="mx-2">
-                            <a href="{{ url('/sports/' . $sport->id) }}" class="sport-card">
+                            <a href="{{ route('categories.list', ['sports' => [$sport->id]]) }}" class="sport-card">
                                 <div class="sport-img">
                                     <img src="{{ $sport->image }}" alt="{{ $sport->title }}" class="img-sports">
                                 </div>
                             </a>
+
                         </div>
                     @endforeach
                 </div>
@@ -50,7 +51,7 @@
             <div class="lookbooks-column">
                 <div class="lookbooks-banner lookbooks-1">
                     <div class="lookbooks-banner__photo">
-                        <div class="lookbook-image-wrap"> <a href="https://maxxsport.com.vn/balo"> <img
+                        <div class="lookbook-image-wrap"> <a href="/balo"> <img
                                     class="img-fluid m-auto object-contain mh-100 w-auto" width="100" height="592"
                                     src="//bizweb.dktcdn.net/100/340/361/themes/913887/assets/lookbook_1_image.jpg?1757583852149"
                                     alt="lookbook_1_image.jpg"> </a> </div>
@@ -60,7 +61,7 @@
             <div class="lookbooks-column">
                 <div class="lookbooks-banner lookbooks-2">
                     <div class="lookbooks-banner__photo">
-                        <div class="lookbook-image-wrap"> <a href="https://maxxsport.com.vn/giay-chay-bo-titan-361"> <img
+                        <div class="lookbook-image-wrap"> <a href="/giay-chay"> <img
                                     class="img-fluid m-auto object-contain mh-100 w-auto" width="100" height="592"
                                     src="//bizweb.dktcdn.net/100/340/361/themes/913887/assets/lookbook_2_image.jpg?1757583852149"
                                     alt="lookbook_2_image.jpg"> </a> </div>
@@ -70,7 +71,7 @@
             <div class="lookbooks-column">
                 <div class="lookbooks-banner lookbooks-3">
                     <div class="lookbooks-banner__photo">
-                        <div class="lookbook-image-wrap"> <a href="https://maxxsport.com.vn/deal-tot-chot-ngay"> <img
+                        <div class="lookbook-image-wrap"> <a href="/sale"> <img
                                     class="img-fluid m-auto object-contain mh-100 w-auto" width="100" height="592"
                                     src="//bizweb.dktcdn.net/100/340/361/themes/913887/assets/lookbook_3_image.jpg?1757583852149"
                                     alt="lookbook_3_image.jpg"> </a> </div>

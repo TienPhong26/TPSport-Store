@@ -6,10 +6,10 @@
             <div class="article">
                 <img src="https://bizweb.dktcdn.net/thumb/medium/100/340/361/articles/500x400-13196ee1-c1d4-494c-b724-e0e7d860005a.jpg?v=1743673577927" alt="">
                 <div class="article-content">
-                    <h3 class="article-title">MAXXSPORT UPDATE VỢT PICKLEBALL & CẦU LÔNG - BỘ ĐÔI VỢT THỂ THAO ĐƯỢC MONG
+                    <h3 class="article-title">TPSPORT UPDATE VỢT PICKLEBALL & CẦU LÔNG - BỘ ĐÔI VỢT THỂ THAO ĐƯỢC MONG
                         ĐỢI</h3>
                     <p class="article-desc">
-                        Tin vui dành cho “MaxxFan”: MaxxSport chính thức lên kệ các sản phẩm vợt thể thao Pickleball và
+                        Tin vui dành cho “TPFan”: TPSPORT chính thức lên kệ các sản phẩm vợt thể thao Pickleball và
                         Cầu lông...
                     </p>
                 </div>
@@ -42,7 +42,7 @@
                 <div class="article-content">
                     <h3 class="article-title">PRIVATE SALE - ƯU ĐÃI ĐỘC QUYỀN DÀNH RIÊNG CHO BẠN</h3>
                     <p class="article-desc">
-                        🔥Chốt ngay loạt deal của MaxxSport Tân Mai, MaxxSport Lê Văn Lương và MaxxSport Trần Phú - Hà
+                        🔥Chốt ngay loạt deal của TPSPORT Tân Mai, TPSPORT Lê Văn Lương và TPSPORT Trần Phú - Hà
                         Đông 🔥Giảm tới...
                     </p>
                 </div>

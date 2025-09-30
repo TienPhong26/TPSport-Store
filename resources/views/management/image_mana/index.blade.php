@@ -59,7 +59,7 @@
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Ảnh sản phẩm</b></h2>
                             <a href="{{ route(name: 'admin.image.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -93,7 +93,7 @@
                                     <td>
                                         <a href="{{ route('admin.image.edit', ['image' => $image->image_id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="far fa-pen"></i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.image.delete', $image->image_id) }}"
                                             method="POST" style="display:inline">

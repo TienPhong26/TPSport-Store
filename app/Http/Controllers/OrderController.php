@@ -73,6 +73,7 @@ class OrderController extends Controller
     {
         $orders = Order::with(['orderDetails', 'shippingMethod', 'voucher'])
             ->orderBy('order_date', 'desc')
+             ->where('order_status', '!=', 'cart')
             ->paginate(10);
 
         return view('management.order_mana.index', compact('orders'));
@@ -116,7 +117,7 @@ class OrderController extends Controller
         $customers = Customer::all();
         $paymentMethods = PaymentMethod::all();
         $shippingMethods = ShippingMethod::all();
-
+        // dd($order->orderDetails);
         return view('management.order_mana.edit', compact(
             'order',
             'customers',
@@ -133,7 +134,7 @@ class OrderController extends Controller
             'receiver_name' => 'required|string|max:100',
             'receiver_phone' => 'required|string|max:20',
             'receiver_address' => 'required|string|max:255',
-            'customer_id' => 'required|exists:customer,id',
+            'customer_id' => 'required|exists:users,id',
             'payment_method_id' => 'required|exists:payment_methods,method_id',
             'shipping_method_id' => 'required|exists:shipping_methods,method_id',
         ]);
@@ -192,7 +193,6 @@ class OrderController extends Controller
     {
         try {
             $validStatuses = ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'];
-
             $request->validate([
                 'order_status' => ['required', Rule::in($validStatuses)]
             ], [

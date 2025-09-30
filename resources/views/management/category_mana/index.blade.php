@@ -27,7 +27,7 @@
                                 class="btn btn-success mt-2 mb-4" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#addCategoryModal">
-                                    <i class="material-icons">&#xE147;</i>
+                                    <i class="fas fa-plus"></i>
                                     <span>Thêm mới</span>
                                 </a>
                         </div>
@@ -54,7 +54,7 @@
                                     <td>
                                         <a href="{{ route('admin.category.edit', ['category' => $category->id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="far fa-pen"></i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.category.delete', $category->id) }}"
                                             method="POST" style="display:inline">
@@ -184,7 +184,7 @@
                 <td>${category.name}</td>
                 <td>
                     <a href="/admin/categories/${category.category_id}/edit" class="edit" title="Sửa">
-                        <i class="far fa-pen"></i>
+                        <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/categories/${category.category_id}" method="POST" style="display:inline; color: #e34724">
                         @csrf

@@ -61,6 +61,7 @@ class VoucherController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge(['code' => strtoupper($request->code)]);
         Log::info('Starting voucher creation process', ['input' => $request->all()]);
 
         try {

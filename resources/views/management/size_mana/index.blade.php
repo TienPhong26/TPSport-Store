@@ -59,7 +59,7 @@
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Size sản phẩm</b></h2>
                             <a href="{{ route('admin.size.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -86,7 +86,7 @@
                                     <td>
                                         <a href="{{ route('admin.size.edit', ['size' => $size->size_id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="far fa-pen"></i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.size.delete', $size->size_id) }}" method="POST"
                                             style="display:inline; color: #e34724">
@@ -176,7 +176,7 @@
                 <td>${size.size_name}</td>
                 <td>
                     <a href="/admin/sizes/${size.size_id}/edit" class="edit" title="Sửa">
-                        <i class="far fa-pen"></i>
+                        <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/sizes/${size.size_id}" method="POST" style="display:inline; color: #e34724">
                         @csrf

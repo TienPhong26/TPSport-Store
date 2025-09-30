@@ -7,9 +7,8 @@
     </div>
     <nav class="sidebar-nav">
         <ul>
-            <li class="nav-item nav-item-has-children">
-                <a href="#0" data-bs-toggle="collapse" data-bs-target="#ddmenu_1" aria-controls="ddmenu_1"
-                    aria-expanded="false" aria-label="Toggle navigation">
+            <li class="nav-item">
+                <a href="/admin/dashboard">
                     <span class="icon">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -21,6 +20,7 @@
                     <span class="text">Dashboard</span>
                 </a>
             </li>
+
             <li class="nav-item nav-item-has-children">
                 <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2"
                     aria-controls="ddmenu_2" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,14 +100,14 @@
                     </li>
                 </ul>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="{{ route('admin.charts') }}">
                     <span class="icon">
                         <i class="lni lni-bar-chart" style="font-size: 1.3em;"></i>
                     </span>
                     <span class="text">Quản lý biểu đồ</span>
                 </a>
-            </li>
+            </li> --}}
 
             <span class="divider">
                 <hr />

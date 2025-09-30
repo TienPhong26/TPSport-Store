@@ -68,7 +68,7 @@
     </div>
     @if($products->count() > 0)
         <div class="text-center mt-3 show-all-prd">
-            <a href="/adidas-moi-ve-1" title="Xem tất cả" class="btn btn-main btn-icon btn-pill">
+            <a href="/product/new-arrivals" title="Xem tất cả" class="btn btn-main btn-icon btn-pill">
                 Xem tất cả
                 <i class="fas fa-chevron-right ic-1"></i>
             </a>

@@ -21,7 +21,7 @@
             <div class="product-grid prd-discount">
                 @forelse($products as $pd)
                     <div class="pro">
-                        <a href="{{ route('shop.product.show', $pd['product_id']) }}" class="btn-view">
+                        <a href="{{ route('shop.product.show', $pd['id']) }}" class="btn-view">
                             <div class="product-image-container position-relative">
                                 <img src="{{ asset($pd['image']) }}" class="w-100 product-image" alt="{{ $pd['name'] }}">
                                 @if (!empty($pd['image_hover']))

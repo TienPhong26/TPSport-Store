@@ -59,7 +59,7 @@
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Phương thức thanh toán</b></h2>
                             <a href="{{ route('admin.payment.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -86,7 +86,7 @@
                                     <td>
                                         <a href="{{ route('admin.payment.edit', $payment->method_id) }}"
                                             class="edit-btn">
-                                            <i class="far fa-pen"></i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.payment.delete', $payment->method_id) }}"
                                             method="POST" style="display:inline">
@@ -166,7 +166,7 @@
                 <td>${payment.method_name}</td>
                 <td>
                     <a href="/admin/payments/${payment.method_id}/edit" class="edit-btn">
-                        <i class="far fa-pen"></i>
+                        <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/payments/${payment.method_id}" method="POST" style="display:inline">
                         @csrf

@@ -212,7 +212,7 @@
                     <div class="btn-group">
                         <a href="/admin/customer/${customer.customer_id}/edit"
                            class="btn btn-warning btn-sm">
-                            <i class="far fa-pen"></i>
+                            <i class="fas fa-pen"></i>
                         </a>
                     </div>
                 </td>

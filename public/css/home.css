@@ -90,7 +90,15 @@ li {
     z-index: 999;
 }
 
-
+.user-dropdown .dropdown-menu li {
+    display: flex;           /* biến <li> thành flex container */
+    align-items: center;     /* căn giữa theo chiều dọc */
+}
+.user-dropdown .dropdown-menu li a {
+    flex: 1;                 /* chiếm hết chiều ngang để link click được toàn bộ */
+    display: flex;
+    align-items: center;     /* căn giữa nội dung link nếu cần */
+}
 
 .user-dropdown .dropdown-menu li a,
 .user-dropdown .dropdown-menu li button {
@@ -101,6 +109,8 @@ li {
     background: transparent;
     border: none;
     width: 100%;
+    align-items: center;  
+
     cursor: pointer;
     border-radius: 8px;
 }
