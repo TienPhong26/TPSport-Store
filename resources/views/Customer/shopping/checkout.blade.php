@@ -379,4 +379,5 @@
         console.log('Initial baseTotal:', baseTotal);
         shippingMethod.dispatchEvent(new Event('change'));
     });
+
 </script>

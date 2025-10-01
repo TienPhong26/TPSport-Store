@@ -73,7 +73,7 @@ class OrderController extends Controller
     {
         $orders = Order::with(['orderDetails', 'shippingMethod', 'voucher'])
             ->orderBy('order_date', 'desc')
-             ->where('order_status', '!=', 'cart')
+            ->where('order_status', '!=', 'cart')
             ->paginate(10);
 
         return view('management.order_mana.index', compact('orders'));
@@ -280,10 +280,20 @@ class OrderController extends Controller
             // Log::info('Current date:', ['today' => $today]);
 
             // Get cart order and total
+            // $cartOrder = Order::where([
+            //     'customer_id' => $customer->id,
+            //     'order_status' => 'cart'
+            // ])->with(['orderDetails.product'])->firstOrFail();
+
             $cartOrder = Order::where([
                 'customer_id' => $customer->id,
                 'order_status' => 'cart'
-            ])->with(['orderDetails.product'])->firstOrFail();
+            ])->with(['orderDetails.product'])->first();
+
+            if (!$cartOrder) {
+                return redirect()->route('cart.view')
+                    ->with('error', 'Giỏ hàng của bạn đang trống.');
+            }
 
             $total = $cartOrder->getTotalAmount();
 
@@ -354,7 +364,7 @@ class OrderController extends Controller
         }
     }
 
-    public function processCheckout(Request $request)
+    public function processCheckout2(Request $request)
     {
         $request->validate([
             'receiver_name' => 'required|string|max:100',
@@ -426,6 +436,98 @@ class OrderController extends Controller
                 ->with('error', 'Có lỗi xảy ra khi đặt hàng: ' . $e->getMessage());
         }
     }
+
+
+    public function processCheckout(Request $request)
+    {
+        $request->validate([
+            'receiver_name' => 'required|string|max:100',
+            'receiver_phone' => 'required|string|max:20',
+            'receiver_address' => 'required|string|max:255',
+            'payment_method_id' => 'required|exists:payment_methods,method_id',
+            'shipping_method_id' => 'required|exists:shipping_methods,method_id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $customer = Auth::guard('customer')->user();
+
+            // Lấy giỏ hàng hiện tại
+            // $cartOrder = Order::where([
+            //     'customer_id' => $customer->id,
+            //     'order_status' => 'cart'
+            // ])->with(['orderDetails.product'])->firstOrFail();
+            $cartOrder = Order::where([
+                'customer_id' => $customer->id,
+                'order_status' => 'cart'
+            ])->with(['orderDetails.product'])->first();
+
+            if (!$cartOrder) {
+                return redirect()->route('cart.view')
+                    ->with('error', 'Giỏ hàng của bạn đang trống.');
+            }
+            // Kiểm tra tồn kho
+            foreach ($cartOrder->orderDetails as $item) {
+                if ($item->sold_quantity > $item->product->amount) {
+                    throw new \Exception("Sản phẩm {$item->product->name} chỉ còn {$item->product->amount} trong kho");
+                }
+            }
+
+            // Xử lý voucher
+            if (session()->has('voucher')) {
+                $voucherData = session('voucher');
+                $voucher = Voucher::find($voucherData['id']);
+
+                if (
+                    !$voucher || !$voucher->status ||
+                    $voucher->expiry_date < now() ||
+                    ($voucher->max_usage_count && $voucher->usage_count >= $voucher->max_usage_count)
+                ) {
+                    throw new \Exception('Mã giảm giá không còn hiệu lực hoặc đã hết lượt sử dụng');
+                }
+
+                $voucher->increment('usage_count');
+            }
+
+            // Update cart thành order
+            $cartOrder->update([
+                'order_status' => 'pending',
+                'order_date' => now(),
+                'receiver_name' => $request->receiver_name,
+                'receiver_phone' => $request->receiver_phone,
+                'receiver_address' => $request->receiver_address,
+                'payment_method_id' => $request->payment_method_id,
+                'shipping_method_id' => $request->shipping_method_id,
+                'voucher_id' => session('voucher.id') ?? null
+            ]);
+
+            // Xóa session voucher
+            session()->forget('voucher');
+
+            DB::commit();
+
+            // Lấy tên phương thức thanh toán để quyết định redirect
+            $paymentMethod = PaymentMethod::find($request->payment_method_id);
+
+            if ($paymentMethod->method_id == 1) {
+                return redirect()->route('vnpay.payment', ['order' => $cartOrder]);
+            }
+            if ($paymentMethod->method_id == 3) {
+                return redirect()->route('momo.payment', ['order' => $cartOrder]);
+            }
+
+            // Nếu là COD → redirect về trang home
+            return redirect()->route('shop.home')
+                ->with('success', 'Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->withInput()
+                ->with('error', 'Có lỗi xảy ra khi đặt hàng: ' . $e->getMessage());
+        }
+    }
+
 
     public function applyVoucher(Request $request)
     {

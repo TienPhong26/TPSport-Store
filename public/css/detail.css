@@ -504,7 +504,7 @@ hr {
     max-width: 761px;
     padding: 10px 25px;
     background: #1c1c1c;
-    
+    cursor: pointer;
     text-decoration: none;
     text-align: center;
     font-weight: bold;

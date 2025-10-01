@@ -95,9 +95,12 @@ Route::middleware('auth:customer')->group(function () {
     Route::post('/orders/{order}/return', [OrderController::class, 'returnOrder'])
         ->name('customer.orders.return');
     Route::post('/orders/{order}/review', [FeedbackController::class, 'submitReview'])->name('order.review');
-    Route::post('/vnpay/payment/{order}', [PaymentController::class, 'vn_payment'])->name('vnpay.payment');
-    Route::get('/vnpay/return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
-    Route::post('/momo/payment/{order}', [PaymentController::class, 'momo_payment'])->name('momo.payment');
+    // Route::post('/vnpay/payment/{order}', [PaymentController::class, 'vn_payment'])->name('vnpay.payment');
+    Route::get('/vnpay/payment/{order}', [PaymentController::class, 'vn_payment'])->name('vnpay.payment');
+
+    // Route::get('', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
+    Route::match(['get', 'post'], '/vnpay/return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
+    Route::get('/momo/payment/{order}', [PaymentController::class, 'momo_payment'])->name('momo.payment');
     Route::match(['get', 'post'], '/momo/return', [PaymentController::class, 'momoReturn'])->name('momo.return');
     Route::get('/payment/bank-qr/{order}', [PaymentController::class, 'showBankPayment'])->name('bank-qr.payment');
 });

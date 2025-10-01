@@ -181,8 +181,8 @@
                     <!-- Nút mua ngay -->
                     {{-- <a href="{{ route('checkout.buy-now', ['product_id' => $product->product_id]) }}" class="buy-now">MUA NGAY</a> --}}
                 </div>
-                <div class="buy-now">
-                    <a href="#" class="" style="color: #ffcb08 !important;">MUA NGAY</a>
+                <div class="buy-now" id="buyNowBtn">
+                    <a href="#"  style="color: #ffcb08 !important;">MUA NGAY</a>
                 </div>
                 <p style="color: #000000; text-align: center; max-width: 761px;">Gọi đặt mua 0397760835 (8:00 - 22:00)</p>
             </form>
@@ -385,6 +385,36 @@
             });
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const buyNowBtn = document.getElementById('buyNowBtn');
+            const addToCartForm = document.getElementById('addToCartForm');
 
+            buyNowBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(addToCartForm);
+
+                fetch("{{ route('cart.add-to-cart') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        // Nếu thêm giỏ hàng thành công → chuyển checkout
+                        window.location.href = "{{ route('checkout') }}";
+                    } else {
+                        alert(data.message || 'Có lỗi khi thêm giỏ hàng');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Có lỗi xảy ra, vui lòng thử lại');
+                });
+            });
+        });
     </script>
 @endpush
