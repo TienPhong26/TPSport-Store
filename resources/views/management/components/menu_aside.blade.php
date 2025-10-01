@@ -118,13 +118,13 @@
                 Hỗ trợ & Thông tin
             </li>
             <li class="nav-item">
-                <a href="#!" onclick="alert('Chức năng đang phát triển!')">
+                <a href="#!" onclick="showComingSoon()">
                     <span class="icon"><i class="lni lni-question-circle"></i></span>
                     <span class="text">Trợ giúp</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#!" onclick="alert('Chức năng đang phát triển!')">
+                <a href="#!" onclick="showComingSoon()">
                     <span class="icon"><i class="lni lni-book"></i></span>
                     <span class="text">Tài liệu hướng dẫn</span>
                 </a>
@@ -135,23 +135,37 @@
             </span>
 
             <li class="nav-item">
-                <a href="#!" onclick="alert('Chức năng đang phát triển!')">
+                <a href="#!" onclick="showComingSoon()">
                     <span class="icon"><i class="lni lni-envelope"></i></span>
                     <span class="text">Liên hệ hỗ trợ</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#!" onclick="alert('Chức năng đang phát triển!')">
+                <a href="#!" onclick="showComingSoon()">
                     <span class="icon"><i class="lni lni-crown"></i></span>
                     <span class="text">Nâng cấp tài khoản</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#!" onclick="alert('Chức năng đang phát triển!')">
-                    <span class="icon"><i class="lni lni-star"></i></span>
+                <a href="#!" onclick="showComingSoon()">
+                    <span class="icon"><i class="fas fa-comments"></i></span>
                     <span class="text">Đánh giá hệ thống</span>
                 </a>
             </li>
         </ul>
     </nav>
 </aside>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function showComingSoon() {
+        Swal.fire({
+            title: '🚀 Sắp ra mắt!',
+            text: 'Chức năng này đang trong quá trình phát triển.',
+            icon: 'info',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#3085d6'
+        });
+    }
+</script>
