@@ -33,6 +33,7 @@
             position: fixed;
             right: 20px;
             top: 67%;
+            padding: 0px !important;
             transform: translateY(-50%) translateY(-100px);
             background-color: #333;
             color: #fff;
@@ -218,7 +219,10 @@
     @include('Customer.components.header')
 
     {{-- ALERTS --}}
-    <div class="alerts-container" style="display:flex;justify-content:center;">
+
+    {{-- NỘI DUNG PAGE CON --}}
+    <main>
+        <div class="alerts-container" style="display:flex;justify-content:center;">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -238,8 +242,6 @@
         @endif
     </div>
 
-    {{-- NỘI DUNG PAGE CON --}}
-    <main>
         @yield('content')
 
         <button class="back-to-top" onclick="scrollToTop()">

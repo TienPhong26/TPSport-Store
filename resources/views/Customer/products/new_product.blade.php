@@ -73,7 +73,13 @@
         <div class="brand-products-header mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="brand-title-products">
-                    Sản phẩm mới
+                     @if(request()->is('product/male-female/male'))
+                                    Thời trang Nam
+                                @elseif(request()->is('product/male-female/female'))
+                                     Thời trang Nữ
+                                @else
+                                    Sản phẩm mới
+                                @endif
                 </h2>
                 <div class="sort-dropdown">
                     <label for="sortSelect" class="sort-label">Sắp xếp:</label>

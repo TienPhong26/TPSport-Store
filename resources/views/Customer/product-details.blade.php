@@ -209,215 +209,7 @@
 
 @endsection
 @push('scripts')
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const minusBtn = document.querySelector('.quantity-btn.minus');
-            const plusBtn = document.querySelector('.quantity-btn.plus');
-            const quantityInput = document.getElementById('quantityInput');
-            const MAX_QUANTITY = 5;
-
-            minusBtn.addEventListener('click', () => {
-                let value = parseInt(quantityInput.value);
-                if(value > 1) {
-                    quantityInput.value = value - 1;
-                }
-            });
-
-            plusBtn.addEventListener('click', () => {
-                let value = parseInt(quantityInput.value);
-                if(value < MAX_QUANTITY) {
-                    quantityInput.value = value + 1;
-                } else {
-                    alert(`Bạn chỉ được mua tối đa ${MAX_QUANTITY} sản phẩm`);
-                }
-            });
-
-            // Giới hạn nhập tay
-            quantityInput.addEventListener('input', () => {
-                let value = parseInt(quantityInput.value) || 1;
-                if(value > MAX_QUANTITY) {
-                    quantityInput.value = MAX_QUANTITY;
-                    alert(`Bạn chỉ được mua tối đa ${MAX_QUANTITY} sản phẩm`);
-                } else if(value < 1) {
-                    quantityInput.value = 1;
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Xử lý ảnh
-            const featuredImage = document.getElementById('featured-image');
-            const smallImages = document.querySelectorAll('.small-Img');
-
-            smallImages.forEach(smallImg => {
-                smallImg.addEventListener('click', function () {
-                    featuredImage.src = this.src;
-                    smallImages.forEach(img => {
-                        img.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                });
-            });
-
-            // Xử lý form add to cart
-            const form = document.getElementById('addToCartForm');
-            const sizeSelect = document.getElementById('size');
-            const selectedSizeInput = document.getElementById('selected_size_id');
-
-            // Set initial size value
-            if (sizeSelect && selectedSizeInput) {
-                selectedSizeInput.value = sizeSelect.value;
-
-                // Update size when changed
-                sizeSelect.addEventListener('change', function () {
-                    selectedSizeInput.value = this.value;
-                });
-            }
-
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    e.preventDefault();
-
-                    // Lấy số lượng khách chọn
-                    const quantity = form.querySelector('input[name="quantity"]').value;
-
-                    if (!confirm(`Bạn có chắc chắn muốn thêm ${quantity} sản phẩm này vào giỏ hàng?`)) {
-                        return;
-                    }
-
-                    // Nếu khách xác nhận, mới gửi request
-                    fetch(this.action, {
-                        method: 'POST',
-                        body: new FormData(this),
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                ?.content,
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                const cartCountElement = document.querySelector('.cart-count');
-                                if (cartCountElement && data.cartCount) {
-                                    cartCountElement.textContent = data.cartCount;
-                                }
-                                // Thông báo thành công và reload
-                                alert(data.message);
-                                window.location.reload();
-                            } else {
-                                if (data.redirect) {
-                                    window.location.href = data.redirect;
-                                } else {
-                                    alert(data.message || 'Có lỗi xảy ra');
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
-                        });
-                });
-            }
-        });
-        const thumbnails = document.querySelectorAll('.small-Card img');
-        const featuredImage = document.getElementById('featured-image');
-        // lấy thẻ a bọc ảnh chính
-        const featuredLink = featuredImage.closest('a');
-
-        // Lấy tất cả src từ thumbnail để làm mảng images
-        let images = Array.from(thumbnails).map(img => img.src);
-
-        // Chỉ số ảnh hiện tại
-        let currentIndex = 0;
-
-        // --- Khi click thumbnail ---
-        thumbnails.forEach((img, index) => {
-            img.addEventListener('click', function () {
-                currentIndex = index; // cập nhật index
-                featuredImage.src = this.src;
-
-                // đổi href của thẻ a fancybox
-                featuredLink.href = this.src;
-
-                thumbnails.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // --- Khi click Prev ---
-        document.querySelector('.prev-btn').addEventListener('click', function () {
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            featuredImage.src = images[currentIndex];
-            featuredLink.href = images[currentIndex];
-
-            // đổi active thumbnail
-            thumbnails.forEach(i => i.classList.remove('active'));
-            thumbnails[currentIndex].classList.add('active');
-        });
-
-        // --- Khi click Next ---
-        document.querySelector('.next-btn').addEventListener('click', function () {
-            currentIndex = (currentIndex + 1) % images.length;
-            featuredImage.src = images[currentIndex];
-            featuredLink.href = images[currentIndex];
-
-            // đổi active thumbnail
-            thumbnails.forEach(i => i.classList.remove('active'));
-            thumbnails[currentIndex].classList.add('active');
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const sizeInputs = document.querySelectorAll('input[name="size_id"]:not(:disabled)');
-            const selectedSizeSpan = document.getElementById('selected-size');
-
-            // lấy input đầu tiên còn hàng
-            const checkedInput = document.querySelector('input[name="size_id"]:checked');
-            if (checkedInput) {
-                selectedSizeSpan.textContent = checkedInput.dataset.sizeName;
-            }
-
-            sizeInputs.forEach(input => {
-                input.addEventListener('change', function () {
-                    selectedSizeSpan.textContent = this.dataset.sizeName;
-                });
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const buyNowBtn = document.getElementById('buyNowBtn');
-            const addToCartForm = document.getElementById('addToCartForm');
-
-            buyNowBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                const formData = new FormData(addToCartForm);
-
-                fetch("{{ route('cart.add-to-cart') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.success) {
-                        // Nếu thêm giỏ hàng thành công → chuyển checkout
-                        window.location.href = "{{ route('checkout') }}";
-                    } else {
-                        alert(data.message || 'Có lỗi khi thêm giỏ hàng');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Có lỗi xảy ra, vui lòng thử lại');
-                });
-            });
-        });
-    </script> --}}
-
+    
 
     <!-- SweetAlert2 CSS & JS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -508,8 +300,22 @@ document.addEventListener('DOMContentLoaded', function() {
                             'Accept': 'application/json'
                         }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (response.status === 401) {
+                            // chưa đăng nhập
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Thông báo',
+                                text: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng'
+                            }).then(() => {
+                                window.location.href = "{{ route('customer.login') }}"; // chuyển hướng login nếu muốn
+                            });
+                            return;
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        if (!data) return; // đã xử lý 401 thì dừng
                         if(data.success){
                             const cartCountElement = document.querySelector('.cart-count');
                             if(cartCountElement && data.cartCount) cartCountElement.textContent = data.cartCount;
@@ -535,6 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error(error);
                         Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi thêm vào giỏ hàng' });
                     });
+
                 }
             });
         });

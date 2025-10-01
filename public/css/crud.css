@@ -344,7 +344,7 @@ table{
 }
 
 .alert.show {
-    top: 20px;
+    top: 60px;
     opacity: 1;
 }
 

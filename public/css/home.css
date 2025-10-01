@@ -125,6 +125,21 @@ li {
 header {
     background: #2d2d2d;
 }
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.social-links i {
+    margin-top: 9px;
+}
+main {
+    margin-top: 65px;
+}
 .header {
     /* padding: 6px 0px 16px 0px; */
     display: flex;
@@ -232,6 +247,8 @@ header {
     position: relative;
     z-index: 1000;
 }
+
+
 
 .logo {
     flex-shrink: 0;
@@ -701,10 +718,12 @@ footer {
 }
 
 .alert.show {
-    top: 20px;
+    top: 60px;
     opacity: 1;
 }
-
+.alert-warning{
+    background-color: #fff;
+}
 .alert.fade-out {
     opacity: 0;
     top: -100px;

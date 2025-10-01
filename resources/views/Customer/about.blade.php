@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/about.css') }}">
-
+    <style>
+        .mr-2{
+            margin-right: 5px;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -26,13 +30,13 @@
 
             <div class="about-title">Về TP-Sport</div>
             <div class="about-subtitle">
-                Cửa hàng thiết bị thể thao hàng đầu – Đam mê thể thao, Sáng tạo vì sức khỏe cộng đồng!
+                Cửa hàng thời trang và thiết bị thể thao hàng đầu – Đam mê thể thao, Sáng tạo vì sức khỏe cộng đồng!
             </div>
 
             <div class="about-card">
                 <div class="card-title">Giới Thiệu</div>
                 <p>
-                    TPSPORT là cửa hàng chuyên cung cấp thiết bị thể thao chính hãng với đa dạng sản phẩm từ
+                    TPSPORT là cửa hàng chuyên cung cấp thời trang và thiết bị thể thao chính hãng với đa dạng sản phẩm từ
                     các thương hiệu nổi tiếng toàn cầu. Chúng tôi tin vào sức mạnh của hoạt động thể thao để tạo nên một
                     cộng đồng khỏe mạnh, năng động và gắn kết.
                 </p>
@@ -42,7 +46,7 @@
                 <div class="card-title">Tầm Nhìn & Sứ Mệnh</div>
                 <strong>Tầm nhìn:</strong>
                 <ul class="about-list">
-                    <li>Trở thành hệ thống bán lẻ thiết bị thể thao được yêu thích nhất Việt Nam vào năm 2030.</li>
+                    <li>Trở thành hệ thống bán đồ thể thao được yêu thích nhất Việt Nam vào năm 2030.</li>
                     <li>Trở thành lựa chọn hàng đầu của mọi cá nhân, gia đình và tổ chức thể thao.</li>
                 </ul>
                 <div style="margin-top: 12px"><strong>Sứ mệnh:</strong></div>
@@ -70,14 +74,14 @@
             <div class="about-card">
                 <div class="card-title">Lịch Sử Phát Triển</div>
                 <ul class="about-list">
-                    <li><strong>2020:</strong> Thành lập cửa hàng đầu tiên tại Hà Nội, tập trung vào bóng đá và cầu
+                    <li><strong class="mr-2">2020: </strong> Thành lập cửa hàng đầu tiên tại Hà Nội, tập trung vào bóng đá và cầu
                         lông.</li>
-                    <li><strong>2021:</strong> Ký kết độc quyền phân phối sản phẩm Adidas & Yonex.</li>
-                    <li><strong>2022:</strong> Ra mắt hệ thống mua hàng trực tuyến, phục vụ trên toàn quốc.</li>
-                    <li><strong>2023:</strong> Mở rộng danh mục sang các bộ môn chạy bộ, gym, yoga, bơi lội.</li>
-                    <li><strong>2025:</strong> Đạt 50,000 đơn hàng thành công, phục vụ hơn 10,000 khách hàng trung
+                    <li><strong  class="mr-2">2021: </strong> Ký kết độc quyền phân phối sản phẩm Adidas & Yonex.</li>
+                    <li><strong class="mr-2">2022: </strong> Ra mắt hệ thống mua hàng trực tuyến, phục vụ trên toàn quốc.</li>
+                    <li><strong class="mr-2">2023: </strong> Mở rộng danh mục sang các bộ môn chạy bộ, gym, yoga, bơi lội.</li>
+                    <li><strong class="mr-2">2025: </strong> Đạt 50,000 đơn hàng thành công, phục vụ hơn 10,000 khách hàng trung
                         thành.</li>
-                    <li><strong>Tương lai:</strong> Tiếp tục nâng tầm chất lượng, đẩy mạnh chuyển đổi số, mở rộng đối
+                    <li><strong class="mr-2">Tương lai:</strong> Tiếp tục nâng tầm chất lượng, đẩy mạnh chuyển đổi số, mở rộng đối
                         tác quốc tế.</li>
                 </ul>
             </div>
