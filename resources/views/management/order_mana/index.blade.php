@@ -1,6 +1,6 @@
 @extends('management.layouts.admin_layout')
 
-@section('title', 'Quản lý sản phẩm')
+@section('title', 'Quản lý Đơn hàng')
 
 @push('styles')
         <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
@@ -45,12 +45,7 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
                             <h2>Quản lý Đơn hàng</h2>
-
                         </div>
                         <div class="row">
 
@@ -132,7 +127,7 @@
                                                 @case('cancelled')
                                                     bg-danger
                                                     @break
-                                                @case('refunded')
+                                                @case('returned')
                                                     bg-secondary
                                                     @break
                                             @endswitch">
@@ -141,10 +136,16 @@
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('admin.order.show', $order->order_id) }}"
+                                            {{-- <a href="{{ route('admin.order.show', $order->order_id) }}"
                                                 class="btn btn-sm btn-info" title="Xem chi tiết">
                                                 <i class="material-icons">visibility</i>
-                                            </a>
+                                            </a> --}}
+                                            <a href="{{ route('admin.order.show', $order->order_id) }}"
+                                                class="btn btn-sm btn-info btn-show-order"
+                                                data-id="{{ $order->order_id }}"
+                                                title="Xem chi tiết">
+                                                <i class="material-icons">visibility</i>
+                                                </a>
 
                                             <a href="{{ route('admin.order.edit', $order->order_id) }}"
                                                 class="btn btn-sm btn-warning" title="Chỉnh sửa">
@@ -153,31 +154,30 @@
 
                                             @if ($order->order_status == 'pending')
                                                 {{-- Show confirm and cancel buttons for pending orders --}}
-                                                <form
-                                                    action="{{ route('admin.order.update-status', $order->order_id) }}"
-                                                    method="POST" style="display:inline">
+                                                <form action="{{ route('admin.order.update-status', $order) }}"
+                                                    method="POST" style="display:inline" 
+                                                    class="confirm-action" 
+                                                    data-message="Xác nhận đơn hàng này?">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden" name="order_status" value="confirmed">
-                                                    <button type="submit" class="btn btn-sm btn-success"
-                                                        title="Xác nhận đơn hàng"
-                                                        onclick="return confirm('Xác nhận đơn hàng này?')">
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Xác nhận đơn hàng">
                                                         <i class="material-icons">check</i>
                                                     </button>
                                                 </form>
 
-                                                <form
-                                                    action="{{ route('admin.order.update-status', $order->order_id) }}"
-                                                    method="POST" style="display:inline">
+                                                <form action="{{ route('admin.order.update-status', $order) }}"
+                                                    method="POST" style="display:inline"
+                                                    class="confirm-action" 
+                                                    data-message="Bạn có chắc muốn hủy đơn hàng này?">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden" name="order_status" value="cancelled">
-                                                    <button type="submit" class="btn btn-sm btn-danger"
-                                                        title="Hủy đơn hàng"
-                                                        onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Hủy đơn hàng">
                                                         <i class="material-icons">clear</i>
                                                     </button>
                                                 </form>
+
                                             @elseif ($order->order_status == 'confirmed')
                                                 {{-- Show block button for confirmed orders --}}
                                                 <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
@@ -194,6 +194,24 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Chi tiết đơn hàng</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body" id="orderDetailContent">
+                                <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Đang tải...</span>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
                     <div class="clearfix">
                         <div class="footer-container">
                             <div class="pagination-info">
@@ -222,6 +240,23 @@
 @push('scripts')
 
    <script>
+    $(document).on('click', '.btn-show-order', function(e) {
+    e.preventDefault();
+    let url = $(this).attr('href');
+
+    $('#orderDetailContent').html(
+        '<div class="text-center py-5">' +
+        '<div class="spinner-border text-primary" role="status"></div>' +
+        '</div>'
+    );
+    $('#orderDetailModal').modal('show');
+
+    $.get(url, function(data) {
+        $('#orderDetailContent').html(data);
+    }).fail(function() {
+        $('#orderDetailContent').html('<div class="alert alert-danger">Không tải được dữ liệu!</div>');
+    });
+});
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
         });
@@ -328,21 +363,21 @@
         if (order.order_status !== 'pending') return '';
 
         return `
-            <form action="/admin/order/${order.order_id}/update-status" method="POST" style="display:inline">
+            <form action="/admin/orders/${order}/update-status" method="POST" style="display:inline">
                 <input type="hidden" name="_token" value="${csrfToken}">
                 <input type="hidden" name="_method" value="PUT">
                 <input type="hidden" name="order_status" value="confirmed">
                 <button type="submit" class="btn btn-sm btn-success"
-                        title="Xác nhận đơn hàng" onclick="return confirm('Xác nhận đơn hàng này?')">
+                        title="Xác nhận đơn hàng">
                     <i class="material-icons">check</i>
                 </button>
             </form>
-            <form action="/admin/order/${order.order_id}/update-status" method="POST" style="display:inline">
+            <form action="/admin/orders/${order}/update-status" method="POST" style="display:inline">
                 <input type="hidden" name="_token" value="${csrfToken}">
                 <input type="hidden" name="_method" value="PUT">
                 <input type="hidden" name="order_status" value="cancelled">
                 <button type="submit" class="btn btn-sm btn-danger"
-                        title="Hủy đơn hàng" onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                        title="Hủy đơn hàng">
                     <i class="material-icons">clear</i>
                 </button>
             </form>
@@ -391,7 +426,25 @@
     dateInput.addEventListener('change', handleSearch);
     statusSelect.addEventListener('change', handleSearch);
 });
+$(document).on('submit', 'form.confirm-action', function(e) {
+    e.preventDefault();
+    let form = this;
+    let message = $(form).data('message') || 'Bạn có chắc chắn thực hiện hành động này?';
 
+    Swal.fire({
+        title: 'Xác nhận',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+});
     </script>
 @endpush
 

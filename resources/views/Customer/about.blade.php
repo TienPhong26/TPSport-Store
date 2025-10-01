@@ -11,7 +11,17 @@
 @endpush
 
 @section('content')
- <div class="about-section">
+    <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('shop.home') }}">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Giới thiệu về cửa hàng</li>
+            </ol>
+        </div>
+    </nav>
+    <div class="about-section">
         <div class="about-container">
 
             <div class="about-title">Về TP-Sport</div>
@@ -129,11 +139,11 @@
             <div class="about-card">
                 <div class="card-title">Liên Hệ</div>
                 <ul class="about-list">
-                    <li>Email: <a href="mailto:ngophongcoder26@gmail.com"
-                            style="color:#aeea00;">support@Tpsports.vn</a></li>
+                    <li>Email: <a href="mailto:ngophongcoder26@gmail.com" style="color:#aeea00;">support@Tpsports.vn</a>
+                    </li>
                     <li>Hotline: <a href="tel:19001234" style="color:#aeea00;">1900 1234</a></li>
-                    <li>Facebook: <a href="https://facebook.com/tpsports" target="_blank"
-                            style="color:#aeea00;">TPSPORT Fanpage</a></li>
+                    <li>Facebook: <a href="https://facebook.com/tpsports" target="_blank" style="color:#aeea00;">TPSPORT
+                            Fanpage</a></li>
                     <li>Địa chỉ: Tòa nhà 21, đường Nam Từ Liêm, Hà Nội</li>
                     <li>Giờ mở cửa: 8h00-21h00 (T2-CN)</li>
                 </ul>
@@ -141,4 +151,3 @@
         </div>
     </div>
 @endsection
-

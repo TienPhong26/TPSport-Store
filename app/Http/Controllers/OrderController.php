@@ -183,14 +183,20 @@ class OrderController extends Controller
         }
     }
 
+    // public function show(Order $order)
+    // {
+    //     $order->load(['orderDetails.product', 'customer', 'voucher', 'paymentMethod', 'shippingMethod']);
+    //     return view('management.order_mana.detail', compact('order'));
+    // }
+
     public function show(Order $order)
     {
-        $order->load(['orderDetails.product', 'customer', 'voucher', 'paymentMethod', 'shippingMethod']);
         return view('management.order_mana.detail', compact('order'));
     }
 
     public function updateStatus(Request $request, Order $order)
     {
+
         try {
             $validStatuses = ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'];
             $request->validate([
@@ -213,10 +219,10 @@ class OrderController extends Controller
                 if ($oldStatus === 'pending' && in_array($newStatus, ['confirmed', 'shipping', 'completed'])) {
                     foreach ($order->orderDetails as $orderDetail) {
                         $product = $orderDetail->product;
-                        if ($product->quantity < $orderDetail->sold_quantity) {
+                        if ($product->amount < $orderDetail->sold_quantity) {
                             throw new \Exception("Sản phẩm {$product->name} không đủ số lượng trong kho");
                         }
-                        $product->quantity -= $orderDetail->sold_quantity;
+                        $product->amount -= $orderDetail->sold_quantity;
                         $product->save();
                     }
                 }
@@ -225,7 +231,7 @@ class OrderController extends Controller
                 if ($newStatus === 'cancelled' && in_array($oldStatus, ['confirmed', 'shipping', 'completed'])) {
                     foreach ($order->orderDetails as $orderDetail) {
                         $product = $orderDetail->product;
-                        $product->quantity += $orderDetail->sold_quantity;
+                        $product->amount += $orderDetail->sold_quantity;
                         $product->save();
                     }
                 }

@@ -1,4 +1,4 @@
-<div class="news-promotions">
+<div class="news-promotions mb-5">
     <!-- Tin Tức -->
     <div class="news-section">
         <h2 class="section-title">TIN TỨC</h2>

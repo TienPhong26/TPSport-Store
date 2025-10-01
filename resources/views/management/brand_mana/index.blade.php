@@ -46,18 +46,10 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý Thương hiệu</h2>
-                                <button type="button" class="btn btn-success mt-2 mb-4" data-bs-toggle="modal" data-bs-target="#addBrandModal">
+                                <button type="button" class="btn btn-primary mt-2 mb-4" data-bs-toggle="modal" data-bs-target="#addBrandModal">
                                     <i class="fas fa-plus"></i>
                                     <span>Thêm mới</span>
                                 </button>
@@ -122,7 +114,7 @@
                                             : asset($brand->brand_banner);
                                     @endphp
                                         <button type="button"
-                                                class="btn btn-sm btn-primary edit-brand-btn"
+                                                class="btn edit"
                                                 data-id="{{ $brand->id }}"
                                                 data-name="{{ $brand->brand_name }}"
                                                 data-description="{{ $brand->description }}"
@@ -136,9 +128,11 @@
                                         <form action="{{ route('admin.brand.delete', $brand->id) }}" method="POST" style="display:inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Bạn có chắc chắn muốn xóa thương hiệu này không?')">
-                                                <i class="fas fa-trash-alt"></i>
+                                             <button type="button" 
+                                                    class="delete" 
+                                                    title="Xóa" 
+                                                    data-toggle="tooltip">
+                                                <i class="fas fa-trash-alt" style="color: red"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -268,7 +262,7 @@
     const editBrandModal = document.getElementById('editBrandModal');
     const editBrandForm = document.getElementById('editBrandForm');
 
-        document.querySelectorAll('.edit-brand-btn').forEach(btn => {
+        document.querySelectorAll('.edit').forEach(btn => {
             btn.addEventListener('click', function () {
                 // Lấy dữ liệu từ data-*
                 const id = this.dataset.id;
@@ -410,18 +404,17 @@ function previewImage(input, imgSelector) {
                         <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/brands/${brand.id}"
-                          method="POST"
-                          style="display:inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="delete"
-                                title="Xóa"
-                                data-toggle="tooltip"
-                                onclick="return confirm('Bạn có chắc chắn muốn xóa thương hiệu này không?')">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </form>
+      method="POST"
+      style="display:inline" class="delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="button" 
+            class="delete" 
+            title="Xóa" 
+            data-toggle="tooltip">
+        <i class="fas fa-trash-alt" style="color: red"></i>
+    </button>
+</form>
                 </td>
             </tr>
         `).join('');
@@ -434,6 +427,32 @@ function previewImage(input, imgSelector) {
 
         searchInput.addEventListener('input', handleSearch);
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    // Xử lý confirm xóa bằng SweetAlert2
+    document.querySelectorAll('.delete').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const form = this.closest('form');
+
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Thao tác này sẽ xóa thương hiệu!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+
 </script>
 @endpush
 

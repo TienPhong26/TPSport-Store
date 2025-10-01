@@ -243,16 +243,16 @@
                                             </a>
 
                                             @if ($order->order_status === 'completed' && !$order->isReturned())
-                                                <form action="{{ route('customer.orders.return', $order->order_id) }}"
-                                                    style="display: flex; justify-content: center;" method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn hoàn trả đơn hàng này ?');">
-                                                    @csrf
-                                                    @method('POST')
-                                                    <button type="submit" class="btn btn-warning btn-sm"
-                                                        title="Hoàn trả đơn hàng">
-                                                        <i class="bi bi-arrow-return-left"></i> Hoàn trả đơn hàng
-                                                    </button>
-                                                </form>
+                                            <form action="{{ route('customer.orders.return', $order->order_id) }}"
+                                                style="display: flex; justify-content: center;"
+                                                method="POST"
+                                                class="return-order-form">
+                                                @csrf
+                                                @method('POST')
+                                                <button type="submit" class="btn btn-warning btn-sm" title="Hoàn trả đơn hàng">
+                                                    <i class="bi bi-arrow-return-left"></i> Hoàn trả đơn hàng
+                                                </button>
+                                            </form>
                                             @endif
                                         </div>
                                     </td>
@@ -311,3 +311,26 @@
         </div>
 @endsection
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.return-order-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Ngăn submit ngay lập tức
+
+            Swal.fire({
+                title: 'Xác nhận',
+                text: 'Bạn có chắc chắn muốn hoàn trả đơn hàng này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit form nếu xác nhận
+                }
+            });
+        });
+    });
+});
+</script>

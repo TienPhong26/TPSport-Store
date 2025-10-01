@@ -16,6 +16,9 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('styles')
@@ -78,7 +81,7 @@
     <div class="overlay"></div>
     <main class="main-wrapper">
         @include('management.components.admin-header')
-        <div class="container mt-2">
+        <div class="container">
             @if ($errors->any())
                 <div class="alert alert-danger alert-fixed">
                     <ul class="mb-0">
@@ -102,13 +105,15 @@
     </main>
 
     <!-- cuối body layout -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('js/alert.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    @stack('scripts') 
+    @stack('scripts')
 
 </body>
 

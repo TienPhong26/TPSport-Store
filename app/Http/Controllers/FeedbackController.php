@@ -26,14 +26,15 @@ class FeedbackController extends Controller
         }
 
         // Kiểm tra đã đánh giá chưa
-        if (Feedback::where('order_id', $orderId)->where('customer_id', auth('customer')->id())->exists()) {
+        if (Feedback::where('order_id', $orderId)->where('user_id', auth('customer')->id())->exists()) {
             return back()->with('error', 'Bạn đã đánh giá đơn hàng này rồi.');
         }
 
         Feedback::create([
-            'customer_id' => auth('customer')->id(),
+            'user_id' => auth('customer')->id(),
+            'customer' => auth('customer')->user()->customer_name,
             'order_id' => $orderId,
-            'comment' => $request->review_text,
+            'feedback' => $request->review_text,
             'rating' => $request->rating,
         ]);
 
@@ -49,9 +50,9 @@ class FeedbackController extends Controller
         ]);
 
         $feedback = Feedback::create([
-            'customer_id' => Auth::guard('customer')->id(),
+            'user_id' => Auth::guard('customer')->id(),
             'product_id' => $validated['product_id'],
-            'comment' => $validated['comment'],
+            'feedback' => $validated['comment'],
             'rating' => $validated['rating'],
         ]);
 
@@ -61,7 +62,7 @@ class FeedbackController extends Controller
     public function update(Request $request, Feedback $feedback)
     {
         // Ensure the feedback belongs to the logged-in customer
-        if ($feedback->customer_id !== Auth::guard('customer')->id()) {
+        if ($feedback->user_id !== Auth::guard('customer')->id()) {
             return redirect()->back()->with('error', 'Bạn không có quyền chỉnh sửa đánh giá này!');
         }
 
@@ -70,7 +71,10 @@ class FeedbackController extends Controller
             'rating' => 'required|integer|min:1|max:5',
         ]);
 
-        $feedback->update($validated);
+        $feedback->update([
+            'feedback' => $validated['comment'],
+            'rating' => $validated['rating'],
+        ]);
 
         return redirect()->back()->with('success', 'Đã cập nhật đánh giá thành công!');
     }

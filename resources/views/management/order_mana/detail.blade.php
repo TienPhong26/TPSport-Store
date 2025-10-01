@@ -1,54 +1,6 @@
-@extends('management.layouts.admin_layout')
 
-@section('title', 'Quản lý chi tiết đơn hàng')
-
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
-    
-@endpush
-
-@section('content')
-   <div class="container mt-3">
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-    </div>
     <div class="container">
         <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Chi tiết đơn hàng #{{ $order->order_id }}</h4>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <a href="{{ route('admin.order') }}" class="btn btn-secondary">
-                            <i class="fa fa-arrow-left"></i> Quay lại
-                        </a>
-                    </div>
-                </div>
-            </div>
-
             <div class="card-body">
                 <div class="row mb-4">
                     <!-- Thông tin khách hàng -->
@@ -176,7 +128,7 @@
                             <input type="hidden" name="order_status" value="confirmed">
                             <button type="submit" class="btn btn-success"
                                 onclick="return confirm('Xác nhận đơn hàng này?')">
-                                <i class="material-icons">check</i> Xác nhận đơn hàng
+                                <i class="fas fa-check"></i> Xác nhận đơn hàng
                             </button>
                         </form>
 
@@ -187,7 +139,7 @@
                             <input type="hidden" name="order_status" value="cancelled">
                             <button type="submit" class="btn btn-danger"
                                 onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
-                                <i class="material-icons">clear</i> Hủy đơn hàng
+                                <i class="fas fa-times"></i> Hủy đơn hàng
                             </button>
                         </form>
                     @endif
@@ -195,10 +147,3 @@
             </div>
         </div>
     </div>
-@endsection
-
-@push('scripts')
-   
-
-@endpush
-

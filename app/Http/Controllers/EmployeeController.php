@@ -68,6 +68,16 @@ class EmployeeController extends Controller
         }
         return $str;
     }
+    public function editAjax($id)
+    {
+        $employee = Employee::findOrFail($id);
+        return view('Owner.employee_mana.edit', compact('employee'));
+    }
+
+    public function createAjax()
+    {
+        return view('Owner.employee_mana.create'); 
+    }
 
     public function showLoginForm()
     {

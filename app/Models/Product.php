@@ -157,4 +157,23 @@ class Product extends Model
     {
         return $this->hasOne(ProductDetail::class, 'product_id', 'product_id');
     }
+
+      public function scopeFilter($query, $filters)
+    {
+        return $query
+            ->when($filters['query'] ?? null, function ($q, $query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            })
+            ->when($filters['category'] ?? null, function ($q, $categoryId) {
+                $q->whereHas('category', function ($q) use ($categoryId) {
+                    $q->where('categories.id', $categoryId);
+                });
+            })
+            ->when($filters['brand'] ?? null, function ($q, $brandId) {
+                $q->where('brand_id', $brandId);
+            })
+            ->when(isset($filters['status']) && $filters['status'] !== '', function ($q) use ($filters) {
+                $q->where('status', $filters['status']);
+            });
+    }
 }

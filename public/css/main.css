@@ -1681,13 +1681,17 @@ h6,
 
 /* =========== tables css =========== */
 .table {
-  border-collapse: inherit;
+  /* border-collapse: inherit; */
   border-spacing: 0px;
 }
+
+.btn{
+  border:none;
+}
 .table > :not(caption) > * > * {
-  padding: 15px 0;
   border-bottom-color: #efefef;
   vertical-align: middle;
+  box-shadow: none;
 }
 .table > :not(:last-child) > :last-child > * {
   border-bottom-color: #efefef;
@@ -3887,8 +3891,9 @@ h6,
   margin-left: 0;
 }
 .main-wrapper .container-fluid {
-  padding-left: 40px;
-  padding-right: 40px;
+  /* margin-top: 40px; */
+  padding-left: 24px;
+  padding-right: 24px;
 }
 @media (max-width: 767px) {
   .main-wrapper .container-fluid {

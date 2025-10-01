@@ -18,7 +18,7 @@
                         <h4>Chỉnh sửa Danh mục</h4>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.category.update', ['category' => $category->category_id]) }}"
+                        <form action="{{ route('admin.category.update', ['category' => $category->id]) }}"
                             method="POST">
                             @csrf
                             @method('PUT')

@@ -292,7 +292,7 @@
 
     <div class="order-actions">
         <a href="{{ route('customer.orders') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left-circle"></i> Quay lại
+            <i class="fas fa-long-arrow-alt-left"></i> Quay lại
         </a>
 
         @if ($order->order_status == 'pending')
@@ -307,15 +307,15 @@
         @endif
 
         @if ($order->order_status == 'completed' && !$order->isReturned())
-            <form action="{{ route('customer.orders.return', $order->order_id) }}" method="POST" class="d-inline">
+            <form action="{{ route('customer.orders.return', $order->order_id) }}" method="POST" class="d-inline return-order-form">
                 @csrf
                 @method('POST')
-                <button type="submit" class="btn btn-warning btn-return-order"
-                    onclick="return confirm('Bạn có chắc chắn muốn hoàn trả đơn hàng này?')">
+                <button type="submit" class="btn btn-warning btn-return-order">
                     <i class="bi bi-arrow-counterclockwise"></i> Hoàn trả đơn hàng
                 </button>
             </form>
-            <button type="button" class="btn btn-success" onclick="openReviewModal()">
+
+            <button type="button" class="btn btn-success" style="background-color: #444;" onclick="openReviewModal()">
                 <i class="bi bi-star"></i> Đánh giá đơn hàng
             </button>
         @endif
@@ -392,4 +392,28 @@
 @endsection
 
 <script src="{{ asset('js/order_details.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.return-order-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Ngăn form submit ngay lập tức
+
+            Swal.fire({
+                title: 'Xác nhận',
+                text: 'Bạn có chắc chắn muốn hoàn trả đơn hàng này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit form nếu xác nhận
+                }
+            });
+        });
+    });
+});
+</script>
 

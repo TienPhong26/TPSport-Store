@@ -90,7 +90,18 @@
 @endpush
 
 @section('content')
+    <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('shop.home') }}">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Đổi mật khẩu</li>
+            </ol>
+        </div>
+    </nav>
 <div class="change-password-container mt-5">
+    
     <div class="change-password-card">
         <h2>ĐỔI MẬT KHẨU</h2>
         <p>Để đảm bảo tính bảo mật, vui lòng đổi mật khẩu của bạn ít nhất 8 ký tự</p>

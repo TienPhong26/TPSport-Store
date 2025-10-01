@@ -1,15 +1,8 @@
-@extends('management.layouts.admin_layout')
 
-@section('title', 'Thêm nhân viên mới')
-
-@section('content')
-<div class="container mt-5">
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Thêm nhân viên mới</h4>
-                </div>
                 <div class="card-body">
                     <form action="{{ route('admin.employee.store') }}" method="POST">
                         @csrf
@@ -89,4 +82,3 @@
         </div>
     </div>
 </div>
-@endsection

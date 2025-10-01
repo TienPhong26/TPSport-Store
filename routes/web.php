@@ -104,7 +104,10 @@ Route::middleware('auth:customer')->group(function () {
     Route::match(['get', 'post'], '/momo/return', [PaymentController::class, 'momoReturn'])->name('momo.return');
     Route::get('/payment/bank-qr/{order}', [PaymentController::class, 'showBankPayment'])->name('bank-qr.payment');
 });
-
+Route::get('admin/employee/{id}/edit-ajax', [EmployeeController::class, 'editAjax'])
+    ->name('admin.employee.edit.ajax');
+Route::get('admin/employee/create-ajax', [EmployeeController::class, 'createAjax'])
+    ->name('admin.employee.create.ajax');
 Route::view('/contact', 'Customer.contact')->name('customer.contact');
 Route::post('/contact', [CustomerController::class, 'submitContact'])->name('contact.store');
 
@@ -287,7 +290,6 @@ Route::prefix('admin')->group(function () {
             Route::get('/search', [VoucherController::class, 'search'])
                 ->name('admin.voucher.search');
             Route::get('{id}/edit-ajax', [VoucherController::class, 'editAjax'])->name('admin.voucher.editAjax');
-
         });
 
         // Routes quản lý payment-methods
@@ -346,4 +348,3 @@ Route::prefix('employee')->group(function () {
         Route::post('/logout', [EmployeeController::class, 'logout'])->name('employee.logout');
     });
 });
-

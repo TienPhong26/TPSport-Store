@@ -209,7 +209,7 @@
 
 @endsection
 @push('scripts')
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const minusBtn = document.querySelector('.quantity-btn.minus');
             const plusBtn = document.querySelector('.quantity-btn.plus');
@@ -416,5 +416,202 @@
                 });
             });
         });
-    </script>
+    </script> --}}
+
+
+    <!-- SweetAlert2 CSS & JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- Biến chung ---
+    const MAX_QUANTITY = 5;
+    const quantityInput = document.getElementById('quantityInput');
+    const minusBtn = document.querySelector('.quantity-btn.minus');
+    const plusBtn = document.querySelector('.quantity-btn.plus');
+    const form = document.getElementById('addToCartForm');
+    const sizeSelect = document.getElementById('size');
+    const selectedSizeInput = document.getElementById('selected_size_id');
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    const featuredImage = document.getElementById('featured-image');
+    const thumbnails = document.querySelectorAll('.small-Card img, .small-Img');
+    const featuredLink = featuredImage?.closest('a');
+    const selectedSizeSpan = document.getElementById('selected-size');
+
+    let currentIndex = 0;
+    let images = Array.from(thumbnails).map(img => img.src);
+
+    // --- Hàm hiển thị alert SweetAlert2 ---
+    const showWarning = (message) => {
+        Swal.fire({ icon: 'warning', title: 'Thông báo', text: message });
+    };
+
+    // --- Điều chỉnh số lượng ---
+    if(minusBtn && plusBtn && quantityInput) {
+        minusBtn.addEventListener('click', () => {
+            let value = parseInt(quantityInput.value) || 1;
+            if(value > 1) quantityInput.value = value - 1;
+        });
+
+        plusBtn.addEventListener('click', () => {
+            let value = parseInt(quantityInput.value) || 1;
+            if(value < MAX_QUANTITY) {
+                quantityInput.value = value + 1;
+            } else {
+                showWarning(`Bạn chỉ được mua tối đa ${MAX_QUANTITY} sản phẩm`);
+            }
+        });
+
+        quantityInput.addEventListener('input', () => {
+            let value = parseInt(quantityInput.value) || 1;
+            if(value > MAX_QUANTITY) {
+                quantityInput.value = MAX_QUANTITY;
+                showWarning(`Bạn chỉ được mua tối đa ${MAX_QUANTITY} sản phẩm`);
+            } else if(value < 1) {
+                quantityInput.value = 1;
+            }
+        });
+    }
+
+    // --- Xử lý form Add to Cart ---
+    if(form){
+        // set initial size
+        if(sizeSelect && selectedSizeInput){
+            selectedSizeInput.value = sizeSelect.value;
+            sizeSelect.addEventListener('change', function() {
+                selectedSizeInput.value = this.value;
+            });
+        }
+
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+            const quantity = form.querySelector('input[name="quantity"]').value;
+
+            Swal.fire({
+                title: 'Xác nhận',
+                text: `Bạn có chắc chắn muốn thêm ${quantity} sản phẩm này vào giỏ hàng?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
+            }).then((result) => {
+                if(result.isConfirmed){
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: new FormData(this),
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success){
+                            const cartCountElement = document.querySelector('.cart-count');
+                            if(cartCountElement && data.cartCount) cartCountElement.textContent = data.cartCount;
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: data.message
+                            }).then(()=> window.location.reload());
+                        } else {
+                            if(data.redirect){
+                                window.location.href = data.redirect;
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi',
+                                    text: data.message || 'Có lỗi xảy ra'
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi thêm vào giỏ hàng' });
+                    });
+                }
+            });
+        });
+    }
+
+    // --- Nút Buy Now ---
+    if(buyNowBtn && form){
+        buyNowBtn.addEventListener('click', function(e){
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            fetch("{{ route('cart.add-to-cart') }}", {
+                method: 'POST',
+                headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    window.location.href = "{{ route('checkout') }}";
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message || 'Có lỗi khi thêm giỏ hàng' });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra, vui lòng thử lại' });
+            });
+        });
+    }
+
+    // --- Xử lý ảnh & thumbnail ---
+    if(featuredImage && thumbnails.length){
+        thumbnails.forEach((img, index) => {
+            img.addEventListener('click', function() {
+                currentIndex = index;
+                featuredImage.src = this.src;
+                if(featuredLink) featuredLink.href = this.src;
+                thumbnails.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+
+        prevBtn?.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            featuredImage.src = images[currentIndex];
+            if(featuredLink) featuredLink.href = images[currentIndex];
+            thumbnails.forEach(i => i.classList.remove('active'));
+            thumbnails[currentIndex].classList.add('active');
+        });
+
+        nextBtn?.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            featuredImage.src = images[currentIndex];
+            if(featuredLink) featuredLink.href = images[currentIndex];
+            thumbnails.forEach(i => i.classList.remove('active'));
+            thumbnails[currentIndex].classList.add('active');
+        });
+    }
+
+    // --- Xử lý size hiển thị ---
+    if(selectedSizeSpan){
+        const sizeInputs = document.querySelectorAll('input[name="size_id"]:not(:disabled)');
+        const checkedInput = document.querySelector('input[name="size_id"]:checked');
+        if(checkedInput) selectedSizeSpan.textContent = checkedInput.dataset.sizeName;
+
+        sizeInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                selectedSizeSpan.textContent = this.dataset.sizeName;
+            });
+        });
+    }
+
+});
+</script>
+
 @endpush

@@ -39,30 +39,22 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Voucher</b></h2>
-                            <a href="{{ route('admin.voucher.create') }}" class="btn btn-success mt-2 mb-4">
+                            <a href="{{ route('admin.voucher.create') }}" class="btn btn-primary mt-2 mb-4">
                                 <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
                         <div class="col-sm-6">
                             <div class="search-filters d-flex gap-2">
-                                <div class="search-box flex-grow-1">
+                                <div class="search-box flex-grow-1" style="height: 50px;">
                                     <i class="material-icons">&#xE8B6;</i>
                                     <input type="text" class="form-control" id="searchInput"
                                         placeholder="Tìm kiếm theo mã voucher...">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3" style="height: 50px;">
                                     <select class="form-control" id="statusFilter">
                                         <option value="">Tất cả trạng thái</option>
                                         <option value="1">Đang kích hoạt</option>
@@ -131,12 +123,12 @@
                                                 </button>
                                             </form>
 
-                                            <form action="{{ route('admin.voucher.delete', $voucher->id) }}"
-                                                method="POST" class="d-inline">
+                                      
+
+                                             <form action="{{ route('admin.voucher.delete', $voucher->id) }}" method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="delete" title="Xóa"
-                                                    onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này không?')"
+                                                <button type="button" class="delete-btn" title="Xóa"
                                                     style="background: none; border: none; padding: 5px;">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
@@ -302,11 +294,10 @@
                                 <i class="material-icons">${voucher.status ? 'toggle_on' : 'toggle_off'}</i>
                             </button>
                         </form>
-                        <form action="/admin/vouchers/${voucher.id}" method="POST" class="d-inline">
+                        <form action="/admin/vouchers/${voucher.id}" method="POST" class="d-inline delete-form">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="delete" title="Xóa"
-                                onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này không?')"
+                            <button type="button" class="delete-btn" title="Xóa"
                                 style="background: none; border: none; padding: 5px;">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -326,6 +317,29 @@
             statusFilter.addEventListener('change', searchVouchers);
         }
     });
+        document.addEventListener('click', function (e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+
+            let form = e.target.closest('form');
+
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Voucher sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    });
+
 </script>
 
 @endpush

@@ -20,6 +20,10 @@
     font-size: 2rem;
 }
 
+#review_text {
+    color: #000; /* màu đen */
+}
+
 .order-id {
     color: #6c757d;
     font-size: 1.1rem;

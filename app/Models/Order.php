@@ -193,7 +193,7 @@ class Order extends Model
 
             // Return products to inventory
             foreach ($this->orderDetails as $detail) {
-                $detail->product->increment('quantity', $detail->sold_quantity);
+                $detail->product->increment('amount', $detail->sold_quantity);
             }
         });
 

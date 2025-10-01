@@ -30,6 +30,16 @@
         @endif
     </div>
 
+    <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('shop.home') }}">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Thông tin cá nhân</li>
+            </ol>
+        </div>
+    </nav>
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-4">
@@ -69,7 +79,7 @@
                             </div>
 
                             <div class="text-center">
-                                <button type="submit" class="btn btn-primary px-5">Cập nhật thông tin</button>
+                                <button type="submit" class="btn btn-login px-5">Cập nhật thông tin</button>
                             </div>
                         </form>
                     </div>

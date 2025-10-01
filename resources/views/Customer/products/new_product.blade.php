@@ -39,7 +39,17 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('shop.home') }}">Trang chủ</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('brands.list') }}">Sản phẩm mới</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <a href="{{ route('brands.list') }}">
+                                @if(request()->is('product/male-female/male'))
+                                    Nam
+                                @elseif(request()->is('product/male-female/female'))
+                                    Nữ
+                                @else
+                                    Sản phẩm mới
+                                @endif
+                            </a>
+                        </li>
 
                     </ol>
                 </div>

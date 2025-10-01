@@ -28,30 +28,10 @@ class ProductController extends Controller
     public function search(Request $request)
     {
         try {
-            $query = $request->get('query');
-            $categoryId = $request->get('category');
-            $brandId = $request->get('brand');
-            $materialId = $request->get('material');
-            $status = $request->get('status');
+            $filters = $request->only(['query', 'category', 'brand', 'material', 'status']);
 
             $products = Product::with(['brand', 'material', 'category', 'size', 'images'])
-                ->when($query, function ($q) use ($query) {
-                    return $q->where('name', 'LIKE', "%{$query}%");
-                })
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    return $q->whereHas('category', function ($q) use ($categoryId) {
-                        $q->where('categories.category_id', $categoryId);
-                    });
-                })
-                ->when($brandId, function ($q) use ($brandId) {
-                    return $q->where('brand_id', $brandId);
-                })
-                ->when($materialId, function ($q) use ($materialId) {
-                    return $q->where('material_id', $materialId);
-                })
-                ->when($status !== null && $status !== '', function ($q) use ($status) {
-                    return $q->where('status', $status);
-                })
+                ->filter($filters)
                 ->get();
 
             $products->each(function ($product) {
@@ -74,6 +54,7 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
 
     public function index()
     {
