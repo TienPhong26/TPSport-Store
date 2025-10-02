@@ -62,6 +62,8 @@ Route::post('customer/change-password', [CustomerController::class, 'changePassw
 
 Route::get('/product/new-arrivals', [ProductController::class, 'newProduct'])
     ->name('product.new-arrivals');
+Route::get('/product/sports-equipment', [ProductController::class, 'sportsEquipment'])
+    ->name('product.sports-equipment');
 Route::get('/product/male-female/{gender}', [ProductController::class, 'maleFemale'])
     ->name('product.male-female');
 Route::get('/product/{product_id}/reviews', [FeedbackController::class, 'showProductReviews'])->name('product.reviews');

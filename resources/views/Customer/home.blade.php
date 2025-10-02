@@ -14,7 +14,7 @@
             @foreach($banners as $banner)
                 <div class="swiper-slide">
                     <img src="{{ $banner->image_path ? asset($banner->image_path) : $banner->image_url }}"
-                        alt="Banner {{ $loop->iteration }}">
+                        alt="Banner {{ $loop->iteration }}" style="max-height: 661.55px;" class="img-fluid">
                 </div>
             @endforeach
         </div>

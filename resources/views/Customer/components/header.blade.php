@@ -46,12 +46,17 @@
                             </li>
 
                             <li>
+                                <a href="{{ route('product.sports-equipment') }}"
+                                    class="{{ request()->routeIs('product.sports-equipment') ? 'active' : '' }}">
+                                    THIẾT BỊ THỂ THAO
+                                </a>
+                            </li>
+                            <li>
                                 <a href="{{ route('product.new-arrivals') }}"
                                     class="{{ request()->routeIs('product.new-arrivals') ? 'active' : '' }}">
                                     SẢN PHẨM MỚI
                                 </a>
                             </li>
-
                             <li>
                                 <a href="{{ route('product.male-female', ['gender' => 'male']) }}"
                                     class="{{ request()->routeIs('product.male-female') && request('gender') == 'male' ? 'active' : '' }}">

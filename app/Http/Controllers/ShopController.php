@@ -20,6 +20,19 @@ class ShopController extends Controller
     {
         $today = Carbon::today();
 
+        // $products = Product::with([
+        //     'brand',
+        //     'category.discounts' => function ($q) use ($today) {
+        //         $q->where('status', 1)
+        //             ->where('start', '<=', $today)
+        //             ->where('end', '>=', $today);
+        //     }
+        // ])
+        //     ->where('status', 1)
+        //     ->orderBy('product_id', 'desc')
+        //     ->take(10)
+        //     ->orderBy('entry_date', 'desc')
+        //     ->get();
         $products = Product::with([
             'brand',
             'category.discounts' => function ($q) use ($today) {
@@ -29,7 +42,7 @@ class ShopController extends Controller
             }
         ])
             ->where('status', 1)
-            ->orderBy('product_id', 'desc')
+            ->orderBy('entry_date', 'desc')
             ->take(10)
             ->get();
 
