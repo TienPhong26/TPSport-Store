@@ -35,14 +35,14 @@
                     <span class="text">Quản lý</span>
                 </a>
                 <ul id="ddmenu_2" class="collapse dropdown-nav">
-                    {{-- @if (Auth::guard('owner')->check())
-                    @endif --}}
-                    <li>
-                        <a href="{{ route('admin.employee') }}"
-                            class="{{ request()->routeIs('admin.employee') ? 'active' : '' }}">
-                            <i class="lni lni-users"></i> Quản lý Nhân viên
-                        </a>
-                    </li>
+                    @if (Auth::guard('owner')->check())
+                        <li>
+                            <a href="{{ route('admin.employee') }}"
+                                class="{{ request()->routeIs('admin.employee') ? 'active' : '' }}">
+                                <i class="lni lni-users"></i> Quản lý Nhân viên
+                            </a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{ route('admin.customer') }}">
                             <i class="lni lni-user"></i> Quản lý Khách hàng
