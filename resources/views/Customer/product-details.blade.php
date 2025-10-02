@@ -120,40 +120,46 @@
                 <p><strong style="color: #000000">Số lượng còn:</strong> {{ $product->amount }}</p>
             </div>
             <form action="{{ route('cart.add-to-cart') }}" method="POST" class="product-form" id="addToCartForm">
-            <div class="sizes">
-                <p>
-                    Kích cỡ:
-                    <span id="selected-size" style="color:rgb(0, 0, 0);"></span>
-                </p>
+            @if($product->sizes->isNotEmpty())
+                <div class="sizes">
+                    <p>
+                        Kích cỡ:
+                        <span id="selected-size" style="color:rgb(0, 0, 0);"></span>
+                    </p>
 
-                <div class="size-options">
-                    @foreach ($product->sizes as $index => $size)
-                        @php
-                            $stock = $size->pivot->size_order; // số lượng tồn
-                            $disabled = $stock == 0 ? 'disabled' : '';
-                            $classOutOfStock = $stock == 0 ? 'out-of-stock' : '';
-                        @endphp
+                    <div class="size-options">
+                        @foreach ($product->sizes as $index => $size)
+                            @php
+                                $stock = $size->pivot->size_order; // số lượng tồn
+                                $disabled = $stock == 0 ? 'disabled' : '';
+                                $classOutOfStock = $stock == 0 ? 'out-of-stock' : '';
+                            @endphp
 
-                        <label class="size-label {{ $classOutOfStock }}">
-                            <input type="radio"
-                                name="size_id"
-                                value="{{ $size->size_id }}"
-                                data-size-name="{{ $size->size_name }}"
-                                @if($index === 0 && $stock > 0) checked @endif
-                                {{ $disabled }} required>
-                            <span>{{ $size->size_name }}</span>
-                        </label>
-                    @endforeach
+                            <label class="size-label {{ $classOutOfStock }}">
+                                <input type="radio"
+                                    name="size_id"
+                                    value="{{ $size->size_id }}"
+                                    data-size-name="{{ $size->size_name }}"
+                                    @if($index === 0 && $stock > 0) checked @endif
+                                    {{ $disabled }} required>
+                                <span>{{ $size->size_name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
+            @endif
+            
 
+            
             <div class="colors mt-4">
                 <p>Màu sắc: {{ $product->productDetail->color }}</p>
                 <div class="color-img-wrapper">
                     <img src="{{ asset($product->image) }}" alt="color-img" class="color-img-icon">
                     <span class="tooltip-text">{{ $product->productDetail->color }}</span>
                 </div>
+                @if(!empty($product->productDetail->material))
                 <p class="mt-4">Chất liệu: {{ $product->productDetail->material }}</p>
+                @endif
 
                 <a data-fancybox="gallery" href="{{ asset('images/adidas-ao.png') }}" >
                     <i class="fas fa-ruler"></i>

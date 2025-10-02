@@ -359,6 +359,8 @@ class ProductController extends Controller
             $brands = Brand::select('id', 'brand_name')
                 ->get();
 
+            // dd($product);
+
             return view('Customer.product-details', [
                 'product' => $product,
                 'brands' => $brands,
