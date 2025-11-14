@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\OwnerController;
@@ -329,6 +330,12 @@ Route::prefix('admin')->group(function () {
             Route::put('/{order}', [OrderController::class, 'update'])->name('admin.order.update');
             Route::get('/search', [OrderController::class, 'search'])->name('admin.orders.search');
         });
+
+        // Routes quản lý nhân viên
+        Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+        Route::post('/submit', [ChatController::class, 'submit'])->name('chat.submit');
+        // Route::prefix('chat')->group(function () {
+        // });
     });
 });
 
