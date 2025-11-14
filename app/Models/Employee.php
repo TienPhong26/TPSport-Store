@@ -10,7 +10,7 @@ class Employee extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'employee';
+    protected $table = 'employees';
     protected $primaryKey = 'employee_id';
     public $timestamps = false;
     protected $fillable = [

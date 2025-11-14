@@ -4,7 +4,7 @@
     <div class="product-grid">
         @forelse($products as $product)
             <div class="pro">
-                <a href="{{ route('shop.product.show', $product->product_id) }}" class="btn-view">
+                <a href="{{ route('shop.product.show', $product->id) }}" class="btn-view">
                     <div class="product-image-container position-relative">
                         {{-- Ảnh mặc định --}}
                         <img src="{{ asset($product->image) }}" class="w-100 product-image" alt="{{ $product->name }}">
@@ -33,6 +33,7 @@
 
                     <p class="prd-vendor">{{ $product->brand->brand_name}}</p>
                     <p class="prd-name">{{ $product->name }}</p>
+
                     @php
                         $discountPercent = 0;
                         if ($product->category->isNotEmpty()) {
@@ -53,6 +54,10 @@
                             <b>{{ number_format($product->price) }} VNĐ</b>
                         @endif
                     </p>
+                    <div class="color-img-wrapper">
+                        <img src="{{ asset($product->image) }}" alt="color-img" class="color-img-icon">
+                        <span class="tooltip-text">{{ $product->productDetail->color }}</span>
+                    </div>
                 </a>
             </div>
         @empty
@@ -63,7 +68,7 @@
     </div>
     @if($products->count() > 0)
         <div class="text-center mt-3 show-all-prd">
-            <a href="/adidas-moi-ve-1" title="Xem tất cả" class="btn btn-main btn-icon btn-pill">
+            <a href="/product/new-arrivals" title="Xem tất cả" class="btn btn-main btn-icon btn-pill">
                 Xem tất cả
                 <i class="fas fa-chevron-right ic-1"></i>
             </a>

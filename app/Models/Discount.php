@@ -20,6 +20,7 @@ class Discount extends Model
         'category_id',
         'discount_percent',
         'start',
+        'des',
         'end',
         'status',
     ];

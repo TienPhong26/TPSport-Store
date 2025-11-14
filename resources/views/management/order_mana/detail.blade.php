@@ -1,64 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý chi tiết Đơn hàng</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
-</head>
-
-<body>
-    @include('management.components.admin-header')
-
-    <div class="container mt-3">
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-    </div>
     <div class="container">
         <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Chi tiết đơn hàng #{{ $order->order_id }}</h4>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <a href="{{ route('admin.order') }}" class="btn btn-secondary">
-                            <i class="fa fa-arrow-left"></i> Quay lại
-                        </a>
-                    </div>
-                </div>
-            </div>
-
             <div class="card-body">
                 <div class="row mb-4">
                     <!-- Thông tin khách hàng -->
@@ -111,7 +53,7 @@
                             @foreach ($order->orderDetails as $detail)
                                 <tr>
                                     <td>
-                                        <div>{{ $detail->product->product_name }}</div>
+                                        <div>{{ $detail->product->name }}</div>
                                         <small class="text-muted">Mã SP: {{ $detail->product->product_id }}</small>
                                     </td>
                                     <td>{{ number_format($detail->sold_price) }} VNĐ</td>
@@ -186,7 +128,7 @@
                             <input type="hidden" name="order_status" value="confirmed">
                             <button type="submit" class="btn btn-success"
                                 onclick="return confirm('Xác nhận đơn hàng này?')">
-                                <i class="material-icons">check</i> Xác nhận đơn hàng
+                                <i class="fas fa-check"></i> Xác nhận đơn hàng
                             </button>
                         </form>
 
@@ -197,7 +139,7 @@
                             <input type="hidden" name="order_status" value="cancelled">
                             <button type="submit" class="btn btn-danger"
                                 onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
-                                <i class="material-icons">clear</i> Hủy đơn hàng
+                                <i class="fas fa-times"></i> Hủy đơn hàng
                             </button>
                         </form>
                     @endif
@@ -205,6 +147,3 @@
             </div>
         </div>
     </div>
-</body>
-
-</html>

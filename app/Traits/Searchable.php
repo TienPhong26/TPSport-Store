@@ -35,7 +35,7 @@ trait Searchable
                     'products' => $products->map(function ($product) use ($isAdmin) {
                         return [
                             'id' => $product->product_id,
-                            'name' => $product->product_name,
+                            'name' => $product->name,
                             'price' => number_format($product->price) . ' VNĐ',
                             'category' => $product->getPrimaryCategory()?->category_name ?? 'N/A',
                             'image' => $product->getMainImage()?->image_url
@@ -84,7 +84,7 @@ trait Searchable
                 ->get()
                 ->map(function ($product) {
                     return [
-                        'name' => $product->product_name,
+                        'name' => $product->name,
                         'category' => $product->getPrimaryCategory()?->category_name ?? 'N/A'
                     ];
                 });

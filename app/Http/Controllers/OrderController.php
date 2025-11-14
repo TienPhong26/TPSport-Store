@@ -73,6 +73,7 @@ class OrderController extends Controller
     {
         $orders = Order::with(['orderDetails', 'shippingMethod', 'voucher'])
             ->orderBy('order_date', 'desc')
+            ->where('order_status', '!=', 'cart')
             ->paginate(10);
 
         return view('management.order_mana.index', compact('orders'));
@@ -86,7 +87,7 @@ class OrderController extends Controller
             'receiver_name' => 'required|string|max:100',
             'receiver_phone' => 'required|string|max:20',
             'receiver_address' => 'required|string|max:255',
-            'customer_id' => 'required|exists:customer,customer_id',
+            'customer_id' => 'required|exists:customer,id',
             'employee_id' => 'required|exists:employee,employee_id',
             'voucher_id' => 'nullable|exists:vouchers,voucher_id',
             'payment_method_id' => 'required|exists:payment_methods,method_id',
@@ -116,7 +117,7 @@ class OrderController extends Controller
         $customers = Customer::all();
         $paymentMethods = PaymentMethod::all();
         $shippingMethods = ShippingMethod::all();
-
+        // dd($order->orderDetails);
         return view('management.order_mana.edit', compact(
             'order',
             'customers',
@@ -133,7 +134,7 @@ class OrderController extends Controller
             'receiver_name' => 'required|string|max:100',
             'receiver_phone' => 'required|string|max:20',
             'receiver_address' => 'required|string|max:255',
-            'customer_id' => 'required|exists:customer,customer_id',
+            'customer_id' => 'required|exists:users,id',
             'payment_method_id' => 'required|exists:payment_methods,method_id',
             'shipping_method_id' => 'required|exists:shipping_methods,method_id',
         ]);
@@ -182,17 +183,22 @@ class OrderController extends Controller
         }
     }
 
+    // public function show(Order $order)
+    // {
+    //     $order->load(['orderDetails.product', 'customer', 'voucher', 'paymentMethod', 'shippingMethod']);
+    //     return view('management.order_mana.detail', compact('order'));
+    // }
+
     public function show(Order $order)
     {
-        $order->load(['orderDetails.product', 'customer', 'voucher', 'paymentMethod', 'shippingMethod']);
         return view('management.order_mana.detail', compact('order'));
     }
 
     public function updateStatus(Request $request, Order $order)
     {
+
         try {
             $validStatuses = ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'];
-
             $request->validate([
                 'order_status' => ['required', Rule::in($validStatuses)]
             ], [
@@ -213,10 +219,10 @@ class OrderController extends Controller
                 if ($oldStatus === 'pending' && in_array($newStatus, ['confirmed', 'shipping', 'completed'])) {
                     foreach ($order->orderDetails as $orderDetail) {
                         $product = $orderDetail->product;
-                        if ($product->quantity < $orderDetail->sold_quantity) {
-                            throw new \Exception("Sản phẩm {$product->product_name} không đủ số lượng trong kho");
+                        if ($product->amount < $orderDetail->sold_quantity) {
+                            throw new \Exception("Sản phẩm {$product->name} không đủ số lượng trong kho");
                         }
-                        $product->quantity -= $orderDetail->sold_quantity;
+                        $product->amount -= $orderDetail->sold_quantity;
                         $product->save();
                     }
                 }
@@ -225,7 +231,7 @@ class OrderController extends Controller
                 if ($newStatus === 'cancelled' && in_array($oldStatus, ['confirmed', 'shipping', 'completed'])) {
                     foreach ($order->orderDetails as $orderDetail) {
                         $product = $orderDetail->product;
-                        $product->quantity += $orderDetail->sold_quantity;
+                        $product->amount += $orderDetail->sold_quantity;
                         $product->save();
                     }
                 }
@@ -277,18 +283,28 @@ class OrderController extends Controller
             $today = now()->format('Y-m-d'); // Format as date string
 
             // Debug current date
-            Log::info('Current date:', ['today' => $today]);
+            // Log::info('Current date:', ['today' => $today]);
 
             // Get cart order and total
+            // $cartOrder = Order::where([
+            //     'customer_id' => $customer->id,
+            //     'order_status' => 'cart'
+            // ])->with(['orderDetails.product'])->firstOrFail();
+
             $cartOrder = Order::where([
-                'customer_id' => $customer->customer_id,
+                'customer_id' => $customer->id,
                 'order_status' => 'cart'
-            ])->with(['orderDetails.product'])->firstOrFail();
+            ])->with(['orderDetails.product'])->first();
+
+            if (!$cartOrder) {
+                return redirect()->route('cart.view')
+                    ->with('error', 'Giỏ hàng của bạn đang trống.');
+            }
 
             $total = $cartOrder->getTotalAmount();
 
             // Get used vouchers
-            $usedVoucherIds = Order::where('customer_id', $customer->customer_id)
+            $usedVoucherIds = Order::where('customer_id', $customer->id)
                 ->whereNotNull('voucher_id')
                 ->pluck('voucher_id');
 
@@ -354,7 +370,7 @@ class OrderController extends Controller
         }
     }
 
-    public function processCheckout(Request $request)
+    public function processCheckout2(Request $request)
     {
         $request->validate([
             'receiver_name' => 'required|string|max:100',
@@ -371,14 +387,14 @@ class OrderController extends Controller
 
             // Get current cart
             $cartOrder = Order::where([
-                'customer_id' => $customer->customer_id,
+                'customer_id' => $customer->id,
                 'order_status' => 'cart'
             ])->with(['orderDetails.product'])->firstOrFail();
 
             // Check stock availability only
             foreach ($cartOrder->orderDetails as $item) {
-                if ($item->sold_quantity > $item->product->quantity) {
-                    throw new \Exception("Sản phẩm {$item->product->product_name} chỉ còn {$item->product->quantity} trong kho");
+                if ($item->sold_quantity > $item->product->amount) {
+                    throw new \Exception("Sản phẩm {$item->product->name} chỉ còn {$item->product->amount} trong kho");
                 }
             }
 
@@ -427,6 +443,98 @@ class OrderController extends Controller
         }
     }
 
+
+    public function processCheckout(Request $request)
+    {
+        $request->validate([
+            'receiver_name' => 'required|string|max:100',
+            'receiver_phone' => 'required|string|max:20',
+            'receiver_address' => 'required|string|max:255',
+            'payment_method_id' => 'required|exists:payment_methods,method_id',
+            'shipping_method_id' => 'required|exists:shipping_methods,method_id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $customer = Auth::guard('customer')->user();
+
+            // Lấy giỏ hàng hiện tại
+            // $cartOrder = Order::where([
+            //     'customer_id' => $customer->id,
+            //     'order_status' => 'cart'
+            // ])->with(['orderDetails.product'])->firstOrFail();
+            $cartOrder = Order::where([
+                'customer_id' => $customer->id,
+                'order_status' => 'cart'
+            ])->with(['orderDetails.product'])->first();
+
+            if (!$cartOrder) {
+                return redirect()->route('cart.view')
+                    ->with('error', 'Giỏ hàng của bạn đang trống.');
+            }
+            // Kiểm tra tồn kho
+            foreach ($cartOrder->orderDetails as $item) {
+                if ($item->sold_quantity > $item->product->amount) {
+                    throw new \Exception("Sản phẩm {$item->product->name} chỉ còn {$item->product->amount} trong kho");
+                }
+            }
+
+            // Xử lý voucher
+            if (session()->has('voucher')) {
+                $voucherData = session('voucher');
+                $voucher = Voucher::find($voucherData['id']);
+
+                if (
+                    !$voucher || !$voucher->status ||
+                    $voucher->expiry_date < now() ||
+                    ($voucher->max_usage_count && $voucher->usage_count >= $voucher->max_usage_count)
+                ) {
+                    throw new \Exception('Mã giảm giá không còn hiệu lực hoặc đã hết lượt sử dụng');
+                }
+
+                $voucher->increment('usage_count');
+            }
+
+            // Update cart thành order
+            $cartOrder->update([
+                'order_status' => 'pending',
+                'order_date' => now(),
+                'receiver_name' => $request->receiver_name,
+                'receiver_phone' => $request->receiver_phone,
+                'receiver_address' => $request->receiver_address,
+                'payment_method_id' => $request->payment_method_id,
+                'shipping_method_id' => $request->shipping_method_id,
+                'voucher_id' => session('voucher.id') ?? null
+            ]);
+
+            // Xóa session voucher
+            session()->forget('voucher');
+
+            DB::commit();
+
+            // Lấy tên phương thức thanh toán để quyết định redirect
+            $paymentMethod = PaymentMethod::find($request->payment_method_id);
+
+            if ($paymentMethod->method_id == 1) {
+                return redirect()->route('vnpay.payment', ['order' => $cartOrder]);
+            }
+            if ($paymentMethod->method_id == 3) {
+                return redirect()->route('momo.payment', ['order' => $cartOrder]);
+            }
+
+            // Nếu là COD → redirect về trang home
+            return redirect()->route('shop.home')
+                ->with('success', 'Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->withInput()
+                ->with('error', 'Có lỗi xảy ra khi đặt hàng: ' . $e->getMessage());
+        }
+    }
+
+
     public function applyVoucher(Request $request)
     {
         try {
@@ -466,7 +574,7 @@ class OrderController extends Controller
 
             // Lấy giỏ hàng hiện tại
             $cartOrder = Order::where([
-                'customer_id' => $customer->customer_id,
+                'customer_id' => $customer->id,
                 'order_status' => 'cart'
             ])->first();
 
@@ -481,7 +589,15 @@ class OrderController extends Controller
             }
 
             // Tính toán giá trị sau khi áp dụng voucher
-            $discountAmount = $voucher->discount_amount ?? ($total * $voucher->discount_percentage / 100);
+            // $discountAmount = $voucher->discount_amount ?? ($total * $voucher->discount_percentage / 100);
+            // $newTotal = max(0, $total - $discountAmount);
+
+
+            if ($voucher->discount_percentage && $voucher->discount_percentage > 0) {
+                $discountAmount = $total * $voucher->discount_percentage / 100;
+            } else {
+                $discountAmount = $voucher->discount_amount ?? 0;
+            }
             $newTotal = max(0, $total - $discountAmount);
 
             // Lưu thông tin voucher vào session
@@ -517,17 +633,17 @@ class OrderController extends Controller
             'shipping_method',
             'voucher'
         ])
-            ->where('customer_id', $customer->customer_id)
+            ->where('customer_id', $customer->id)
             ->where('order_status', '!=', 'cart')
             ->orderBy('order_date', 'desc')
             ->paginate(10);
 
-        $totalOrders = Order::where('customer_id', $customer->customer_id)
+        $totalOrders = Order::where('customer_id', $customer->id)
             ->where('order_status', '!=', 'cart')
             ->count();
 
         // Tính tổng chi phí bao gồm cả phí vận chuyển
-        $totalSpent = Order::where('customer_id', $customer->customer_id)
+        $totalSpent = Order::where('customer_id', $customer->id)
             ->where('order_status', '!=', 'cart')
             ->with('shipping_method')
             ->get()
@@ -535,7 +651,7 @@ class OrderController extends Controller
                 return $order->getFinalTotal() + ($order->shipping_method ? $order->shipping_method->shipping_fee : 0);
             });
 
-        $completedOrders = Order::where('customer_id', $customer->customer_id)
+        $completedOrders = Order::where('customer_id', $customer->id)
             ->where('order_status', 'completed')
             ->count();
 

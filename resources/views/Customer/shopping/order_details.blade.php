@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('customer._layouts.master')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết đơn hàng</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+@section('title', 'Chi tiết đơn hàng')
+
+{{-- CSS riêng cho trang brand list --}}
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/brand_list.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/order_details.css') }}">
-    <script src="{{ asset('js/alert.js') }}"></script>
+@endpush
 
-</head>
+@section('content')
+
 <div class="alerts-container" style="display: flex; justify-content: center;">
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -34,7 +35,18 @@
         </div>
     @endif
 </div>
+<nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ route('shop.home') }}">Trang chủ</a>
+            </li>
+       <li class="breadcrumb-item active" aria-current="page"><a href="/orders">Lịch sử đặt hàng</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng</li>
 
+        </ol>
+    </div>
+</nav>
 <div class="order-details-container">
     <div class="order-header">
         <div class="order-title">
@@ -196,22 +208,17 @@
             @foreach ($order->orderDetails as $detail)
                 <div class="product-item">
                     <div class="product-image">
-                        @if ($detail->product->getMainImage())
-                            <img src="{{ asset($detail->product->getMainImage()->image_url) }}"
-                                alt="{{ $detail->product->product_name }}" class="img-fluid rounded">
-                        @else
-                            <img src="{{ asset('images/no-image.png') }}" alt="No image available"
-                                class="img-fluid rounded">
-                        @endif
+                        <img src="{{ asset($detail->product->image ?? 'images/no-image.png') }}"
+                                            alt="{{ $detail->product->name }}" class="img-fluid rounded">
                     </div>
 
                     <div class="product-info">
-                        <h4>{{ $detail->product->product_name }}</h4>
+                        <h4>{{ $detail->product->name }}</h4>
                         <p class="product-description">{{ $detail->product->description }}</p>
                         <div class="product-details">
                             <span class="category">
                                 Danh mục:
-                                {{ $detail->product->getPrimaryCategory() ? $detail->product->getPrimaryCategory()->category_name : 'N/A' }}
+                                {{-- {{ $detail->product-> : 'N/A' }} --}}
                             </span>
                             <br>
                             <span class="brand">
@@ -285,7 +292,7 @@
 
     <div class="order-actions">
         <a href="{{ route('customer.orders') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left-circle"></i> Quay lại
+            <i class="fas fa-long-arrow-alt-left"></i> Quay lại
         </a>
 
         @if ($order->order_status == 'pending')
@@ -300,15 +307,15 @@
         @endif
 
         @if ($order->order_status == 'completed' && !$order->isReturned())
-            <form action="{{ route('customer.orders.return', $order->order_id) }}" method="POST" class="d-inline">
+            <form action="{{ route('customer.orders.return', $order->order_id) }}" method="POST" class="d-inline return-order-form">
                 @csrf
                 @method('POST')
-                <button type="submit" class="btn btn-warning btn-return-order"
-                    onclick="return confirm('Bạn có chắc chắn muốn hoàn trả đơn hàng này?')">
+                <button type="submit" class="btn btn-warning btn-return-order">
                     <i class="bi bi-arrow-counterclockwise"></i> Hoàn trả đơn hàng
                 </button>
             </form>
-            <button type="button" class="btn btn-success" onclick="openReviewModal()">
+
+            <button type="button" class="btn btn-success" style="background-color: #444;" onclick="openReviewModal()">
                 <i class="bi bi-star"></i> Đánh giá đơn hàng
             </button>
         @endif
@@ -382,6 +389,31 @@
     </div>
 </div>
 
+@endsection
+
 <script src="{{ asset('js/order_details.js') }}"></script>
 
-</html>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.return-order-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Ngăn form submit ngay lập tức
+
+            Swal.fire({
+                title: 'Xác nhận',
+                text: 'Bạn có chắc chắn muốn hoàn trả đơn hàng này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit form nếu xác nhận
+                }
+            });
+        });
+    });
+});
+</script>
+

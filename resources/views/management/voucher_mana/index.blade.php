@@ -1,28 +1,17 @@
-<!DOCTYPE html>
-@php
+@extends('management.layouts.admin_layout')
+
+@section('title', 'Quản lý voucher')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
+    
+@endpush
+
+@section('content')
+   @php
     use Illuminate\Support\Facades\Storage;
 @endphp
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý Voucher</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/crud.css') }}">
-    <script src="{{ asset('js/alert.js') }}"></script>
-</head>
-
-<body>
-    @include('management.components.admin-header')
-
-    <div class="alerts-container">
+<div class="alerts-container">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -46,34 +35,26 @@
         @endif
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Voucher</b></h2>
-                            <a href="{{ route('admin.voucher.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                            <a href="{{ route('admin.voucher.create') }}" class="btn btn-primary mt-2 mb-4">
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
                         <div class="col-sm-6">
                             <div class="search-filters d-flex gap-2">
-                                <div class="search-box flex-grow-1">
+                                <div class="search-box flex-grow-1" style="height: 50px;">
                                     <i class="material-icons">&#xE8B6;</i>
                                     <input type="text" class="form-control" id="searchInput"
                                         placeholder="Tìm kiếm theo mã voucher...">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3" style="height: 50px;">
                                     <select class="form-control" id="statusFilter">
                                         <option value="">Tất cả trạng thái</option>
                                         <option value="1">Đang kích hoạt</option>
@@ -83,7 +64,7 @@
                             </div>
                         </div>
                     </div>
-                    <table class="table table-striped table-hover table-bordered">
+                    <table class="table table-striped table-hover table-bordered text-center">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -129,6 +110,7 @@
                                                 <i class="material-icons">&#xE254;</i>
                                             </a>
 
+
                                             <form action="{{ route('admin.voucher.toggle', $voucher->id) }}"
                                                 method="POST" class="d-inline">
                                                 @csrf
@@ -141,14 +123,14 @@
                                                 </button>
                                             </form>
 
-                                            <form action="{{ route('admin.voucher.delete', $voucher->id) }}"
-                                                method="POST" class="d-inline">
+                                      
+
+                                             <form action="{{ route('admin.voucher.delete', $voucher->id) }}" method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="delete" title="Xóa"
-                                                    onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này không?')"
+                                                <button type="button" class="delete-btn" title="Xóa"
                                                     style="background: none; border: none; padding: 5px;">
-                                                    <i class="material-icons">&#xE872;</i>
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -157,6 +139,24 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="modal fade" id="editVoucherModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Chỉnh sửa Voucher</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('admin.voucher.update', $voucher->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        
+                                        <button type="submit" class="btn btn-primary">Cập nhật Voucher</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="clearfix">
                         <div class="footer-container">
                             <div class="pagination-info">
@@ -180,9 +180,10 @@
             </div>
         </div>
     </div>
-</body>
+@endsection
 
-<script>
+@push('scripts')
+   <script>
     function nextPage() {
         const currentPage = {{ $vouchers->currentPage() }};
         const totalPages = {{ $vouchers->lastPage() }};
@@ -283,7 +284,7 @@
                 <td>
                     <div class="action-buttons">
                         <a href="/admin/vouchers/${voucher.id}/edit" class="edit" title="Sửa">
-                            <i class="material-icons">&#xE254;</i>
+                            <i class="fas fa-pen"></i>
                         </a>
                         <form action="/admin/vouchers/${voucher.id}/toggle" method="POST" class="d-inline">
                             @csrf
@@ -293,13 +294,12 @@
                                 <i class="material-icons">${voucher.status ? 'toggle_on' : 'toggle_off'}</i>
                             </button>
                         </form>
-                        <form action="/admin/vouchers/${voucher.id}" method="POST" class="d-inline">
+                        <form action="/admin/vouchers/${voucher.id}" method="POST" class="d-inline delete-form">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="delete" title="Xóa"
-                                onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này không?')"
+                            <button type="button" class="delete-btn" title="Xóa"
                                 style="background: none; border: none; padding: 5px;">
-                                <i class="material-icons">&#xE872;</i>
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>
                     </div>
@@ -317,6 +317,31 @@
             statusFilter.addEventListener('change', searchVouchers);
         }
     });
+        document.addEventListener('click', function (e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+
+            let form = e.target.closest('form');
+
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Voucher sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    });
+
 </script>
 
-</html>
+@endpush
+
+

@@ -5,7 +5,7 @@
             <div class="product-grid">
                 @forelse($products as $product)
                     <div class="pro">
-                        <a href="{{ route('shop.product.show', $product->product_id) }}" class="btn-view">
+                        <a href="{{ route('shop.product.show', $product->id) }}" class="btn-view">
                             <div class="product-image-container position-relative">
                                 <img src="{{ asset($product->image) }}" class="w-100 product-image" alt="{{ $product->name }}">
 
@@ -30,6 +30,7 @@
 
                             <p class="prd-vendor">{{ $product->brand->brand_name}}</p>
                             <p class="prd-name">{{ $product->name }}</p>
+                            
                             @php
                                 $discountPercent = 0;
                                 if ($product->category->isNotEmpty()) {
@@ -63,12 +64,12 @@
 
         <!-- Pagination -->
         @if($products->hasPages())
-            <div class="pagination-wrapper d-flex justify-content-center mt-4">
+            <div class="pagination-wrapper d-flex justify-content-end mt-4">
                 <ul class="pagination">
                     {{-- Previous Page Link --}}
                     @if ($products->onFirstPage())
                         <li class="disabled">
-                            <span><i class="fas fa-chevron-left"style="color: black"></i></span>
+                            <span><i class="fas fa-chevron-left" style="color: black"></i></span>
                         </li>
                     @else
                         <li>
@@ -95,12 +96,12 @@
                     @if ($products->hasMorePages())
                         <li>
                             <a href="{{ $products->nextPageUrl() }}" rel="next" style="color: black">
-                                <i class="fas fa-chevron-right"style="color: black"></i>
+                                <i class="fas fa-chevron-right" style="color: black"></i>
                             </a>
                         </li>
                     @else
                         <li class="disabled">
-                            <span><i class="fas fa-chevron-right"style="color: black"></i></span>
+                            <span><i class="fas fa-chevron-right" style="color: black"></i></span>
                         </li>
                     @endif
                 </ul>
@@ -112,7 +113,12 @@
                 <i class="fas fa-box-open"></i>
             </div>
             <h3>Không có sản phẩm</h3>
-            <p>Thương hiệu {{ $brand->brand_name }} hiện chưa có sản phẩm nào.</p>
+            {{-- <p>Thương hiệu {{ $brand->brand_name }} hiện chưa có sản phẩm nào.</p> --}}
+            @if (is_a($brand, \Illuminate\Support\Collection::class))
+                <p>Chưa có thương hiệu cụ thể.</p>
+            @else
+                <p>Thương hiệu {{ $brand->brand_name }} hiện chưa có sản phẩm nào.</p>
+            @endif
             <div class="no-products-actions">
                 <a href="{{ route('brands.list') }}" class="btn-primary">
                     <i class="fas fa-building" style="margin-right: 8px"></i>

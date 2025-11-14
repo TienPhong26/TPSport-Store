@@ -23,4 +23,8 @@ class Size extends Model
             ->using(sizeProduct::class)
             ->withPivot('size_order');
     }
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'size_id', 'size_id');
+    }
 }

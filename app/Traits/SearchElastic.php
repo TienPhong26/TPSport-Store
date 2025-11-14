@@ -15,7 +15,7 @@ trait SearchElastic
             'id' => $this->product_id,
             'body' => [
                 'product_id' => $this->product_id,
-                'product_name' => $this->product_name,
+                'name' => $this->product_name,
                 'status' => $this->status,
                 'quantity' => $this->quantity,
                 'price' => $this->price,

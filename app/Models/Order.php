@@ -33,7 +33,7 @@ class Order extends Model
     // Relationship with Customer
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     // Relationship with Employee
@@ -80,6 +80,7 @@ class Order extends Model
     // Helper method to get status label
     // Add constants for order statuses
     public const STATUS_PENDING = 'pending';
+    public const STATUS_CART = 'cart';
     public const STATUS_CONFIRMED = 'confirmed';
     public const STATUS_SHIPPING = 'shipping';
     public const STATUS_COMPLETED = 'completed';
@@ -95,6 +96,7 @@ class Order extends Model
             self::STATUS_SHIPPING => 'Đang giao hàng',
             self::STATUS_COMPLETED => 'Đã hoàn thành',
             self::STATUS_CANCELLED => 'Đã hủy',
+            self::STATUS_CART => 'Đang trong giỏ hàng',
             self::STATUS_RETURNED => 'Đã hoàn trả'
         ];
 
@@ -191,7 +193,7 @@ class Order extends Model
 
             // Return products to inventory
             foreach ($this->orderDetails as $detail) {
-                $detail->product->increment('quantity', $detail->sold_quantity);
+                $detail->product->increment('amount', $detail->sold_quantity);
             }
         });
 

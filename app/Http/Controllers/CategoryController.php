@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Size;
+use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +19,7 @@ class CategoryController extends Controller
             $query = $request->get('query', '');
             Log::info('Category search query:', ['query' => $query]);
 
-            $categories = Category::where('category_name', 'LIKE', "%{$query}%")
+            $categories = Category::where('name', 'LIKE', "%{$query}%")
                 ->orWhere('category_id', 'LIKE', "%{$query}%")
                 ->get();
 
@@ -47,7 +50,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'category_name' => 'required|string|max:100|unique:categories'
+            'name' => 'required|string|max:100|unique:categories'
         ]);
 
         try {
@@ -70,7 +73,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'category_name' => 'required|string|max:255|unique:categories,category_name,' . $category->category_id . ',category_id',
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id . ',id',
         ]);
 
         try {
@@ -101,36 +104,99 @@ class CategoryController extends Controller
         }
     }
 
-    public function categoryList()
+    public function categoryList(Request $request, $sportId = null)
     {
-        $categories = Category::withCount('products')
-            ->orderBy('products_count', 'desc')
+        $brand = Brand::select('id', 'brand_name')->get();
+
+        $type_product = Product::select('type')
+            ->distinct()
+            ->get();
+        $type_sport = Sports::select('id', 'title')
             ->get();
 
-        return view('Customer.category.category_list', compact('categories'));
-    }
 
-    /**
-     * Hiển thị sản phẩm trong một danh mục cụ thể
-     */
-    public function showCategoryProducts(Request $request, $categoryId)
-    {
-        // Lấy category và eager load products (active, còn hàng, kèm brand, images)
-        $category = Category::with(['products' => function ($query) {
-            $query->where('status', 'active')
-                ->where('quantity', '>', 0)
-                ->with(['brand', 'images']);
-        }])->findOrFail($categoryId);
 
-        // Query sản phẩm thuộc category này
-        $query = Product::whereHas('categories', function ($q) use ($categoryId) {
-            $q->where('categories.category_id', $categoryId);
-        })
-            ->where('status', 'active')
-            ->where('quantity', '>', 0)
-            ->with(['brand', 'images']);
+        $sportsIds = $request->input('sports'); // nhận từ ?sports[]=15
+        // lấy 1 ID duy nhất
+        $sportId = is_array($sportsIds) ? reset($sportsIds) : $sportsIds;
 
-        // Xử lý sort nếu có
+        $sportsPro = $sportId ? Sports::find($sportId) : null;
+        // dd($sportsPro);
+
+        $typeMap = [
+            'shirt'    => 'Áo',
+            'trousers' => 'Quần',
+            'ball'     => 'Bóng',
+            'socks'    => 'Tất',
+            'shoes'    => 'Giày',
+        ];
+        $type_product = $type_product->map(function ($item) use ($typeMap) {
+            $item->type_name = $typeMap[$item->type] ?? $item->type;
+            return $item;
+        });
+        $query = Product::with(['brand', 'images', 'sport'])
+            ->where('status', '1')
+            ->where('amount', '>', 0);
+        if ($sportId) {
+            $query->where('sport_id', $sportId);
+        }
+        // Apply filters
+        // Product type filter
+        if ($request->has('types') && !empty($request->input('types'))) {
+            $types = $request->input('types');
+            $query->whereIn('type', $types);
+        }
+        if ($request->has('brands') && !empty($request->input('brands'))) {
+            $brands = $request->input('brands');
+            $query->whereIn('brand_id', $brands);
+        }
+        if ($request->has('sports') && !empty($request->input('sports'))) {
+            $sports = $request->input('sports');
+            $query->whereIn('sport_id', $sports);
+        }
+
+        // Price range filter
+        if ($request->has('price_ranges') && !empty($request->input('price_ranges'))) {
+            $priceRanges = $request->input('price_ranges');
+            $query->where(function ($q) use ($priceRanges) {
+                foreach ($priceRanges as $range) {
+                    switch ($range) {
+                        case 'under_500k':
+                            $q->orWhere('price', '<', 500000);
+                            break;
+                        case '500k_1m':
+                            $q->orWhereBetween('price', [500000, 1000000]);
+                            break;
+                        case '1m_2m':
+                            $q->orWhereBetween('price', [1000000, 2000000]);
+                            break;
+                        case '2m_3m':
+                            $q->orWhereBetween('price', [2000000, 3000000]);
+                            break;
+                        case '3m_5m':
+                            $q->orWhereBetween('price', [3000000, 5000000]);
+                            break;
+                        case 'over_5m':
+                            $q->orWhere('price', '>', 5000000);
+                            break;
+                    }
+                }
+            });
+        }
+        $sizesShoes = Size::where('type', 'shoes')->get();
+        $sizesQA    = Size::where('type', 'qa')->get();
+        // Size filter
+        $sizes = array_merge(
+            $request->input('sizeQA', []),
+            $request->input('sizeSho', [])
+        );
+
+        if (!empty($sizes)) {
+            $query->whereHas('sizes', function ($q) use ($sizes) {
+                $q->whereIn('size_name', $sizes);
+            });
+        }
+        // Sort products
         switch ($request->input('sort')) {
             case 'price_asc':
                 $query->orderBy('price', 'asc');
@@ -139,10 +205,10 @@ class CategoryController extends Controller
                 $query->orderBy('price', 'desc');
                 break;
             case 'name_asc':
-                $query->orderBy('product_name', 'asc');
+                $query->orderBy('name', 'asc');
                 break;
             case 'name_desc':
-                $query->orderBy('product_name', 'desc');
+                $query->orderBy('name', 'desc');
                 break;
             case 'newest':
                 $query->orderBy('created_at', 'desc');
@@ -151,8 +217,32 @@ class CategoryController extends Controller
                 $query->orderBy('product_id', 'asc');
         }
 
-        $products = $query->paginate(12);
+        $products = $query->paginate(perPage: 16);
 
-        return view('Customer.category.filter_product', compact('category', 'products'));
+        if ($request->ajax()) {
+            return response()->json([
+                'products_html' => view('Customer.widget._products_grid', [
+                    'products' => $products,
+                    'brand' => $brand,
+                ])->render(),
+                'filters_html' => view('Customer.widget._active_filters', [
+                    'brand' => $brand,
+                    'type_sport' => $type_sport,
+                    'type_product' => $type_product,
+                ])->render()
+            ]);
+        }
+
+        return view('Customer.category.category_list', [
+            'products' => $products,
+            'brand' => $brand,
+            'brands' => $brand,
+            'type_product' => $type_product,
+            'type_sport' => $type_sport,
+            'sport_id' => $sportId,
+            'sports' => $sportsPro,
+            'sizesShoes'   => $sizesShoes,
+            'sizesQA'      => $sizesQA,
+        ]);
     }
 }

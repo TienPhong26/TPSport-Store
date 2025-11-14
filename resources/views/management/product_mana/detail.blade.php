@@ -1,50 +1,76 @@
-<!DOCTYPE html>
-@php
-    use Illuminate\Support\Facades\Storage;
-@endphp
-<html lang="en">
+@extends('management.layouts.admin_layout')
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý Sản phẩm</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="{{ asset('js/alert.js') }}"></script>
-</head>
+@section('title', 'Quản lý sản phẩm')
 
-<body>
-    @include('management.components.admin-header')
+@push('styles')
+    <style>
+        .main-product-image {
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            object-fit: cover;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-    <div class="alerts-container">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        .sub-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
 
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
+        .sub-product-image {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
 
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-    </div>
+        .sub-product-image:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
 
+        .no-image-placeholder {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+        }
+
+        .main-image-container,
+        .sub-images-container {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .container-fluid{
+            font-size: 14px;
+        }
+    </style>
+  
+@endpush
+
+@section('content')
+    @php
+        use Illuminate\Support\Facades\Storage;
+    @endphp
     <div class="container-fluid">
         <div class="card">
             <div class="card-header" style="padding: 15px">
@@ -62,9 +88,8 @@
                         <!-- Ảnh chính -->
                         <div class="main-image-container mb-3">
                             <h5>Ảnh chính</h5>
-                            @if ($mainImage = $product->getMainImage())
-                                <img src="{{ asset($mainImage->image_url) }}" alt="Ảnh chính"
-                                    class="main-product-image">
+                            @if ($product->image)
+                                <img src="{{ asset($product->image) }}" class="w-100 product-image" alt="{{ $product->name }}">
                             @else
                                 <div class="no-image-placeholder">
                                     <small class="text-muted">Không có ảnh chính</small>
@@ -76,14 +101,21 @@
                         <div class="sub-images-container">
                             <h5>Ảnh phụ</h5>
                             <div class="sub-images-grid">
-                                @forelse($product->getSubImages() as $subImage)
-                                    <img src="{{ asset($subImage->image_url) }}" alt="Ảnh phụ"
-                                        class="sub-product-image">
+                                {{-- @forelse($product->getSubImages() as $subImage)
+                                <img src="{{ asset($subImage->image_url) }}" alt="Ảnh phụ" class="sub-product-image">
                                 @empty
+                                <div class="no-image-placeholder">
+                                    <small class="text-muted">Không có ảnh phụ</small>
+                                </div>
+                                @endforelse --}}
+                                @if ($product->image_hover)
+                                    <img src="{{ asset($product->image_hover) }}" class="w-100 product-image"
+                                        alt="{{ $product->name }}">
+                                @else
                                     <div class="no-image-placeholder">
                                         <small class="text-muted">Không có ảnh phụ</small>
                                     </div>
-                                @endforelse
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -94,11 +126,11 @@
                             <tbody>
                                 <tr>
                                     <th style="width: 200px;">Tên sản phẩm:</th>
-                                    <td>{{ $product->product_name }}</td>
+                                    <td>{{ $product->name }}</td>
                                 </tr>
                                 <tr>
                                     <th>Mã sản phẩm:</th>
-                                    <td>{{ $product->product_id }}</td>
+                                    <td>{{ $product->id }}</td>
                                 </tr>
                                 <tr>
                                     <th>Giá:</th>
@@ -107,25 +139,27 @@
                                 <tr>
                                     <th>Giảm giá:</th>
                                     <td>
-                                        @if ($product->discount > 0)
+                                        @if(optional($product->current_discount)->discount_percent > 0)
                                             <div>
-                                                <span class="badge bg-warning text-dark">Giảm giá:
-                                                    {{ $product->discount }}%</span>
+                                                <span class="badge bg-warning text-dark">
+                                                    Giảm giá: {{ optional($product->current_discount)->discount_percent ?? 0 }}%
+                                                </span>
                                             </div>
                                             <div class="mt-2">
                                                 <span class="text-success">
-                                                    Giá sau giảm: {{ number_format($product->getDiscountedPrice()) }}
-                                                    VNĐ
+                                                    Giá sau giảm:
+                                                    {{ number_format($product->getDiscountedPrice(), 0, ',', '.') }} VNĐ
                                                 </span>
                                             </div>
                                         @else
                                             <span>Không có giảm giá</span>
                                         @endif
+
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Số lượng tồn:</th>
-                                    <td>{{ $product->quantity }}</td>
+                                    <td>{{ $product->amount }}</td>
                                 </tr>
                                 <tr>
                                     <th>Thương hiệu:</th>
@@ -134,8 +168,8 @@
                                 <tr>
                                     <th>Danh mục:</th>
                                     <td>
-                                        @foreach ($product->categories as $category)
-                                            <span class="badge bg-info me-1">{{ $category->category_name }}</span>
+                                        @foreach ($product->category as $cate)
+                                            <span class="badge bg-info me-1">{{ $cate->name }}</span>
                                         @endforeach
                                     </td>
                                 </tr>
@@ -149,7 +183,7 @@
                                 </tr>
                                 <tr>
                                     <th>Chất liệu:</th>
-                                    <td>{{ $product->material->material_name }}</td>
+                                    <td>{{ $product->productDetail->material ?? 'N/A' }}</td>
                                 </tr>
                                 <tr>
                                     <th>Trạng thái:</th>
@@ -163,7 +197,7 @@
                                 </tr>
                                 <tr>
                                     <th>Mô tả:</th>
-                                    <td style="line-height: 25px; font-size: 14px;">{{ $product->description }}</td>
+                                    <td style="line-height: 25px; font-size: 14px;">{{ $product->short_description }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -172,76 +206,38 @@
             </div>
         </div>
     </div>
-</body>
-<style>
-    .main-product-image {
-        width: 100%;
-        max-width: 400px;
-        height: 400px;
-        object-fit: cover;
-        border: 2px solid #28a745;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+@endsection
 
-    .sub-images-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-    }
+@push('scripts')
 
-    .sub-product-image {
-        width: 100%;
-        height: 100px;
-        object-fit: cover;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        transition: transform 0.2s;
-    }
+    <script>
+        function updateMainImage(imagePath) {
+            const mainImage = document.getElementById('mainProductImage');
+            mainImage.src = imagePath;
+        }
 
-    .sub-product-image:hover {
-        transform: scale(1.05);
-        cursor: pointer;
-    }
+        // Existing alert code...
+        $(document).ready(function () {
+            setTimeout(function () {
+                $(".alert").alert('close');
+            }, 5000);
+        });
+    </script>
 
-    .no-image-placeholder {
-        width: 100%;
-        height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #f8f9fa;
-        border: 2px dashed #dee2e6;
-        border-radius: 8px;
-    }
+@endpush
 
-    .main-image-container,
-    .sub-images-container {
-        background-color: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
 
-    h5 {
-        color: #495057;
-        margin-bottom: 15px;
-        font-weight: 600;
-    }
-</style>
-<script>
-    function updateMainImage(imagePath) {
-        const mainImage = document.getElementById('mainProductImage');
-        mainImage.src = imagePath;
-    }
+{{--
 
-    // Existing alert code...
-    $(document).ready(function() {
-        setTimeout(function() {
-            $(".alert").alert('close');
-        }, 5000);
-    });
-</script>
-
-</html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý Sản phẩm</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="{{ asset('js/alert.js') }}"></script>
+</head> --}}

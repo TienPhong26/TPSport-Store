@@ -14,18 +14,18 @@ class AdminController extends Controller
 {
     public function show()
     {
-        if (Auth::guard('owner')->check()) {
-            $profile = Auth::guard('owner')->user();
-            return view('management.profile.owner', compact('profile'));
-        }
+        // if (Auth::guard('owner')->check()) {
+        // }
+        $profile = Auth::guard('owner')->user();
+        return view('management.profile.owner', compact('profile'));
 
-        if (Auth::guard('employee')->check()) {
-            $profile = Auth::guard('employee')->user();
-            return view('management.profile.employee', compact('profile'));
-        }
+        // if (Auth::guard('employee')->check()) {
+        //     $profile = Auth::guard('employee')->user();
+        //     return view('management.profile.employee', compact('profile'));
+        // }
 
-        return redirect()->route('admin.dashboard')
-            ->with('error', 'Không tìm thấy thông tin tài khoản');
+        // return redirect()->route('admin.dashboard')
+        //     ->with('error', 'Không tìm thấy thông tin tài khoản');
     }
 
     public function update(Request $request)

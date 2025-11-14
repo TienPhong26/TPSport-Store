@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\OwnerController;
@@ -19,7 +20,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\CustomerAuthentication;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\OutletController;
+use App\Models\Customer;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
 
 // 1) Trang chủ khách hàng
@@ -58,7 +61,17 @@ Route::post('customer/change-password', [CustomerController::class, 'changePassw
     ->middleware(CustomerAuthentication::class)
     ->name('customer.change-password.update');
 
+Route::get('/product/new-arrivals', [ProductController::class, 'newProduct'])
+    ->name('product.new-arrivals');
+Route::get('/product/sports-equipment', [ProductController::class, 'sportsEquipment'])
+    ->name('product.sports-equipment');
+Route::get('/product/male-female/{gender}', [ProductController::class, 'maleFemale'])
+    ->name('product.male-female');
+Route::get('/product/{product_id}/reviews', [FeedbackController::class, 'showProductReviews'])->name('product.reviews');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('shop.product.show');
+
+Route::get('/outlet/list', [OutletController::class, 'newProduct'])
+    ->name('outlet.list');
 
 Route::middleware('auth:customer')->group(function () {
     Route::get('/customer/profile', [CustomerController::class, 'profile'])->name('customer.profile');
@@ -67,7 +80,11 @@ Route::middleware('auth:customer')->group(function () {
     Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add-to-cart');
     Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
     Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
-    Route::delete('/cart/delete/{productId}', [CartController::class, 'deleteItem'])->name('cart.delete-item');
+    // Route::delete('/cart/delete/{productId}', [CartController::class, 'deleteItem'])->name('cart.delete-item');
+    Route::delete(
+        '/cart/delete/{productId}/{sizeId}',
+        [CartController::class, 'deleteItem']
+    )->name('cart.delete-item');
     Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
     Route::post('/voucher/apply', [OrderController::class, 'applyVoucher'])->name('voucher.apply');
     Route::get('/checkout', [OrderController::class, 'showCheckout'])->name('checkout');
@@ -81,13 +98,19 @@ Route::middleware('auth:customer')->group(function () {
     Route::post('/orders/{order}/return', [OrderController::class, 'returnOrder'])
         ->name('customer.orders.return');
     Route::post('/orders/{order}/review', [FeedbackController::class, 'submitReview'])->name('order.review');
-    Route::post('/vnpay/payment/{order}', [PaymentController::class, 'vn_payment'])->name('vnpay.payment');
-    Route::get('/vnpay/return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
-    Route::post('/momo/payment/{order}', [PaymentController::class, 'momo_payment'])->name('momo.payment');
+    // Route::post('/vnpay/payment/{order}', [PaymentController::class, 'vn_payment'])->name('vnpay.payment');
+    Route::get('/vnpay/payment/{order}', [PaymentController::class, 'vn_payment'])->name('vnpay.payment');
+
+    // Route::get('', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
+    Route::match(['get', 'post'], '/vnpay/return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
+    Route::get('/momo/payment/{order}', [PaymentController::class, 'momo_payment'])->name('momo.payment');
     Route::match(['get', 'post'], '/momo/return', [PaymentController::class, 'momoReturn'])->name('momo.return');
     Route::get('/payment/bank-qr/{order}', [PaymentController::class, 'showBankPayment'])->name('bank-qr.payment');
 });
-
+Route::get('admin/employee/{id}/edit-ajax', [EmployeeController::class, 'editAjax'])
+    ->name('admin.employee.edit.ajax');
+Route::get('admin/employee/create-ajax', [EmployeeController::class, 'createAjax'])
+    ->name('admin.employee.create.ajax');
 Route::view('/contact', 'Customer.contact')->name('customer.contact');
 Route::post('/contact', [CustomerController::class, 'submitContact'])->name('contact.store');
 
@@ -100,15 +123,15 @@ Route::get('/search', [ShopController::class, 'search'])
     ->name('products.search');
 
 //Trang hiển thị danh mục sản phẩm
-Route::get('/categories', [CategoryController::class, 'categoryList'])->name('categories.list');
-Route::get('/categories/{category}', [CategoryController::class, 'showCategoryProducts'])->name('categories.show');
-
+Route::get('/categories/{sportId?}', [CategoryController::class, 'categoryList'])
+    ->name('categories.list');
 //Trang hiển thị thương hiệu sản phẩm
 Route::get('/brands', [BrandController::class, 'brandList'])->name('brands.list');
 Route::get('/brands/{brand}', [BrandController::class, 'showBrandProducts'])->name('brands.show');
 
 
-Route::get('/product/{product_id}/reviews', [FeedbackController::class, 'showProductReviews'])->name('product.reviews');
+
+
 
 //Login route mặc định của Admin
 Route::get('login', function () {
@@ -139,7 +162,8 @@ Route::prefix('admin')->group(function () {
     });
 
     // Routes yêu cầu Owner đã đăng nhập
-    Route::middleware(['auth:owner,employee'])->group(function () {
+    // Route::middleware(['auth:owner,employee'])->group(function () {
+    Route::middleware([])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('admin.dashboard')
             ->withoutMiddleware(['prevent-back-history']);
@@ -268,6 +292,7 @@ Route::prefix('admin')->group(function () {
                 ->name('admin.voucher.toggle');
             Route::get('/search', [VoucherController::class, 'search'])
                 ->name('admin.voucher.search');
+            Route::get('{id}/edit-ajax', [VoucherController::class, 'editAjax'])->name('admin.voucher.editAjax');
         });
 
         // Routes quản lý payment-methods
@@ -305,6 +330,12 @@ Route::prefix('admin')->group(function () {
             Route::put('/{order}', [OrderController::class, 'update'])->name('admin.order.update');
             Route::get('/search', [OrderController::class, 'search'])->name('admin.orders.search');
         });
+
+        // Routes quản lý nhân viên
+        Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+        Route::post('/submit', [ChatController::class, 'submit'])->name('chat.submit');
+        // Route::prefix('chat')->group(function () {
+        // });
     });
 });
 

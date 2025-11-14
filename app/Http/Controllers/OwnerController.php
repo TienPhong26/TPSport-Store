@@ -42,28 +42,28 @@ class OwnerController extends Controller
         }
     }
 
-    public function showLoginForm()
-    {
-        Log::info('Accessing admin login form');
-
-        if (Auth::guard('owner')->check() || Auth::guard('employee')->check()) {
-            return redirect()->route('admin.dashboard');
-        }
-        $response = view('management.login');
-        return $this->preventBackHistory($response);
-    }
-
-    // public function logout(Request $request)
+    // public function showLoginForm()
     // {
-    //     Auth::guard('owner')->logout();
-    //     Auth::guard('employee')->logout();
+    //     Log::info('Accessing admin login form');
 
-    //     $request->session()->invalidate();
-    //     $request->session()->regenerateToken();
-
-    //     return redirect()->route('admin.login')
-    //         ->with('success', 'Đăng xuất thành công!');
+    //     if (Auth::guard('owner')->check() || Auth::guard('employee')->check()) {
+    //         return redirect()->route('admin.dashboard');
+    //     }
+    //     $response = view('management.login');
+    //     return $this->preventBackHistory($response);
     // }
+
+    public function logout(Request $request)
+    {
+        Auth::guard('owner')->logout();
+        Auth::guard('employee')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login')
+            ->with('success', 'Đăng xuất thành công!');
+    }
 
     // public function dashboard()
     // {
@@ -103,4 +103,47 @@ class OwnerController extends Controller
     //             ->with('error', 'Có lỗi xảy ra khi truy cập dashboard');
     //     }
     // }
+
+
+
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         // Validate chỉ email và password
+    //         $credentials = $request->validate([
+    //             'email' => ['required', 'email'],
+    //             'password' => ['required'],
+    //         ]);
+
+    //         Log::info('Login attempt', [
+    //             'email' => $credentials['email'],
+    //         ]);
+
+    //         // Dùng guard mặc định 'web' (hoặc guard bạn cấu hình cho users)
+    //         if (Auth::attempt($credentials)) {
+    //             $request->session()->regenerate();
+    //             return redirect()->route('admin.dashboard');
+    //         }
+
+    //         return back()->withErrors([
+    //             'email' => 'Thông tin đăng nhập không hợp lệ.'
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Login error: ' . $e->getMessage());
+    //         return back()->withErrors(['error' => 'Login failed.']);
+    //     }
+    // }
+
+    public function showLoginForm()
+    {
+        
+        // Nếu đã login rồi → chuyển dashboard
+        if (Auth::check()) {
+            Log::info('Accessing admin login form');
+            return redirect()->route('admin.dashboard');
+        }
+
+        $response = view('management.login');
+        return $this->preventBackHistory($response);
+    }
 }

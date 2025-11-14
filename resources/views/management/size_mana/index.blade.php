@@ -47,19 +47,11 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Size sản phẩm</b></h2>
                             <a href="{{ route('admin.size.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -86,7 +78,7 @@
                                     <td>
                                         <a href="{{ route('admin.size.edit', ['size' => $size->size_id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.size.delete', $size->size_id) }}" method="POST"
                                             style="display:inline; color: #e34724">
@@ -94,7 +86,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa" data-toggle="tooltip"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa Size sản phẩm này không?')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -176,14 +168,14 @@
                 <td>${size.size_name}</td>
                 <td>
                     <a href="/admin/sizes/${size.size_id}/edit" class="edit" title="Sửa">
-                        <i class="material-icons">&#xE254;</i>
+                        <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/sizes/${size.size_id}" method="POST" style="display:inline; color: #e34724">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="delete" title="Xóa"
                                 onclick="return confirm('Bạn có chắc chắn muốn xóa Size sản phẩm này không?')">
-                            <i class="material-icons">&#xE872;</i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 </td>

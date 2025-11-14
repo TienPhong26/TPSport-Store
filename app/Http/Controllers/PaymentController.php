@@ -19,6 +19,7 @@ class PaymentController extends Controller
         $vnp_TmnCode = "ZVFYAJCW";
         $vnp_HashSecret = "RNP6Q0DRH55E08RUS5K22URJNKJZ16CF";
 
+        // \Log::info('order', ['order' => $order]);
         $vnp_TxnRef = $order->order_id;
         $vnp_OrderInfo = "Thanh toan don hang #" . $order->order_id;
         $vnp_OrderType = 'billpayment';
@@ -159,7 +160,7 @@ class PaymentController extends Controller
     {
         $order = Order::findOrFail($orderId);
         $qrCodeUrl = $order->qr_code_url ?? asset('images/qr-tpbank.png');
-        $logoUrl = asset('images/logo.png');
+        $logoUrl = asset('images/tplogo.png');
         return view('Customer.payment.bank_payment', compact('order', 'qrCodeUrl', 'logoUrl'));
     }
 

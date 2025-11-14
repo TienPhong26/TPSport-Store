@@ -47,19 +47,11 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Phương thức thanh toán</b></h2>
                             <a href="{{ route('admin.payment.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -86,7 +78,7 @@
                                     <td>
                                         <a href="{{ route('admin.payment.edit', $payment->method_id) }}"
                                             class="edit-btn">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.payment.delete', $payment->method_id) }}"
                                             method="POST" style="display:inline">
@@ -94,7 +86,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa phương thức thanh toán này?')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -166,14 +158,14 @@
                 <td>${payment.method_name}</td>
                 <td>
                     <a href="/admin/payments/${payment.method_id}/edit" class="edit-btn">
-                        <i class="material-icons">&#xE254;</i>
+                        <i class="fas fa-pen"></i>
                     </a>
                     <form action="/admin/payments/${payment.method_id}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="delete" title="Xóa"
                             onclick="return confirm('Bạn có chắc chắn muốn xóa phương thức thanh toán này?')">
-                            <i class="material-icons">&#xE872;</i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </form>
                 </td>

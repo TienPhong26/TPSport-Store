@@ -43,13 +43,13 @@
                 <div class="product-card">
                     <div class="product-image">
                         <img src="{{ $product->getMainImage() ? asset($product->getMainImage()->image_url) : asset('images/no-image.png') }}"
-                            alt="{{ $product->product_name }}">
+                            alt="{{ $product->name }}">
                     </div>
                     <div class="product-details">
                         <div class="product-category">
                             {{ $product->getPrimaryCategory()?->category_name ?? 'Chưa phân loại' }}
                         </div>
-                        <h3 class="product-name">{{ $product->product_name }}</h3>
+                        <h3 class="product-name">{{ $product->name }}</h3>
                         <div class="product-brand">
                             Thương hiệu:
                             {{ $product->brand?->brand_name ?? 'Không có thương hiệu' }}

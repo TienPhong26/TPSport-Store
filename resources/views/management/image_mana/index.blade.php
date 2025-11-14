@@ -47,19 +47,11 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Ảnh sản phẩm</b></h2>
                             <a href="{{ route(name: 'admin.image.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -93,7 +85,7 @@
                                     <td>
                                         <a href="{{ route('admin.image.edit', ['image' => $image->image_id]) }}"
                                             class="edit" title="Sửa" data-toggle="tooltip">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.image.delete', $image->image_id) }}"
                                             method="POST" style="display:inline">
@@ -101,7 +93,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa" data-toggle="tooltip"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không? Hình ảnh sẽ bị xóa khỏi tất cả sản phẩm liên quan.')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>

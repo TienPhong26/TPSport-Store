@@ -20,6 +20,9 @@ class Sports extends Model
        'title',
        'image',
        'banner_image',
+       'banner_image_path',
+       'description',
+       'image_path',
        'status'
     ];
 }

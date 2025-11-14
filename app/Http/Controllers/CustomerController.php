@@ -125,14 +125,14 @@ class CustomerController extends Controller
         // Validate input
         $validated = $request->validate([
             'customer_name' => 'required|string|max:100',
-            'email' => 'required|email|unique:customer,email',
+            'email' => 'required|email|unique:users,email',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
         // Create new customer
-        $customer = new \App\Models\Customer();
+        $customer = new Customer();
         $customer->customer_name = $validated['customer_name'];
         $customer->email = $validated['email'];
         $customer->phone_number = $validated['phone_number'] ?? null;
@@ -140,11 +140,14 @@ class CustomerController extends Controller
         $customer->password = bcrypt($validated['password']);
         $customer->save();
 
-        // Auto-login after registration
-        $request->session()->put('customer_id', $customer->customer_id);
+        // Optionally, auto-login
+        // $request->session()->put('customer_id', $customer->customer_id);
 
-        return redirect()->route('customer.login');
+        // Redirect to login with success message
+        return redirect()->route('customer.login')
+            ->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
     }
+
 
     public function home()
     {
@@ -153,7 +156,7 @@ class CustomerController extends Controller
 
     public function index()
     {
-        $customers = Customer::orderBy('customer_id', 'asc')->paginate(8);
+        $customers = Customer::orderBy('id', 'asc')->paginate(8);
         return view('management.customer_mana.index', compact('customers'));
     }
 
@@ -192,18 +195,29 @@ class CustomerController extends Controller
 
     public function updateProfile(Request $request)
     {
+        // $authCustomer = Auth::guard(name: 'customer')->user();
+        // $customer = Customer::find($authCustomer->customer_id);
+
         $authCustomer = Auth::guard('customer')->user();
-        $customer = Customer::find($authCustomer->customer_id);
+        if (!$authCustomer) {
+            return redirect()->back()->withErrors('Bạn chưa đăng nhập.');
+        }
+
+        $customer = Customer::find($authCustomer->id);
+        if (!$customer) {
+            return redirect()->back()->withErrors('Không tìm thấy khách hàng.');
+        }
+
 
         $rules = [
             'customer_name' => 'required|string|max:255',
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => 'nullable|string|max:10',
             'address' => 'nullable|string|max:255',
         ];
 
         // Nếu email thay đổi thì check unique
         if ($request->email !== $customer->email) {
-            $rules['email'] = 'required|email|unique:customer,email';
+            $rules['email'] = 'required|email|unique:users,email';
         } else {
             $rules['email'] = 'required|email';
         }
@@ -369,7 +383,7 @@ class CustomerController extends Controller
         ]);
 
         $authCustomer = Auth::guard('customer')->user();
-        $customer = Customer::find($authCustomer->customer_id);
+        $customer = Customer::find($authCustomer->id);
 
         if (!Hash::check($request->current_password, $customer->password)) {
             return back()->with('error', 'Mật khẩu hiện tại không đúng.');

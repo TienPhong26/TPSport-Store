@@ -47,19 +47,11 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{ route('admin.dashboard') }}" class="btn back-btn">
-                                <i class="fa fa-arrow-left"></i>
-                                <span style="font-size: 12px; font-weight: 500;"> Quay lại</span>
-                            </a>
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-sm-6">
                             <h2>Quản lý <b>Chất liệu</b></h2>
                             <a href="{{ route('admin.material.create') }}" class="btn btn-success mt-2 mb-4">
-                                <i class="material-icons">&#xE147;</i>
+                                <i class="fas fa-plus"></i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
@@ -85,7 +77,7 @@
                                     <td>{{ $material->material_name }}</td>
                                     <td>
                                         <a href="{{ route('admin.material.edit', $material->material_id) }}">
-                                            <i class="material-icons">&#xE254;</i>
+                                            <i class="fas fa-pen"></i>
                                         </a>
                                         <form action="{{ route('admin.material.delete', $material->material_id) }}"
                                             method="POST" style="display:inline">
@@ -93,7 +85,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="delete" title="Xóa" data-toggle="tooltip"
                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa chất liệu này không?')">
-                                                <i class="material-icons">&#xE872;</i>
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -206,12 +198,12 @@
                     <div class="btn-group">
                         <a href="/admin/materials/${material.material_id}/edit"
                            class="btn btn-warning btn-sm">
-                            <i class="material-icons">&#xE254;</i>
+                            <i class="fas fa-pen"></i>
                         </a>
                         <button type="button"
                                 class="btn btn-danger btn-sm"
                                 onclick="deleteMaterial(${material.material_id})">
-                            <i class="material-icons">&#xE872;</i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 </td>

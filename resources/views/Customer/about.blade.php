@@ -1,29 +1,42 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('customer._layouts.master')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giới thiệu</title>
+@section('title', 'Giới thiệu về TP Sport')
+
+{{-- CSS riêng cho trang brand list --}}
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/about.css') }}">
+    <style>
+        .mr-2{
+            margin-right: 5px;
+        }
+    </style>
+@endpush
 
-</head>
-
-<body>
-    @include('Customer.components.header')
-
+@section('content')
+    <nav class="breadcrumb-wrapper" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('shop.home') }}">Trang chủ</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Giới thiệu về cửa hàng</li>
+            </ol>
+        </div>
+    </nav>
     <div class="about-section">
         <div class="about-container">
 
-            <div class="about-title">Về ProjectTN Sports</div>
+            <div class="about-title">Về TP-Sport</div>
             <div class="about-subtitle">
-                Cửa hàng thiết bị thể thao hàng đầu – Đam mê thể thao, Sáng tạo vì sức khỏe cộng đồng!
+                Cửa hàng thời trang và thiết bị thể thao hàng đầu – Đam mê thể thao, Sáng tạo vì sức khỏe cộng đồng!
             </div>
 
             <div class="about-card">
                 <div class="card-title">Giới Thiệu</div>
                 <p>
-                    ProjectTN Sports là cửa hàng chuyên cung cấp thiết bị thể thao chính hãng với đa dạng sản phẩm từ
+                    TPSPORT là cửa hàng chuyên cung cấp thời trang và thiết bị thể thao chính hãng với đa dạng sản phẩm từ
                     các thương hiệu nổi tiếng toàn cầu. Chúng tôi tin vào sức mạnh của hoạt động thể thao để tạo nên một
                     cộng đồng khỏe mạnh, năng động và gắn kết.
                 </p>
@@ -33,7 +46,7 @@
                 <div class="card-title">Tầm Nhìn & Sứ Mệnh</div>
                 <strong>Tầm nhìn:</strong>
                 <ul class="about-list">
-                    <li>Trở thành hệ thống bán lẻ thiết bị thể thao được yêu thích nhất Việt Nam vào năm 2030.</li>
+                    <li>Trở thành hệ thống bán đồ thể thao được yêu thích nhất Việt Nam vào năm 2030.</li>
                     <li>Trở thành lựa chọn hàng đầu của mọi cá nhân, gia đình và tổ chức thể thao.</li>
                 </ul>
                 <div style="margin-top: 12px"><strong>Sứ mệnh:</strong></div>
@@ -61,14 +74,14 @@
             <div class="about-card">
                 <div class="card-title">Lịch Sử Phát Triển</div>
                 <ul class="about-list">
-                    <li><strong>2020:</strong> Thành lập cửa hàng đầu tiên tại Hà Nội, tập trung vào bóng đá và cầu
+                    <li><strong class="mr-2">2020: </strong> Thành lập cửa hàng đầu tiên tại Hà Nội, tập trung vào bóng đá và cầu
                         lông.</li>
-                    <li><strong>2021:</strong> Ký kết độc quyền phân phối sản phẩm Adidas & Yonex.</li>
-                    <li><strong>2022:</strong> Ra mắt hệ thống mua hàng trực tuyến, phục vụ trên toàn quốc.</li>
-                    <li><strong>2023:</strong> Mở rộng danh mục sang các bộ môn chạy bộ, gym, yoga, bơi lội.</li>
-                    <li><strong>2025:</strong> Đạt 50,000 đơn hàng thành công, phục vụ hơn 10,000 khách hàng trung
+                    <li><strong  class="mr-2">2021: </strong> Ký kết độc quyền phân phối sản phẩm Adidas & Yonex.</li>
+                    <li><strong class="mr-2">2022: </strong> Ra mắt hệ thống mua hàng trực tuyến, phục vụ trên toàn quốc.</li>
+                    <li><strong class="mr-2">2023: </strong> Mở rộng danh mục sang các bộ môn chạy bộ, gym, yoga, bơi lội.</li>
+                    <li><strong class="mr-2">2025: </strong> Đạt 50,000 đơn hàng thành công, phục vụ hơn 10,000 khách hàng trung
                         thành.</li>
-                    <li><strong>Tương lai:</strong> Tiếp tục nâng tầm chất lượng, đẩy mạnh chuyển đổi số, mở rộng đối
+                    <li><strong class="mr-2">Tương lai:</strong> Tiếp tục nâng tầm chất lượng, đẩy mạnh chuyển đổi số, mở rộng đối
                         tác quốc tế.</li>
                 </ul>
             </div>
@@ -87,39 +100,7 @@
 
             <div class="about-card">
                 <div class="card-title">Đội Ngũ Quản Lý & Chuyên Gia</div>
-                <img src="{{ asset('images/face/Team.jpg') }}" alt="ProjectTN Sports Logo" class="about-team-main-img">
-                <div class="about-team">
-                    <div class="team-member">
-                        <img src="{{ asset('images/face/Ninh.jpg') }}" alt="CEO Trần Đăng Ninh">
-                        <div class="team-name">Trần Đăng Ninh</div>
-                        <div class="team-role">CEO & Co-founder</div>
-                        <div>10+ năm kinh nghiệm ngành bán lẻ thể thao</div>
-                    </div>
-                    <div class="team-member">
-                        <img src="{{ asset('images/face/Tung.jpg') }}" alt="COO Hoàng Sơn Tùng">
-                        <div class="team-role">COO – Vận hành</div>
-                        <div>Chuyên gia quản lý chuỗi cung ứng</div>
-                    </div>
-                    <div class="team-member">
-                        <img src="{{ asset('images/face/Huy.jpg') }}" alt="COO Nguyễn Quốc Huy">
-                        <div class="team-name">Nguyễn Quốc Huy</div>
-                        <div class="team-role">Sales – Bán hàng</div>
-                        <div>Chuyên gia bán hàng khủng</div>
-                    </div>
-                    <div class="team-member">
-                        <img src="{{ asset('images/face/Phuc.png') }}" alt="COO Đỗ Hồng Phúc">
-                        <div class="team-name">Đỗ Hồng Phúc</div>
-                        <div class="team-role">HR – Quản lý nhan viên</div>
-                        <div>Chuyên gia quản lý nhân viên</div>
-                    </div>
-                    <div class="team-member">
-                        <img src="{{ asset('images/face/Tam.jpg') }}" alt="COO Nguyễn Đức Tâm">
-                        <div class="team-name">Nguyễn Đức Tâm</div>
-                        <div class="team-role">PM – Phần mềm</div>
-                        <div>Chuyên gia sản phẩm</div>
-                    </div>
-                    <!-- Thêm thành viên khác nếu muốn -->
-                </div>
+                <img src="{{ asset('images/face/Team.jpg') }}" alt="TPSPORT Logo" class="about-team-main-img">
             </div>
 
             <div class="about-card">
@@ -162,23 +143,15 @@
             <div class="about-card">
                 <div class="card-title">Liên Hệ</div>
                 <ul class="about-list">
-                    <li>Email: <a href="mailto:support@projecttnsports.vn"
-                            style="color:#aeea00;">support@projecttnsports.vn</a></li>
+                    <li>Email: <a href="mailto:ngophongcoder26@gmail.com" style="color:#aeea00;">support@Tpsports.vn</a>
+                    </li>
                     <li>Hotline: <a href="tel:19001234" style="color:#aeea00;">1900 1234</a></li>
-                    <li>Facebook: <a href="https://facebook.com/projecttnsports" target="_blank"
-                            style="color:#aeea00;">ProjectTN Sports Fanpage</a></li>
-                    <li>Địa chỉ: Tòa nhà 789, đường Mỹ Đình, Hà Nội</li>
+                    <li>Facebook: <a href="https://facebook.com/tpsports" target="_blank" style="color:#aeea00;">TPSPORT
+                            Fanpage</a></li>
+                    <li>Địa chỉ: Tòa nhà 21, đường Nam Từ Liêm, Hà Nội</li>
                     <li>Giờ mở cửa: 8h00-21h00 (T2-CN)</li>
                 </ul>
             </div>
-
-            <div class="about-footer">
-                © {{ date('Y') }} ProjectTN Sports – Đam mê thể thao, Kết nối mọi người!
-            </div>
         </div>
     </div>
-
-    @include('Customer.components.footer')
-</body>
-
-</html>
+@endsection

@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Traits\HasRoles;
 
 class Customer extends Authenticatable
 {
     use HasFactory, Notifiable;
-    protected $table = 'customer';
-    protected $primaryKey = 'customer_id';
+    use HasRoles;
+    protected $table = 'users';
+    protected $primaryKey = 'id';
     public $timestamps = false;
     protected $guard_name = 'customer';
 
@@ -19,6 +21,8 @@ class Customer extends Authenticatable
         'email',
         'password',
         'phone_number',
+        'reset_token',
+        'reset_token_expire',
         'address',
         'status',
     ];

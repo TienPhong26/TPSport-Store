@@ -1,20 +1,21 @@
 body {
     color: #566787;
     background: #f5f5f5;
-    font-family: "Roboto", sans-serif;
 }
 .table-responsive {
-    margin: 30px 0;
+    margin: 24px 0;
+    border-radius:5px;
 }
 .table-wrapper {
     min-width: 1000px;
     background: #fff;
+    border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.05);
 }
 .table-title {
-    padding-bottom: 10px;
-    margin: 0 0 10px;
+    /* padding-bottom: 10px; */
+    /* margin: 0 0 10px; */
 }
 .table-title h2 {
     margin: 16px 0;
@@ -46,8 +47,8 @@ body {
     width: 50%;
 }
 .search-box input {
-    height: 34px;
-    border-radius: 20px;
+    height: 39px;
+    border-radius: 10px;
     padding-left: 35px;
     border-color: #ddd;
     box-shadow: none;
@@ -64,14 +65,12 @@ body {
 }
 
 .back-btn {
-    margin: 10px 0;
-    padding: 10px 16px !important;
     font-size: 14px;
     font-weight: 500;
     display: inline-block;
-    background-color: #565656 !important;
-    color: #ffffff;
-    border: 3px solid #ffffff;
+    background-color: #fff !important;
+    color: #000;
+    border: 1px solid #000 !important;
     border-radius: 8px;
     transition: all 0.3s ease;
     box-shadow: 0 3px 4px rgba(0, 0, 0, 0.05);
@@ -81,17 +80,17 @@ body {
 
 .back-btn i {
     font-size: 16px;
-    color: #ffffff;
+    color: #000;
     margin-right: 8px;
 }
 
 .back-btn span {
-    color: #ffffff;
+    color: #000;
 }
 
 .back-btn:hover {
     background-color: #f8f9fa;
-    border-color: #c0c0c0;
+    border-color: #000;
     color: #333333;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -185,16 +184,16 @@ table.table td i {
     font-weight: 500;
 }
 .badge-success {
-    background-color: #28a745;
+    background-color: #198754 !important;
     color: #fff;
 }
 .badge-danger {
-    background-color: #dc3545;
+    background-color: #dc3545 !important;
     color: #fff;
 }
 .status-badge {
     display: inline-block;
-    width: 100px;
+    width: auto;
     text-align: center;
 }
 
@@ -228,6 +227,12 @@ table.table td i {
     justify-content: space-between;
     align-items: center;
     padding: 24px 0 0;
+    
+}
+
+table{
+    font-size: 14px;
+    
 }
 
 .pagination-info {
@@ -237,7 +242,6 @@ table.table td i {
 }
 
 .pagination-info span {
-    font-family: Inter;
     font-weight: 500;
     font-size: 13px;
     color: #344054;
@@ -256,7 +260,6 @@ table.table td i {
 .page-info-text {
     display: flex;
     align-items: center;
-    font-family: Inter;
     font-weight: 500;
     font-size: 13px;
     text-align: center;
@@ -278,7 +281,6 @@ table.table td i {
 }
 
 .all-page-number {
-    font-family: Inter;
     font-weight: 500;
     font-size: 13px;
     color: #333333;
@@ -296,7 +298,6 @@ table.table td i {
 }
 
 .next-page-btn span {
-    font-family: Inter;
     font-weight: 600;
     font-size: 12px;
     background: linear-gradient(90deg, #4FA800 0%, #00844E 100%);
@@ -343,7 +344,7 @@ table.table td i {
 }
 
 .alert.show {
-    top: 20px;
+    top: 60px;
     opacity: 1;
 }
 
@@ -412,3 +413,26 @@ table.table td i {
     color: #dc3545;
 }
 
+.delete{
+    border:none;
+}
+
+.btn-sm i{
+    color:black;
+}
+
+
+#employeeTable td, #employeeTable th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+#employeeTable .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+.badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.6em;
+}

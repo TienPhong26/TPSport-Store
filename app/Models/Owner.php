@@ -9,7 +9,7 @@ class Owner extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'owner';
+    protected $table = 'owners';
     protected $primaryKey = 'owner_id';
     public $timestamps = false;
     protected $fillable = ['owner_name', 'email', 'password', 'phone_number'];

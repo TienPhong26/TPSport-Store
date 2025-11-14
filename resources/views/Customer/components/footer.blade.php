@@ -16,7 +16,7 @@
             <div class="row">
                 <div class="column">
                     <div class="about-us-content">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="footer-logo">
+                        <img src="{{ asset('images/tplogo.png') }}" alt="Logo" class="footer-logo">
                         <p>Chúng tôi tự hào là điểm đến mua sắm uy tín hàng đầu, cam kết mang đến những sản phẩm chất lượng cao với giá cả hợp lý nhất.</p>
                         <div class="social-links">
                             <a href="https://web.facebook.com/ngo.phong.320740"><i class="fa fa-facebook"></i></a>
@@ -57,7 +57,7 @@
                     <div class="contact-info">
                         <div class="contact-item">
                             <i class="fa fa-map-marker"></i>
-                            <p>123 Đường ABC, Quận XYZ<br>TP. Hà Nội, Việt Nam</p>
+                            <p>21 Nam Từ Liêm<br>Hà Nội, Việt Nam</p>
                         </div>
                         <div class="contact-item">
                             <i class="fa fa-envelope"></i>

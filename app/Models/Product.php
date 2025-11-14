@@ -25,6 +25,8 @@ class Product extends Model
         'product_id',
         'brand_id',
         'status',
+        'entry_date',
+        'gender',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -55,7 +57,30 @@ class Product extends Model
             'category_id'
         );
     }
+    public function getCurrentDiscountAttribute()
+    {
+        $today = now();
+        return $this->category
+            ->flatMap->discounts
+            ->where('status', 1)
+            ->where('start', '<=', $today)
+            ->where('end', '>=', $today)
+            ->first();
+    }
 
+
+    public function getDiscountedPrice()
+    {
+        $originalPrice = $this->price;
+
+        $discount = $this->current_discount;
+
+        if ($discount && $discount->discount_percent > 0) {
+            return $originalPrice * (1 - ($discount->discount_percent / 100));
+        }
+
+        return $originalPrice;
+    }
 
     public function images(): BelongsToMany
     {
@@ -74,6 +99,10 @@ class Product extends Model
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class, 'brand_id');
+    }
+    public function sport(): BelongsTo
+    {
+        return $this->belongsTo(Sports::class, 'sport_id');
     }
 
     public function material(): BelongsTo
@@ -112,20 +141,39 @@ class Product extends Model
             ->get();
     }
 
-    public function getDiscountedPrice()
-    {
-        return $this->price * (1 - ($this->discount / 100));
-    }
-
     public function toSearchableArray()
     {
         return [
             'product_id' => $this->product_id,
-            'product_name' => $this->product_name,
+            'name' => $this->product_name,
             'description' => $this->description,
             'price' => $this->price,
             'category_name' => $this->getPrimaryCategory() ? $this->getPrimaryCategory()->category_name : null,
             'brand_name' => $this->brand ? $this->brand->brand_name : null
         ];
+    }
+
+    public function productDetail()
+    {
+        return $this->hasOne(ProductDetail::class, 'product_id', 'product_id');
+    }
+
+      public function scopeFilter($query, $filters)
+    {
+        return $query
+            ->when($filters['query'] ?? null, function ($q, $query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            })
+            ->when($filters['category'] ?? null, function ($q, $categoryId) {
+                $q->whereHas('category', function ($q) use ($categoryId) {
+                    $q->where('categories.id', $categoryId);
+                });
+            })
+            ->when($filters['brand'] ?? null, function ($q, $brandId) {
+                $q->where('brand_id', $brandId);
+            })
+            ->when(isset($filters['status']) && $filters['status'] !== '', function ($q) use ($filters) {
+                $q->where('status', $filters['status']);
+            });
     }
 }

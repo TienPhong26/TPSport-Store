@@ -17,6 +17,7 @@ use Elastic\Elasticsearch\Client;
 use App\Traits\Searchable;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Feedback;
 
 class DashboardController extends Controller
 {
@@ -38,10 +39,10 @@ class DashboardController extends Controller
 
         try {
             // Kiểm tra auth
-            if (!Auth::guard('owner')->check() && !Auth::guard('employee')->check()) {
-                return redirect()->route('admin.login')
-                    ->with('error', 'Vui lòng đăng nhập để tiếp tục.');
-            }
+            // if (!Auth::guard('owner')->check() && !Auth::guard('employee')->check()) {
+            //     return redirect()->route('admin.login')
+            //         ->with('error', 'Vui lòng đăng nhập để tiếp tục.');
+            // }
 
             Log::info('Starting dashboard data collection');
 
@@ -81,45 +82,66 @@ class DashboardController extends Controller
 
             // 6. Lấy top sản phẩm bán chạy
             $topSellingProducts = DB::table('order_details')
-                ->join('products', 'products.product_id', '=', 'order_details.product_id')
-                ->join('category_product', 'products.product_id', '=', 'category_product.product_id')
-                ->join('categories', 'categories.category_id', '=', 'category_product.category_id')
+                ->join('products', 'products.id', '=', 'order_details.product_id')
+                ->join('category_product', 'products.id', '=', 'category_product.product_id')
+                ->join('categories', 'categories.id', '=', 'category_product.category_id')
                 ->join('orders', 'orders.order_id', '=', 'order_details.order_id')
-                ->join('image_product', function ($join) {
-                    $join->on('products.product_id', '=', 'image_product.product_id')
-                        ->where('image_product.image_role', '=', 'main');
-                })
-                ->join('images', 'images.image_id', '=', 'image_product.image_id')
                 ->where('orders.order_status', 'completed')
-                ->where('products.status', 'active')
+                ->where('products.status', 1)
                 ->select(
-                    'products.product_id',
-                    'products.product_name',
-                    'images.image_url',
-                    'categories.category_name',
+                    'products.id',
+                    'products.name',
+                    'products.image',
+                    'categories.name as cate_name',
                     'products.price',
                     DB::raw('SUM(order_details.sold_quantity) as total_sold'),
                     DB::raw('SUM(order_details.sold_quantity * order_details.sold_price) as total_revenue')
                 )
                 ->groupBy(
-                    'products.product_id',
-                    'products.product_name',
-                    'images.image_url',
-                    'categories.category_name',
+                    'products.id',
+                    'products.name',
+                    'products.image',
+                    'categories.name',
                     'products.price'
                 )
                 ->orderBy('total_sold', 'desc')
                 ->limit(5)
                 ->get();
-
+            //   $topSellingProducts = DB::table('order_details')
+            //     ->join('products', 'products.id', '=', 'order_details.product_id')
+            //     ->join('category_product', 'products.id', '=', 'category_product.product_id')
+            //     ->join('categories', 'categories.id', '=', 'category_product.category_id')
+            //     ->join('orders', 'orders.order_id', '=', 'order_details.order_id')
+            //     ->where('orders.order_status', 'completed')
+            //     ->where('products.status', 1)
+            //     ->select(
+            //         'products.id',
+            //         'products.name',
+            //         'products.image',
+            //         'categories.name',
+            //         'products.price',
+            //         DB::raw('SUM(order_details.sold_quantity) as total_sold'),
+            //         DB::raw('SUM(order_details.sold_quantity * order_details.sold_price) as total_revenue')
+            //     )
+            //     ->groupBy(
+            //         'products.id',
+            //         'products.name',
+            //         'products.image',
+            //         'categories.name',
+            //         'products.price'
+            //     )
+            //     ->orderBy('total_sold', 'desc')
+            //     ->limit(5)
+            //     ->get();
+            // dd($topSellingProducts);
             // Debug log
-            Log::info('Top Selling Products Query Result:', [
-                'count' => $topSellingProducts->count(),
-                'products' => $topSellingProducts->toArray()
-            ]);
+            // Log::info('Top Selling Products Query Result:', [
+            //     'count' => $topSellingProducts->count(),
+            //     'products' => $topSellingProducts->toArray()
+            // ]);
 
-            $allFeedbacks = \App\Models\Feedback::with('customer')->orderByDesc('feedback_id')->get();
-
+            $allFeedbacks = Feedback::with('customer')->orderByDesc('id')->get();
+            // dd($allFeedbacks);
             // biểu đồ so sánh số lượng đơn hàng hoàn thành và hủy trong 7 ngày qua
             $orderChartLabels = [];
             $completedCounts = [];
@@ -203,12 +225,12 @@ class DashboardController extends Controller
 
             // Tìm kiếm sản phẩm
             $products = Product::where(function ($q) use ($query) {
-                $q->whereRaw('LOWER(product_name) LIKE ?', ['%' . strtolower($query) . '%'])
+                $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($query) . '%'])
                     ->orWhereHas('brand', function ($q) use ($query) {
                         $q->whereRaw('LOWER(brand_name) LIKE ?', ['%' . strtolower($query) . '%']);
                     })
                     ->orWhereHas('categories', function ($q) use ($query) {
-                        $q->whereRaw('LOWER(category_name) LIKE ?', ['%' . strtolower($query) . '%']);
+                        $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($query) . '%']);
                     });
             })
                 ->with(['brand', 'categories', 'images'])
@@ -221,8 +243,8 @@ class DashboardController extends Controller
                     'products' => $products->map(function ($product) {
                         return [
                             'id' => $product->product_id,
-                            'name' => $product->product_name,
-                            'category' => $product->getPrimaryCategory()?->category_name ?? 'N/A',
+                            'name' => $product->name,
+                            'category' => $product->getPrimaryCategory()?->name ?? 'N/A',
                             'price' => number_format($product->price) . ' VNĐ',
                             'image' => $product->getMainImage()?->image_url
                                 ? asset('storage/' . $product->getMainImage()->image_url)
@@ -252,12 +274,12 @@ class DashboardController extends Controller
             }
 
             $products = Product::where(function ($q) use ($query) {
-                $q->whereRaw('LOWER(product_name) LIKE ?', ['%' . strtolower($query) . '%'])
+                $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($query) . '%'])
                     ->orWhereHas('brand', function ($q) use ($query) {
                         $q->whereRaw('LOWER(brand_name) LIKE ?', ['%' . strtolower($query) . '%']);
                     })
                     ->orWhereHas('categories', function ($q) use ($query) {
-                        $q->whereRaw('LOWER(category_name) LIKE ?', ['%' . strtolower($query) . '%']);
+                        $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($query) . '%']);
                     });
             })
                 ->with(['brand', 'categories', 'images'])
@@ -266,11 +288,11 @@ class DashboardController extends Controller
                 ->map(function ($product) {
                     return [
                         'id' => $product->product_id,
-                        'name' => $product->product_name,
-                        'category' => $product->getPrimaryCategory()?->category_name ?? 'N/A',
+                        'name' => $product->name,
+                        'category' => $product->getPrimaryCategory()?->name ?? 'N/A',
                         'price' => number_format($product->price) . ' VNĐ',
                         'image_url' => $product->getMainImage()?->image_url
-                            ? asset( $product->getMainImage()->image_url)
+                            ? asset($product->getMainImage()->image_url)
                             : asset('images/no-image.png'),
                         'url' => route('admin.product.edit', $product->product_id)
                     ];
@@ -389,7 +411,7 @@ class DashboardController extends Controller
                     $total += $product->orderDetails->sum('sold_quantity');
                 }
                 return [
-                    'name' => $cat->category_name,
+                    'name' => $cat->name,
                     'total' => $total
                 ];
             });
@@ -443,8 +465,6 @@ class DashboardController extends Controller
     public function getBrandSalesStats(): JsonResponse
     {
         try {
-            Log::info('Starting getBrandSalesStats...');
-
             // First get total orders
             $totalOrders = DB::table('order_details')->count();
             Log::info('Total orders found: ' . $totalOrders);
@@ -457,14 +477,14 @@ class DashboardController extends Controller
             }
 
             $brandStats = DB::table('brands as b')
-                ->join('products as p', 'b.brand_id', '=', 'p.brand_id')
-                ->join('order_details as od', 'p.product_id', '=', 'od.product_id')
+                ->join('products as p', 'b.id', '=', 'p.brand_id')
+                ->join('order_details as od', 'p.id', '=', 'od.product_id')
                 ->select(
                     'b.brand_name',
                     DB::raw('COUNT(od.product_id) as total_sales'),
                     DB::raw("ROUND((COUNT(od.product_id) * 100.0 / $totalOrders), 2) as percentage")
                 )
-                ->groupBy('b.brand_id', 'b.brand_name')
+                ->groupBy('b.id', 'b.brand_name')
                 ->orderByDesc('total_sales')
                 ->limit(5)
                 ->get();
